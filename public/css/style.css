@@ -1,0 +1,629 @@
+/*SDG Wheel and news*/
+/* ==========================================================================
+   1. GLOBAL VARIABLES & BASE STYLES
+   ========================================================================== */
+:root {
+    --bg-color: #f7f9fb;
+    --border-ui: #e4e8eb;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --uob-blue: #0288d1;
+    /* Main SDG fallbacks */
+    --sdg3: #4C9F38; 
+    --sdg4: #C7162C; 
+    --sdg6: #26BDE2;
+    --sdg11: #F99D26; 
+    --sdg13: #3F7E44; 
+    --sdg15: #56C02B;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color); 
+    color: var(--text-main); 
+    margin: 0; 
+    padding: 40px 20px;
+}
+
+.dashboard-layout {
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    align-items: center;
+    gap: 60px; 
+    max-width: 1200px; 
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   2. FULL-CIRCLE SDG WHEEL COMPONENTS
+   ========================================================================== */
+.wheel-wrapper {
+    position: relative; 
+    width: 360px; 
+    height: 360px; /* Restored to full height */
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sdg-wheel-container {
+    width: 100%; 
+    height: 100%;       
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Sets the rotation pivot point directly in the middle of the circle */
+    transform-origin: center center; 
+    animation: rotateFullWheel 25s linear infinite;
+    transition: animation-duration 0.4s ease;
+}
+
+/* Accelerates the movement when the user hovers over the area */
+.wheel-wrapper:hover .sdg-wheel-container {
+    animation-duration: 6s;
+    cursor: pointer;
+}
+
+/* White badge aligned perfectly in the center of the full circle */
+.inner-static-badge {
+    position: absolute; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px; 
+    height: 160px;
+    background: white; 
+    border-radius: 50%; /* Full circle shape */
+    z-index: 10;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    box-sizing: border-box;
+    font-weight: 700; 
+    color: #0f172a; 
+    font-size: 0.95rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    pointer-events: none;
+}
+
+@keyframes rotateFullWheel {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   3. WHEEL SQUARE IMAGES & HIGHLIGHT MECHANICS
+   ========================================================================== */
+.wheel-icon-img { 
+    position: absolute;
+    top: calc(50% - 15px);
+    left: calc(50% - 15px); /* Centers image elements around the core midpoint */
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transform-origin: center center; 
+    opacity: 0.85;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.wheel-icon-img:hover {
+    opacity: 1;
+}
+
+/* Dim remaining tiles once an active highlight state is triggered */
+.sdg-wheel-container.has-highlight .wheel-icon-img {
+    opacity: 0.2;
+    filter: grayscale(80%);
+}
+
+/* The Chosen One: Lights up sharply in its exact position */
+.sdg-wheel-container.has-highlight .wheel-icon-img.active-highlight {
+    opacity: 1 !important;
+    filter: grayscale(0%) !important;
+}
+
+/* ==========================================================================
+   4. CONTROL CARDS & INTERFACE GRID
+   ========================================================================== */
+.control-grid {
+    display: grid; 
+    grid-template-columns: repeat(3, 110px); 
+    gap: 16px;
+}
+
+.sdg-card-btn {
+    background: #fff; 
+    border: 1px solid var(--border-ui); 
+    border-radius: 12px;
+    padding: 14px; 
+    text-align: left; 
+    cursor: pointer; 
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px;
+}
+
+.sdg-card-btn:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 16px rgba(0,0,0,0.06); 
+}
+
+.sdg-card-btn .badge-num { 
+    font-size: 1.5rem; 
+    font-weight: 800; 
+}
+
+.sdg-card-btn .label { 
+    font-size: 0.8rem; 
+    font-weight: 600; 
+    color: var(--text-muted); 
+}
+
+/* Card Button Color Triggers */
+.sdg-card-btn[data-sdg="3"] .badge-num { color: var(--sdg3); }
+.sdg-card-btn[data-sdg="4"] .badge-num { color: var(--sdg4); }
+.sdg-card-btn[data-sdg="6"] .badge-num { color: var(--sdg6); }
+.sdg-card-btn[data-sdg="11"] .badge-num { color: var(--sdg11); }
+.sdg-card-btn[data-sdg="13"] .badge-num { color: var(--sdg13); }
+.sdg-card-btn[data-sdg="15"] .badge-num { color: var(--sdg15); }
+
+.global-reset-bar {
+    grid-column: span 3; 
+    background: #0f172a; 
+    color: white; 
+    border: none;
+    padding: 12px; 
+    border-radius: 8px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: opacity 0.2s;
+}
+
+.global-reset-bar:hover { 
+    opacity: 0.9; 
+}
+
+/* ==========================================================================
+   5. TICKER & NEWS PANEL FEED
+   ========================================================================== */
+.news-section-panel {
+    max-width: 1100px; 
+    margin: 50px auto 0 auto; 
+    background: white;
+    border: 1px solid var(--border-ui); 
+    border-radius: 16px; 
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.panel-title-bar {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    border-bottom: 1px solid var(--border-ui); 
+    padding-bottom: 16px; 
+    margin-bottom: 24px;
+}
+
+.panel-title-bar h2 { 
+    margin: 0; 
+    font-size: 1.3rem; 
+    font-weight: 700; 
+    color: #0f172a; 
+}
+
+.ticker-frame { 
+    width: 100%; 
+    overflow: hidden; /* Clips layout out-of-bounds scrollbars */
+    background: #fff; 
+    position: relative; 
+}
+
+.ticker-frame::-webkit-scrollbar {
+    display: none; 
+}
+
+.ticker-track { 
+    display: flex; 
+    width: max-content; 
+    /* SLOWED DOWN: Increased from 120s to 240s for an ultra-slow drift pace */
+    animation: runTicker 240s linear infinite; 
+}
+
+.ticker-track:hover { 
+    animation-play-state: paused; 
+}
+
+@keyframes runTicker {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.executive-news-card {
+    width: 320px; 
+    padding: 20px; 
+    margin-right: 24px; 
+    background: #fff;
+    border: 1px solid var(--border-ui); 
+    border-radius: 10px;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    gap: 12px;
+    flex-shrink: 0; /* Keeps items wide and readable */
+}
+
+.executive-news-card .meta-line {
+    font-size: 0.75rem; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;
+}
+
+.executive-news-card h4 {
+    margin: 0; 
+    font-size: 0.95rem; 
+    line-height: 1.4; 
+    color: #1e293b;
+    display: -webkit-box; 
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden;
+}
+
+.redirect-action-btn {
+    align-self: flex-start; 
+    background: #f1f5f9; 
+    color: var(--uob-blue);
+    text-decoration: none; 
+    font-size: 0.8rem; 
+    font-weight: 700;
+    padding: 6px 12px; 
+    border-radius: 6px; 
+    transition: background 0.2s;
+}
+
+.redirect-action-btn:hover { 
+    background: #e2e8f0; 
+}
+
+/* ==========================================================================
+   6. ADDITIONAL SDG ICONS & COMPACT DETAILS
+   ========================================================================== */
+.sdg-icons-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.sdg-section-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: black;
+    margin-bottom: 40px;
+    letter-spacing: -0.3px;
+    position: relative;
+}
+
+.sdg-cards-horizontal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+.sdg-card-compact {
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.sdg-card-compact:hover {
+    transform: translateY(-12px);
+}
+
+.sdg-image-wrapper {
+    width: 120px;
+    height: auto;
+    position: relative;
+}
+
+/* Glow effect on hover */
+.sdg-image-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -15px;
+    background: linear-gradient(135deg, rgba(86, 192, 43, 0.25), rgba(44, 95, 45, 0.25));
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+    filter: blur(20px);
+}
+
+.sdg-image-wrapper img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.15),
+        0 3px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.sdg-card-compact:hover .sdg-image-wrapper img {
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.25),
+        0 8px 16px rgba(0, 0, 0, 0.15);
+    transform: scale(1.03);
+}
+
+.sdg-content-compact {
+    display: none;
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+/*Locations css*/
+/* ==========================================================================
+   1. Core Reset & Global Layout
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+  line-height: 1.5;
+}
+
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* ==========================================================================
+   2. Category Navigation (UOB Brand Identity)
+   ========================================================================== */
+.category-nav ul {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  flex-wrap: wrap;
+}
+
+.category-nav li {
+  text-align: center;
+}
+
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: #002366; /* Deep corporate blue tint */
+  gap: 12px;
+  transition: color 0.2s ease;
+}
+
+/* Base State: UOB Accent Gold/Bronze Circles */
+.nav-btn svg {
+  width: 32px;
+  height: 32px;
+  padding: 20px;
+  box-sizing: content-box;
+  background-color: #b5945b; /* Official UOB Accent Gold */
+  color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Active / Selected State: UOB Deep Royal Blue */
+.nav-btn.active svg {
+  background-color: #0039a6; /* Official UOB Royal Blue */
+  box-shadow: 0 4px 14px rgba(0, 57, 166, 0.35);
+}
+
+/* Hover Interactive Mechanics */
+.nav-btn:hover svg {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.nav-btn.active:hover svg {
+  box-shadow: 0 6px 18px rgba(0, 57, 166, 0.45);
+}
+
+.nav-btn:hover {
+  color: #0039a6;
+}
+
+/* ==========================================================================
+   3. Panel Panel Switching System (Crucial for JS)
+   ========================================================================== */
+.content-panel {
+  display: none; /* Keeps inactive cards hidden */
+}
+
+.content-panel.active {
+  display: block; /* Triggered via JavaScript injection */
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   4. Items Dynamic Display Grid
+   ========================================================================== */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 25px;
+  padding: 20px 0 60px 0;
+}
+
+.item-card {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.item-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.item-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.item-card-info {
+  padding: 16px;
+  text-align: center;
+}
+
+.item-card-info h3 {
+  font-size: 15px;
+  color: #002366;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   5. Expandable Details View (Modal Overlay Layer)
+   ========================================================================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 15, 45, 0.6); /* Tinted with deep dark blue */
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-content {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.close-modal:hover {
+  color: #0039a6;
+}
+
+#modal-img {
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+#modal-title {
+  color: #0039a6;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+#modal-desc {
+  color: #495057;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.plants-display {
+  margin-top: 25px;
+  border-top: 2px solid #f1f3f5;
+  padding-top: 15px;
+}
+
+.plants-display h3 {
+  color: #002366;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+#modal-plants-list {
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+#modal-plants-list li {
+  background: #f1f3f5;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #2d5a27; /* Keeping flora items represented with a healthy green context */
+  font-weight: 500;
+  text-align: center;
+  border-left: 3px solid #b5945b; /* Accentuated with UOB Gold margin lines */
+}
