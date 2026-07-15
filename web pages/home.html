@@ -9,39 +9,53 @@
         <script src="../public/js/chatbot.js" defer></script>
     </head>
     <body>
-        <nav>
-     <img src="../public/images/UOB logo.png" alt="UOB Logo">
-    <a href="home.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="locations.html">Locations</a>
-    <div>
-    <a href="#">Plants</a>
-    <div>
-        <a href="indoor.html">Indoor</a>
-        <a href="outdoor.html">Outdoor</a>
+<div class="logo-space">
+    <img src="../public/images/UOB logo.png" alt="UOB Logo">
+</div>
+<nav class="navbar">
+    <div class="nav-left"></div>
+
+    <div class="nav-center">
+        <a href="home.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="locations.html">Locations</a>
+        
+        <div class="dropdown">
+            <a href="#">Plants</a>
+            <div class="dropdown-content">
+                <a href="indoor.html">Indoor</a>
+                <a href="outdoor.html">Outdoor</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <a href="#">Projects</a>
+            <div class="dropdown-content">
+                <a href="projects/before and after.html">Landscape Improvements</a>
+                <a href="projects/statistics and reports.html">Statistics And Reports</a>
+            </div>
+        </div>
     </div>
-   </div>
-   <div>
-    <a href="#">Projects</a>
-    <div>
-        <a href="projects/before and after.html">Landscape Improvements</a>
-        <a href="projects/statistics and reports.html">Statistics And Reports</a>
+
+    <div class="nav-right">
+        <a href="login.html"><button class="login-btn">Login</button></a>
     </div>
-   </div>
-   <a href="login.html"><button>Login</button></a>
-   </nav>
-   <header>
-    <video autoplay muted loop playsinline>
-      <source src="../public/videos/video_1.mp4" type="video/mp4">
+</nav>
+<header>
+    <video autoplay muted loop playsinline style="width: 100%; height: 100vh; object-fit: cover;">
+        <source src="../public/videos/video_1.mp4" type="video/mp4">
     </video>
-    <div>
-        University of Bahrain Landscapes
+    
+    <div class="overlay-square">
+        <div class="overlay-label">
+            University of Bahrain Landscapes
+        </div>
     </div>
-  </header>
-  <main>
-    <section>
-        <h1>Welcome to UoB Landscape</h1>
-          <p>This website showcases the diverse flora across our campus, providing detailed
+</header>
+  <main class="main">
+    <section class="welcome">
+        <h1 class="welcome-title">Welcome to UOB Landscape</h1>
+          <p class="welcome-paragraph"><br>This website showcases the diverse flora across our campus, providing detailed
             information about each plant, its location, and its unique characteristics. It was
             created collaboratively by IT students along with landscaping and biology students,
             combining technology, science, and design to make exploring our university's green
@@ -49,216 +63,185 @@
             that contribute to the beauty and sustainability of our campus.
           </p>
     </section>
-    <section>
-        <div>
-            <div>100+</div>
-            <div>Plant Species</div>
+    <section class="stats">
+        <div class="stat-container">
+            <div class="num">100+</div>
+            <div class="num-text">Plant Species</div>
         </div>
-        <div>
-            <div>50+</div>
-            <div>Locations</div>
+        <div class="stat-container">
+            <div class="num">50+</div>
+            <div class="num-text">Locations</div>
         </div>
-        <div>
-             <div>36K+</div>
-             <div>Square Meters</div>
+        <div class="stat-container">
+             <div class="num">36K+</div>
+             <div class="num-text">Square Meters</div>
         </div>
-        <div>
-            <div>30+</div>
-            <div>Projects</div>
+        <div class="stat-container">
+            <div class="num">30+</div>
+            <div class="num-text">Projects</div>
         </div>
     </section>
-    <section>
-        <h2>Explore Our Landscape</h2>
+    <section class="catching">
+        <h2 class="catching-heading"><br>Explore Our Landscape</h2><br>
+        <div class="plant-container">
+</div><br>
+        <a href="locations.html"><button class="locations-btn">Discover UOB Landscape</button></a>
     </section>
-    <section>
+    <section class="sdg-icons" id="sdg">
         <div class="sdg-content-row">
-
-        <!-- SDG Icons Section -->
         <div class="sdg-icons-section">
-          <h3 class="sdg-section-title">Featured Sustainable Development Goals</h3>
-
+          <h3 class="sdg-section-title">UOB Landscape Featured Sustainable Development Goals</h3>
           <div class="sdg-cards-horizontal">
-            <!-- SDG 3 -->
-            <a href="" class="sdg-card-compact" tabindex="0">
               <div class="sdg-image-wrapper">
                 <img src="../public/images/sdg-3.png" alt="SDG 3: Good Health and Well-being">
               </div>
-            </a>
-
-            <!-- SDG 4 -->
-            <a href="" class="sdg-card-compact" tabindex="0">
               <div class="sdg-image-wrapper">
                 <img src="../public/images/sdg-4.png" alt="SDG 4: Quality Education">
               </div>
-            </a>
-
-            <!-- SDG 6 -->
-            <a href="" class="sdg-card-compact" tabindex="0">
               <div class="sdg-image-wrapper">
                 <img src="../public/images/sdg-6.png" alt="SDG 6: Clean Water and Sanitation">
               </div>
-            </a>
-
-            <!-- SDG 11 -->
-            <a href="" class="sdg-card-compact" tabindex="0" aria-label="SDG 11: Sustainable Cities and Communities">
               <div class="sdg-image-wrapper">
                 <img src="../public/images/sdg-11.png" alt="SDG 11: Sustainable Cities and Communities">
               </div>
-            </a>
-
-            <!-- SDG 13 -->
-            <a href="" class="sdg-card-compact" tabindex="0">
               <div class="sdg-image-wrapper">
                 <img src="../public/images/sdg-13.png" alt="SDG 13: Climate Action">
               </div>
-            </a>
-
-            <!-- SDG 15 -->
-            <a href="" class="sdg-card-compact" tabindex="0">
               <div class="sdg-image-wrapper">
                 <img src="../public/images/sdg-15.png" alt="SDG 15: Life on Land">
               </div>
-            </a>
           </div>
+          <h4 class="sdg-section-text">University of Bahrain proudly aligns with the United Nations Sustainable Development Goals, fostering a greener, healthier, and more sustainable campus environment for future generations.</h3>
         </div>
       </div>
     </div>
   </section>
-    </section>
-        <div class="dashboard-layout">
-<div class="wheel-wrapper full-wheel-mode">
-    <div class="inner-static-badge">SDG Wheel</div>
-    
-    <div class="sdg-wheel-container" id="wheel-canvas">
-        <img id="wheel-img-1" class="wheel-icon-img" src="../public/images/sdg_1.png" style="transform: rotate(0deg) translateY(-140px) rotate(0deg);" />
-        <img id="wheel-img-2" class="wheel-icon-img" src="../public/images/sdg_2.png" style="transform: rotate(21.18deg) translateY(-140px) rotate(-21.18deg);" />
-        <img id="wheel-img-3" class="wheel-icon-img" src="../public/images/sdg_3.png" style="transform: rotate(42.35deg) translateY(-140px) rotate(-42.35deg);" />
-        <img id="wheel-img-4" class="wheel-icon-img" src="../public/images/sdg_4.png" style="transform: rotate(63.53deg) translateY(-140px) rotate(-63.53deg);" />
-        <img id="wheel-img-5" class="wheel-icon-img" src="../public/images/sdg_5.png" style="transform: rotate(84.71deg) translateY(-140px) rotate(-84.71deg);" />
-        <img id="wheel-img-6" class="wheel-icon-img" src="../public/images/sdg_6.png" style="transform: rotate(105.88deg) translateY(-140px) rotate(-105.88deg);" />
-        <img id="wheel-img-7" class="wheel-icon-img" src="../public/images/sdg_7.png" style="transform: rotate(127.06deg) translateY(-140px) rotate(-127.06deg);" />
-        <img id="wheel-img-8" class="wheel-icon-img" src="../public/images/sdg_8.png" style="transform: rotate(148.24deg) translateY(-140px) rotate(-148.24deg);" />
-        <img id="wheel-img-9" class="wheel-icon-img" src="../public/images/sdg_9.png" style="transform: rotate(169.41deg) translateY(-140px) rotate(-169.41deg);" />
-        <img id="wheel-img-10" class="wheel-icon-img" src="../public/images/sdg_10.png" style="transform: rotate(190.59deg) translateY(-140px) rotate(-190.59deg);" />
-        <img id="wheel-img-11" class="wheel-icon-img" src="../public/images/sdg_11.png" style="transform: rotate(211.76deg) translateY(-140px) rotate(-211.76deg);" />
-        <img id="wheel-img-12" class="wheel-icon-img" src="../public/images/sdg_12.png" style="transform: rotate(232.94deg) translateY(-140px) rotate(-232.94deg);" />
-        <img id="wheel-img-13" class="wheel-icon-img" src="../public/images/sdg_13.png" style="transform: rotate(254.12deg) translateY(-140px) rotate(-254.12deg);" />
-        <img id="wheel-img-14" class="wheel-icon-img" src="../public/images/sdg_14.png" style="transform: rotate(275.29deg) translateY(-140px) rotate(-275.29deg);" />
-        <img id="wheel-img-15" class="wheel-icon-img" src="../public/images/sdg_15.png" style="transform: rotate(296.47deg) translateY(-140px) rotate(-296.47deg);" />
-        <img id="wheel-img-16" class="wheel-icon-img" src="../public/images/sdg_16.png" style="transform: rotate(317.65deg) translateY(-140px) rotate(-317.65deg);" />
-        <img id="wheel-img-17" class="wheel-icon-img" src="../public/images/sdg_17.png" style="transform: rotate(338.82deg) translateY(-140px) rotate(-338.82deg);" />
-    </div>
-</div>
-        <div class="control-grid">
-            <button class="sdg-card-btn" data-sdg="3" onclick="handleSdgInteraction(3)">
-                <span class="badge-num">03</span><span class="label">GOOD HEALTH AND WELL-BEING</span>
-            </button>
-            <button class="sdg-card-btn" data-sdg="4" onclick="handleSdgInteraction(4)">
-                <span class="badge-num">04</span><span class="label">QUALITY EDUCATION</span>
-            </button>
-            <button class="sdg-card-btn" data-sdg="6" onclick="handleSdgInteraction(6)">
-                <span class="badge-num">06</span><span class="label">CLEAN WATER AND SANITATION</span>
-            </button>
-            <button class="sdg-card-btn" data-sdg="11" onclick="handleSdgInteraction(11)">
-                <span class="badge-num">11</span><span class="label">SUSTAINABLE CITITES AND COMMUNITIES</span>
-            </button>
-            <button class="sdg-card-btn" data-sdg="13" onclick="handleSdgInteraction(13)">
-                <span class="badge-num">13</span><span class="label">CILMATE ACTION</span>
-            </button>
-            <button class="sdg-card-btn" data-sdg="15" onclick="handleSdgInteraction(15)">
-                <span class="badge-num">15</span><span class="label">LIFE ON LAND</span>
-            </button>
-            <button class="global-reset-bar" onclick="clearActiveFilters()">Show All News Feed items</button>
+<section class="sdg-news">
+    <div class="dashboard-top-row">
+        <div class="left-column">
+            <div class="stack-cards">
+                <div class="inner-static-badge">
+                    <h2 class="sdg-card">SDG cards</h2>
+                </div>
+                <div class="sdg-card-container" id="card-canvas">
+                    <div class="card-wrapper" id="card-1"><img class="card-icon-img" src="../public/images/sdg_1.png"/></div>
+                    <div class="card-wrapper" id="card-2"><img class="card-icon-img" src="../public/images/sdg_2.png"/></div>
+                    <div class="card-wrapper" id="card-3"><img class="card-icon-img" src="../public/images/sdg_3.png"/></div>
+                    <div class="card-wrapper" id="card-4"><img class="card-icon-img" src="../public/images/sdg_4.png"/></div>
+                    <div class="card-wrapper" id="card-5"><img class="card-icon-img" src="../public/images/sdg_5.png"/></div>
+                    <div class="card-wrapper" id="card-6"><img class="card-icon-img" src="../public/images/sdg_6.png"/></div>
+                    <div class="card-wrapper" id="card-7"><img class="card-icon-img" src="../public/images/sdg_7.png"/></div>
+                    <div class="card-wrapper" id="card-8"><img class="card-icon-img" src="../public/images/sdg_8.png"/></div>
+                    <div class="card-wrapper" id="card-9"><img class="card-icon-img" src="../public/images/sdg_9.png"/></div>
+                    <div class="card-wrapper" id="card-10"><img class="card-icon-img" src="../public/images/sdg_10.png"/></div>
+                    <div class="card-wrapper" id="card-11"><img class="card-icon-img" src="../public/images/sdg_11.png"/></div>
+                    <div class="card-wrapper" id="card-12"><img class="card-icon-img" src="../public/images/sdg_12.png"/></div>
+                    <div class="card-wrapper" id="card-13"><img class="card-icon-img" src="../public/images/sdg_13.png"/></div>
+                    <div class="card-wrapper" id="card-14"><img class="card-icon-img" src="../public/images/sdg_14.png"/></div>
+                    <div class="card-wrapper" id="card-15"><img class="card-icon-img" src="../public/images/sdg_15.png"/></div>
+                    <div class="card-wrapper" id="card-16"><img class="card-icon-img" src="../public/images/sdg_16.png"/></div>
+                    <div class="card-wrapper" id="card-17"><img class="card-icon-img" src="../public/images/sdg_17.png"/></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="control-grid">
+                <button class="sdg-card-btn" data-sdg="3" onclick="handleSdgInteraction(3)">
+                    <span class="badge-num">03</span><span class="label">GOOD HEALTH AND WELL-BEING</span>
+                </button>
+                <button class="sdg-card-btn" data-sdg="4" onclick="handleSdgInteraction(4)">
+                    <span class="badge-num">04</span><span class="label">QUALITY EDUCATION</span>
+                </button>
+                <button class="sdg-card-btn" data-sdg="6" onclick="handleSdgInteraction(6)">
+                    <span class="badge-num">06</span><span class="label">CLEAN WATER AND SANITATION</span>
+                </button>
+                <button class="sdg-card-btn" data-sdg="11" onclick="handleSdgInteraction(11)">
+                    <span class="badge-num">11</span><span class="label">SUSTAINABLE CITITES AND COMMUNITIES</span>
+                </button>
+                <button class="sdg-card-btn" data-sdg="13" onclick="handleSdgInteraction(13)">
+                    <span class="badge-num">13</span><span class="label">CILMATE ACTION</span>
+                </button>
+                <button class="sdg-card-btn" data-sdg="15" onclick="handleSdgInteraction(15)">
+                    <span class="badge-num">15</span><span class="label">LIFE ON LAND</span>
+                </button>
+                <button class="global-reset-bar" onclick="clearActiveFilters()">Show All News Feed items</button>
+            </div>
         </div>
     </div>
+
     <div class="news-section-panel">
         <div class="panel-title-bar">
             <h2 id="stream-headline">UOB SDG News</h2>
         </div>
-
         <div id="scrolling-viewframe" class="ticker-frame">
             <div class="ticker-track" id="ticker-track-injection">
                 <div style="padding: 20px; color: var(--text-muted);">Syncing with University of Bahrain news...</div>
             </div>
         </div>
-
         <div id="static-filter-viewframe" class="static-display-grid" style="display: none;"></div>
     </div>
-    </section>
+</section>
   </main>
    <footer>
-      <div>
-        <h4>About</h4>
-        <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information
-          about plants, their locations, and ecological significance.</p>
-      </div>
-      <div>
-        <h4>Navigation</h4>
-  <ul>
-    <li>
-     <a href="home.html">Home</a>
-    </li>
-    <li>
-      <a href="about.html">About</a>
-    </li>
-    <li>
-      <a href="locations.html">Locations</a>
-    </li>
-    <li>
-    <div>
-    <a href="#">Plants</a>
-    <div>
-        <a href="indoor.html">Indoor</a>
-        <a href="outdoor.html">Outdoor</a>
-    </div>
-   </div>
-   </li>
-   <li>
-   <div>
-    <a href="#">Projects</a>
-    <div>
-       <a href="projects/before and after.html">Landscape Improvements</a>
-        <a href="projects/statistics and reports.html">Statistics And Reports</a>
-    </div>
-   </div>
-   </li>
-  </ul>
-      </div>
-      <div>
-        <h4>External Links</h4>
-        <ul>
-          <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
-          <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of
-              Bahrain</a></li>
-          <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank"
-              rel="noopener noreferrer">Sustainable Development</a></li>
-        </ul>
-      </div>
-      <div >
-        <h4>Contact</h4>
-        <div>
-          <a target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-envelope"></i>
-          </a>
-          <span>landscape@uob.edu.bh</span>
+    <div class="footer-top-container">
+        <div class="footer-col">
+            <h4>About</h4>
+            <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information about plants, their locations, and ecological significance.</p>
         </div>
-        <div class="social-links">
-          <a target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-phone"></i>
-          </a>
-          <span>+973 1743 8181</span>
+
+        <div class="footer-col">
+            <h4>Navigation</h4>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="locations.html">Locations</a></li>
+                <li>
+                    <a href="#">Plants</a>
+                    <div style="padding-left: 15px;">
+                        <a href="indoor.html">Indoor</a><br>
+                        <a href="outdoor.html">Outdoor</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">Projects</a>
+                    <div style="padding-left: 15px;">
+                        <a href="projects/before and after.html">Landscape Improvements</a><br>
+                        <a href="projects/statistics and reports.html">Statistics And Reports</a>
+                    </div>
+                </li>
+            </ul>
         </div>
-        <div class="social-links">
-          <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
-            <i class="fab fa-youtube"></i>
-          </a>
-          <span>YouTube</span>
+
+        <div class="footer-col">
+            <h4>External Links</h4>
+            <ul>
+                <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
+                <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of Bahrain</a></li>
+                <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank" rel="noopener noreferrer">Sustainable Development</a></li>
+            </ul>
         </div>
-      </div>
+
+        <div class="footer-col">
+    <h4>Contact</h4>
+    <div class="social-links">
+        <i class="fa-solid fa-envelope"></i> 
+        <a href="mailto:landscape@uob.edu.bh">landscape@uob.edu.bh</a>
     </div>
+    <div class="social-links">
+        <i class="fa-solid fa-phone"></i> <span>+973 1743 8181</span>
+    </div>
+    <div class="social-links">
+        <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-youtube"></i> YouTube
+        </a>
+    </div>
+</div>
+    </div>
+
     <div class="footer-bottom">
-      <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
+        <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
     </div>
-  </footer>
+</footer>
     </body>
 </html>

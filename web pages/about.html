@@ -6,197 +6,258 @@
     <title>About</title>
     <link rel="stylesheet" href="../public/css/style.css" />
     <script src="../public/js/chatbot.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   </head>
   <body>
-    <nav>
-     <img src="../public/images/UOB logo.png" alt="UOB Logo">
-    <a href="home.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="locations.html">Locations</a>
-    <div>
-    <a href="#">Plants</a>
-    <div>
-        <a href="indoor.html">Indoor</a>
-        <a href="outdoor.html">Outdoor</a>
+    <div class="logo-space">
+    <img src="../public/images/UOB logo.png" alt="UOB Logo">
+</div>
+<nav class="navbar">
+    <div class="nav-left"></div>
+    <div class="nav-center">
+        <a href="home.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="locations.html">Locations</a>
+        
+        <div class="dropdown">
+            <a href="#">Plants</a>
+            <div class="dropdown-content">
+                <a href="indoor.html">Indoor</a>
+                <a href="outdoor.html">Outdoor</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <a href="#">Projects</a>
+            <div class="dropdown-content">
+                <a href="projects/before and after.html">Landscape Improvements</a>
+                <a href="projects/statistics and reports.html">Statistics And Reports</a>
+            </div>
+        </div>
     </div>
-   </div>
-   <div>
-    <a href="#">Projects</a>
-    <div>
-        <a href="projects/before and after.html">Landscape Improvements</a>
-        <a href="projects/statistics and reports.html">Statistics And Reports</a>
+
+    <div class="nav-right">
+        <a href="login.html"><button class="login-btn">Login</button></a>
     </div>
-   </div>
-   <a href="login.html"><button>Login</button></a>
-   </nav>
+</nav>
    <main>
-    <section>
-     <h1>UOB Landscapes</h1>
-     <p>A collaborative platform uniting biology, engineering, and technology to create a
-      sustainable and data-driven campus environment.</p>
-    </section>
-    <section>
-      <h1>Where Science Meets Design</h1>
-          <p>The University of Bahrain Landscapes initiative envisions a collaborative platform where science,
+    <section class="about">
+  <img class="about-image" src="../public/images/landscape_13.png" alt="UOB enterance">
+  <div class="overlay-square">
+    <div class="overlay-label">University of Bahrain Landscapes</div>
+  </div>
+
+  <div class="about-content-wrapper">
+    <img class="about-leaf left-leaf" src="../public/images/golden_leaf_left.png" alt="Left leaf">
+    
+    <div class="text-group">
+      <h1 class="about-title">UOB Landscapes</h1>
+      <p class="about-paragraph">A collaborative platform uniting biology, engineering, and technology to create a sustainable and data-driven campus environment, where science meets design.</p>
+    </div>
+
+    <img class="about-leaf right-leaf" src="../public/images/golden_leaf_right.png" alt="Right leaf">
+  </div>
+</section>
+    <section class="vision">
+          <p class="vision-paragragh">The University of Bahrain Landscapes initiative envisions a collaborative platform where science,
             engineering, and technology unite to create a sustainable and data-driven campus environment.
             By integrating biological research, landscape design, and digital innovation, the project aims to
             cultivate a living repository of plant data and design proposals that evolve with time. This ongoing
             collaboration lays the groundwork for a greener, smarter, and more connected university landscape
             that reflects the harmony between nature, knowledge, and technology.</p>
     </section>
-    <section>
-          <p>This initiative lays the foundation for a continuously evolving landscape strategy, where scientific
-            insight and engineering creativity converge to shape a greener, smarter campus experience.</p>
-    </section>
-    <section>
-      <h2>Landscape in UOB offers</h2>
-      <div>
-        <h3>Scientific Research</h3>
-          <p>Biologists from the College of Science meticulously document indoor plant species, creating a comprehensive
-            database that serves as a valuable resource for botanical research and education.</p>
-      </div>
-      <div>
-       <h3>Engineering Excellence</h3>
-          <p>Landscape engineers from the College of Engineering design innovative outdoor and indoor landscaping
-            proposals with detailed plans and 3D models that bring visions to life.</p>
-      </div>
-      <div>
-        <h3>Digital Innovation</h3>
-          <p>Software engineers from the College of IT develop and maintain the platform, ensuring seamless data
-            integration and user-friendly access to all landscape information.</p>
-      </div>
-      <div>
-        <h3>Future Growth</h3>
-          <p>Both biological surveys and engineering designs are part of an ongoing process, with future expansions
-            planned to cover additional locations and introduce new proposals across campus.</p>
-      </div>
-    </section>
-    <section>
-      <h2 class="section-title">Our Methods & Practices</h2>
-          <p class="section-subtitle">How we maintain and enhance the UOB campus landscape through sustainable methods
+    <br>
+<div class="gallery-container">
+  <div class="row">
+    <div class="rope"></div>
+    <div class="vision-image">
+      <i class="bi bi-paperclip clip"></i>
+      <img src="../public/images/landscape_2.png">
+      <div class="vision-image-caption">Road near the outdoor main plaza</div>
+    </div>
+    <div class="vision-image">
+      <i class="bi bi-paperclip clip"></i>
+      <img src="../public/images/landscape_7.jpg">
+      <div class="vision-image-caption">Road behind building S48</div>
+    </div>
+    <div class="vision-image">
+      <i class="bi bi-paperclip clip"></i>
+      <img src="../public/images/landscape_8.jpg">
+      <div class="vision-image-caption">Road front of building S39</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="rope"></div>
+    <div class="vision-image">
+      <i class="bi bi-paperclip clip"></i>
+      <img src="../public/images/landscape_5.jpg">
+      <div class="vision-image-caption">Road S40</div>
+    </div>
+    <div class="vision-image">
+      <i class="bi bi-paperclip clip"></i>
+      <img src="../public/images/landscape_3.jpeg">
+      <div class="vision-image-caption">Road near the outdoor main plaza and S6</div>
+    </div>
+    <div class="vision-image">
+      <i class="bi bi-paperclip clip"></i>
+      <img src="../public/images/landscape_4.jpg">
+      <div class="vision-image-caption">Fountain behind S6</div>
+    </div>
+  </div>
+</div>
+<section class="offers">
+    <h2 class="offers-title">Landscape in UOB offers</h2>
+    <div class="offer-1">
+      <h3 class="offer-1-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-leaf" viewBox="0 0 16 16">
+  <path d="M1.4 1.7c.216.289.65.84 1.725 1.274 1.093.44 2.884.774 5.834.528l.37-.023c1.823-.06 3.117.598 3.956 1.579C14.16 6.082 14.5 7.41 14.5 8.5c0 .58-.032 1.285-.229 1.997q.198.248.382.54c.756 1.2 1.19 2.563 1.348 3.966a1 1 0 0 1-1.98.198c-.13-.97-.397-1.913-.868-2.77C12.173 13.386 10.565 14 8 14c-1.854 0-3.32-.544-4.45-1.435-1.125-.887-1.89-2.095-2.391-3.383C.16 6.62.16 3.646.509 1.902L.73.806zm-.05 1.39c-.146 1.609-.008 3.809.74 5.728.457 1.17 1.13 2.213 2.079 2.961.942.744 2.185 1.22 3.83 1.221 2.588 0 3.91-.66 4.609-1.445-1.789-2.46-4.121-1.213-6.342-2.68-.74-.488-1.735-1.323-1.844-2.308-.023-.214.237-.274.38-.112 1.4 1.6 3.573 1.757 5.59 2.045 1.227.215 2.21.526 3.033 1.158.058-.39.075-.782.075-1.158 0-.91-.288-1.988-.975-2.792-.626-.732-1.622-1.281-3.167-1.229l-.316.02c-3.05.253-5.01-.08-6.291-.598a5.3 5.3 0 0 1-1.4-.811"/>
+</svg> Scientific Research</h3>
+      <p class="offer-1-paragraph">Biologists from the College of Science meticulously document indoor plant species, creating a comprehensive database that serves as a valuable resource for botanical research and education.</p>
+    </div>
+    <div class="offer-2">
+      <h3 class="offer-2-title"><i class="bi bi-gear"></i> Engineering Excellence</h3>
+      <p class="offer-2-paragraph">Landscape engineers from the College of Engineering design innovative outdoor and indoor landscaping proposals with detailed plans and 3D models that bring visions to life.</p>
+    </div>
+    <div class="offer-3">
+      <h3 class="offer-3-title"><i class="bi bi-lightbulb"></i> Digital Innovation</h3>
+      <p class="offer-3-paragraph">Software engineers from the College of IT develop and maintain the platform, ensuring seamless data integration and user-friendly access to all landscape information.</p>
+    </div>
+    <div class="offer-4">
+      <h3 class="offer-4-title"><i class="bi bi-graph-up-arrow"></i>  Future Growth</h3>
+      <p class="offer-4-paragraph">Both biological surveys and engineering designs are part of an ongoing process, with future expansions planned to cover additional locations and introduce new proposals across campus.</p>
+    </div>
+  </section>
+    <section class="methods">
+      <h2 class="methods-title">Our Methods & Practices</h2>
+      <svg width="100%" height="20" viewBox="0 0 100 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0 10 Q 5 0, 10 10 T 20 10 T 30 10 T 40 10 T 50 10 T 60 10 T 70 10 T 80 10 T 90 10 T 100 10" 
+        stroke="#a67d4a" 
+        stroke-width="1.0" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+</svg>
+          <p class="methods-paragraph">How we maintain and enhance the UOB campus landscape through sustainable methods
             and innovative services.</p>
-    </section>
-    <section>
-      <h3>Irrigation Techniques</h3>
-                <p>We employ smart irrigation methods across campus, including drip irrigation and scheduled watering
+
+      <h3 class="method-1"><i class="bi bi-tree text-success me-2"></i>+<i class="bi bi-droplet"></i>   Irrigation Techniques</h3>
+                <p class="method-1-paragraph-1">We employ smart irrigation methods across campus, including drip irrigation and scheduled watering
                   systems that minimize water waste while keeping our landscape healthy year-round.</p>
-                <p>Our team monitors soil moisture levels and adjusts watering schedules seasonally to ensure optimal
+                <p class="method-1-paragraph-2">Our team monitors soil moisture levels and adjusts watering schedules seasonally to ensure optimal
                   plant health while conserving water resources.</p>
-    </section>
-    <section>
-      <h3>SDG in Daily Operations</h3>
-                <p>Our daily landscaping operations are guided by the UN Sustainable Development Goals. Every decision
+
+      <h3 class="method-2"><i class="bi bi-arrow-repeat"></i>+<i class="bi bi-leaf"></i> <i class="bi bi-graph-up-arrow"></i>   SDG in Daily Operations</h3>
+                <p class="method-2-paragraph-1">Our daily landscaping operations are guided by the UN Sustainable Development Goals. Every decision
                   we make on campus reflects our commitment to a greener and more sustainable environment.</p>
-                <p>We contribute to SDG 3 by maintaining green spaces that support well-being, SDG 4 by engaging
-                  students in hands-on research and training, SDG 6 by using smart irrigation to minimize water waste,
-                  SDG 11 by creating a livable and sustainable campus, SDG 13 by planting species that absorb CO₂ and
-                  reduce heat, and SDG 15 by documenting and protecting campus biodiversity.</p>
-                <a href=""><buttton>Learn more about our SDG commitments</buttton></a>
-              </div>
-    </section>
-    <section>
-      <h3>Portable Plants Service</h3>
-                <p>We offer a portable plants service for campus events and occasions. Our collection of plants in
+                <p method-2-paragraph-2>We contribute to:<br>
+                  <i class="bi bi-check2-circle" style="color: #a67d4a;"></i> SDG 3 by maintaining green spaces that support well-being. <br>
+                  <i class="bi bi-check2-circle" style="color: #a67d4a;"></i> SDG 4 by engaging students in hands-on research and training, SDG 6 by using smart irrigation to minimize water waste.<br>
+                  <i class="bi bi-check2-circle" style="color: #a67d4a;"></i> SDG 11 by creating a livable and sustainable campus.<br>
+                  <i class="bi bi-check2-circle" style="color: #a67d4a;"></i> SDG 13 by planting species that absorb CO₂ and
+                  reduce heat.<br> <i class="bi bi-check2-circle" style="color: #a67d4a;"></i> SDG 15 by documenting and protecting campus biodiversity.</p>
+                <a href="home.html#sdg"><buttton class="learn-more-btn">Learn more</buttton></a>
+
+      <h3 class="method-3"><i class="bi bi-flower1"></i>+<i class="bi bi-box2-heart"></i>   Portable Plants Service</h3>
+                <p class="method-3-paragraph-1">We offer a portable plants service for campus events and occasions. Our collection of plants in
                   portable pots is carefully selected for their visual appeal and suitability for both indoor and
                   outdoor settings — from formal ceremonies and outdoor gatherings to department exhibitions and special
                   university occasions.</p>
-                <p>Our team handles the full process, from selecting and arranging the right plants to delivering and
+                <p class="method-3-paragraph-2">Our team handles the full process, from selecting and arranging the right plants to delivering and
                   retrieving them after the event, ensuring a seamless experience for every occasion. Browse our 
-                  <a href="plants/indoor.html"><button>portable plants collection</button></a></p>
+                  <a href="plants/indoor.html"><button class="plants-collection-btn">Discover</button></a></p>
     </section>
-    <section>
-            <h2 class="section-title">Meet Our Team</h2>
-            <p class="section-subtitle">University of Bahrain students contributing through hands-on
-              training in biological research, landscape design, and software development.</p>
-            <div>
-               <h3>College of Science</h3>
-                <p>Biologists</p>
-            </div>
-            <div>
-             <h3>College of Engineering</h3>
-              <p>Landscape Engineers</p>
-            </div>
-            <div>
-              <h3>College of Information Technology</h3>
-              <p>Software Engineers</p>
-              <p>Computer Scientest</p>
-            </div>
-    </section>
+    <section class="team">
+  <h2 class="team-title">Meet Our Team</h2>
+  <p class="team-subtitle">University of Bahrain students contributing through hands-on training in biological research, landscape design, and software development.</p>
+  
+  <div class="team-card">
+    <h3 class="college">College of Science</h3>
+    <div class="major-group">
+      <p class="major">Biologists</p>
+      <div class="member-list" id="science-biologists"></div>
+    </div>
+  </div>
+
+  <div class="team-card">
+    <h3 class="college">College of Engineering</h3>
+    <div class="major-group">
+      <p class="major">Landscape Engineers</p>
+      <div class="member-list" id="engineering-landscape"></div>
+    </div>
+  </div>
+
+  <div class="team-card">
+    <h3 class="college">College of Information Technology</h3>
+    <div class="major-group">
+      <p class="major">Software Engineers</p>
+      <div class="member-list" id="it-software"></div>
+    </div>
+    <div class="major-group">
+      <p class="major">Computer Scientists</p>
+      <div class="member-list" id="it-computer-science"></div>
+    </div>
+  </div>
+</section>
    </main>
-  </main>
-  <footer>
-      <div>
-        <h4>About</h4>
-        <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information
-          about plants, their locations, and ecological significance.</p>
-      </div>
-      <div>
-        <h4>Navigation</h4>
-  <ul>
-    <li>
-     <a href="home.html">Home</a>
-    </li>
-    <li>
-      <a href="about.html">About</a>
-    </li>
-    <li>
-      <a href="locations.html">Locations</a>
-    </li>
-    <li>
-    <div>
-    <a href="#">Plants</a>
-    <div>
-        <a href="indoor.html">Indoor</a>
-        <a href="outdoor.html">Outdoor</a>
-    </div>
-   </div>
-   </li>
-   <li>
-   <div>
-    <a href="#">Projects</a>
-    <div>
-      <a href="projects/before and after.html">Landscape Improvements</a>
-        <a href="projects/statistics and reports.html">Statistics And Reports</a>
-    </div>
-   </div>
-   </li>
-  </ul>
-      </div>
-      <div>
-        <h4>External Links</h4>
-        <ul>
-          <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
-          <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of
-              Bahrain</a></li>
-          <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank"
-              rel="noopener noreferrer">Sustainable Development</a></li>
-        </ul>
-      </div>
-      <div >
-        <h4>Contact</h4>
-        <div>
-          <a target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-envelope"></i>
-          </a>
-          <span>landscape@uob.edu.bh</span>
+<footer>
+    <div class="footer-top-container">
+        <div class="footer-col">
+            <h4>About</h4>
+            <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information about plants, their locations, and ecological significance.</p>
         </div>
-        <div class="social-links">
-          <a target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-phone"></i>
-          </a>
-          <span>+973 1743 8181</span>
+
+        <div class="footer-col">
+            <h4>Navigation</h4>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="locations.html">Locations</a></li>
+                <li>
+                    <a href="#">Plants</a>
+                    <div style="padding-left: 15px;">
+                        <a href="indoor.html">Indoor</a><br>
+                        <a href="outdoor.html">Outdoor</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">Projects</a>
+                    <div style="padding-left: 15px;">
+                        <a href="projects/before and after.html">Landscape Improvements</a><br>
+                        <a href="projects/statistics and reports.html">Statistics And Reports</a>
+                    </div>
+                </li>
+            </ul>
         </div>
-        <div class="social-links">
-          <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
-            <i class="fab fa-youtube"></i>
-          </a>
-          <span>YouTube</span>
+
+        <div class="footer-col">
+            <h4>External Links</h4>
+            <ul>
+                <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
+                <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of Bahrain</a></li>
+                <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank" rel="noopener noreferrer">Sustainable Development</a></li>
+            </ul>
         </div>
-      </div>
+
+        <div class="footer-col">
+    <h4>Contact</h4>
+    <div class="social-links">
+        <i class="fa-solid fa-envelope"></i> 
+        <a href="mailto:landscape@uob.edu.bh">landscape@uob.edu.bh</a>
     </div>
+    <div class="social-links">
+        <i class="fa-solid fa-phone"></i> <span>+973 1743 8181</span>
+    </div>
+    <div class="social-links">
+        <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-youtube"></i> YouTube
+        </a>
+    </div>
+</div>
+    </div>
+
     <div class="footer-bottom">
-      <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
+        <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
     </div>
-  </footer>
+</footer>
   </body>
 </html>

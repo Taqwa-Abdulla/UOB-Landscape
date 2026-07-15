@@ -7,7 +7,6 @@ const colorPalette = {
     16: '#00689d', 17: '#19486a' 
 };
 
-// --- NEW FULL NAME DICTIONARY ---
 const sdgFullNames = {
     3: "SDG 3: Good Health and Well-being",
     4: "SDG 4: Quality Education",
@@ -26,137 +25,99 @@ document.addEventListener("DOMContentLoaded", () => {
     cards.forEach(card => {
         card.addEventListener("click", () => {
             const sdgNum = parseInt(card.getAttribute("data-sdg"), 10);
-            if (sdgNum) {
-                handleSdgInteraction(sdgNum);
-            }
+            if (sdgNum) handleSdgInteraction(sdgNum);
         });
     });
 
     const resetBtn = document.querySelector(".global-reset-bar");
     if (resetBtn) {
-        resetBtn.addEventListener("click", () => {
-            clearActiveFilters();
-        });
+        resetBtn.addEventListener("click", () => showAllNews());
     }
 });
 
 async function initializeFeedConnection() {
+    const syncStatus = document.getElementById('sync-status');
+    const grid = document.getElementById('static-filter-viewframe');
+    if (grid) grid.style.display = 'none';
+
     try {
-        const response = await fetch(finalApiPath); 
-        if (!response.ok) {
-            throw new Error(`HTTP status: ${response.status}`);
-        }
+        const response = await fetch(finalApiPath);
+        const data = await response.json();
         
-        const parsedPayload = await response.json();
-        
-        if (parsedPayload && Array.isArray(parsedPayload) && parsedPayload.length > 0) {
-            institutionalMasterData = parsedPayload;
+        if (data && Array.isArray(data)) {
+            institutionalMasterData = data;
+            if (syncStatus) syncStatus.style.display = 'none';
             renderContinuousTicker(institutionalMasterData);
-        } else {
-            throw new Error("Payload formatting layout mismatch.");
         }
-    } catch (error) {
-        console.error("Scraper stream sync breakdown: ", error);
-        displayConnectionError();
+    } catch (e) { 
+        if (syncStatus) syncStatus.innerText = "Failed to load live data stream.";
+        console.error("Data load error:", e); 
     }
 }
 
 function renderContinuousTicker(newsItems) {
     const track = document.getElementById('ticker-track-injection');
-    if (!track) return;
-    
-    const doubleLoopData = [...newsItems, ...newsItems];
-    
-    track.innerHTML = doubleLoopData.map(item => {
-        const fullName = sdgFullNames[item.sdg] || `SDG ${item.sdg}`;
-        return `
-            <div class="executive-news-card" data-id="${item.id}" style="border-top: 3px solid ${colorPalette[item.sdg] || '#cbd5e1'}">
-                <div>
-                    <div class="meta-line" style="color: ${colorPalette[item.sdg]}">${item.date} — ${fullName}</div>
-                    <h4>${item.title}</h4>
-                </div>
-                <a href="${item.link}" target="_blank" class="redirect-action-btn">Learn More</a>
-            </div>
-        `;
-    }).join('');
-}
+    const scrollFrame = document.getElementById('scrolling-viewframe');
+    if (!track || !scrollFrame) return;
 
-function handleSdgInteraction(selectedSdg) {
-    const wheelContainer = document.getElementById("wheel-canvas");
-    
-    document.querySelectorAll(".wheel-icon-img").forEach(img => {
-        img.classList.remove("active-highlight");
-    });
-
-    const targetImg = document.getElementById(`wheel-img-${selectedSdg}`);
-    if (targetImg && wheelContainer) {
-        wheelContainer.classList.add("has-highlight");
-        targetImg.classList.add("active-highlight");
-    }
-
-    const headlineElement = document.getElementById('stream-headline');
-    if (headlineElement) {
-        headlineElement.innerText = `${sdgFullNames[selectedSdg] || 'Goal ' + selectedSdg} News:`;
-    }
-    
-    const scrollingFrame = document.getElementById('scrolling-viewframe');
-    if (scrollingFrame) scrollingFrame.style.display = 'none';
-    
-    const filteredDisplay = document.getElementById('static-filter-viewframe');
-    if (!filteredDisplay) return;
-    
-    filteredDisplay.style.display = 'grid';
-
-    const filteredSet = institutionalMasterData.filter(n => n.sdg === selectedSdg);
-    
-    if(filteredSet.length === 0) {
-        filteredDisplay.innerHTML = `<p style="grid-column: span 3; color: var(--text-muted); text-align:center; padding: 40px 0;">No active live items found for ${sdgFullNames[selectedSdg]}.</p>`;
-        return;
-    }
-
-    filteredDisplay.innerHTML = filteredSet.map(item => `
-        <div class="executive-news-card" data-id="${item.id}" style="border-top: 3px solid ${colorPalette[item.sdg]}; width: auto; margin-right: 0;">
-            <div>
-                <div class="meta-line" style="color: ${colorPalette[item.sdg]}">${item.date}</div>
-                <h4 style="-webkit-line-clamp: unset;">${item.title}</h4>
-            </div>
+    scrollFrame.style.display = 'block';
+    track.innerHTML = newsItems.map(item => `
+        <div class="executive-news-card" style="border-top: 3px solid ${colorPalette[item.sdg] || '#cbd5e1'}">
+            <h4>${item.title}</h4>
             <a href="${item.link}" target="_blank" class="redirect-action-btn">Learn More</a>
         </div>
     `).join('');
 }
 
-function clearActiveFilters() {
-    const wheelContainer = document.getElementById("wheel-canvas");
-    if (wheelContainer) wheelContainer.classList.remove("has-highlight");
+function handleSdgInteraction(selectedSdg) {
+    const allStackCards = Array.from(document.querySelectorAll(".card-wrapper"));
+    const targetCard = document.getElementById(`card-${selectedSdg}`);
     
-    document.querySelectorAll(".wheel-icon-img").forEach(img => {
-        img.classList.remove("active-highlight");
-    });
+    if (allStackCards.length > 0) {
+        let indices = Array.from({length: allStackCards.length}, (_, i) => i + 1);
+        indices.sort(() => Math.random() - 0.5);
 
-    const headlineElement = document.getElementById('stream-headline');
-    if (headlineElement) headlineElement.innerText = "UOB SDG News";
+        allStackCards.forEach((card, index) => {
+            if (card === targetCard) {
+                card.style.zIndex = 999;
+                card.style.transform = "rotate(0deg) translateX(0px) scale(1.05)";
+            } else {
+                card.style.zIndex = indices[index];
+                card.style.transform = ""; 
+            }
+        });
+    }
+
+    document.getElementById('scrolling-viewframe').style.display = 'none';
+    const grid = document.getElementById('static-filter-viewframe');
+    grid.style.display = 'grid';
     
-    const scrollingFrame = document.getElementById('scrolling-viewframe');
-    if (scrollingFrame) scrollingFrame.style.display = 'block';
-    
-    const filteredDisplay = document.getElementById('static-filter-viewframe');
-    if (filteredDisplay) filteredDisplay.style.display = 'none';
+    const filteredSet = institutionalMasterData.filter(n => n.sdg === selectedSdg);
+    grid.innerHTML = filteredSet.length > 0 
+        ? filteredSet.map(item => `
+            <div class="executive-news-card" style="border-top: 3px solid ${colorPalette[item.sdg] || '#cbd5e1'}">
+                <h4>${item.title}</h4>
+                <a href="${item.link}" target="_blank" class="redirect-action-btn">Learn More</a>
+            </div>
+        `).join('') 
+        : `<p style="grid-column: span 3; text-align: center;">No news found for this SDG.</p>`;
 }
 
-function displayConnectionError() {
-    const track = document.getElementById('ticker-track-injection');
-    if (track) {
-        track.innerHTML = `<p style="color: red; padding: 20px;">Failed to load live data stream from server.</p>`;
-    }
+function showAllNews() {
+    document.querySelectorAll(".card-wrapper").forEach((card, index) => {
+        card.style.zIndex = index + 1;
+        card.style.transform = "";
+    });
+    
+    const grid = document.getElementById('static-filter-viewframe');
+    const scrollFrame = document.getElementById('scrolling-viewframe');
+    
+    if (grid) grid.style.display = 'none';
+    if (scrollFrame) scrollFrame.style.display = 'block';
 }
 
 function navigateNews(direction) {
     const frame = document.getElementById('scrolling-viewframe');
     const scrollAmount = 344; 
-
-    if (direction === 'next') {
-        frame.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    } else {
-        frame.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    }
+    frame.scrollBy({ left: direction === 'next' ? scrollAmount : -scrollAmount, behavior: 'smooth' });
 }
