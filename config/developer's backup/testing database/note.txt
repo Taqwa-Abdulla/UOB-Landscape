@@ -1,0 +1,2 @@
+This folder has landscape database with data in its tables for initial testing.
+Remove this note later.
