@@ -1,10 +1,12 @@
+
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'creator')),
-    is_contributor BOOLEAN DEFAULT FALSE
+    is_contributor BOOLEAN DEFAULT FALSE,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL
 );
 
 CREATE TABLE locations (
@@ -15,13 +17,15 @@ CREATE TABLE locations (
     name_ar VARCHAR(255) NOT NULL,
     latitude NUMERIC(10,8) NOT NULL,
     longitude NUMERIC(11,8) NOT NULL,
-    created_by INT REFERENCES users(user_id) ON DELETE SET NULL
+    created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL
 );
 
 CREATE TABLE plants (
     plant_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     common_name_en VARCHAR(255) DEFAULT NULL,
     common_name_ar VARCHAR(255) DEFAULT NULL,
     scientific_name VARCHAR(255) NOT NULL,
@@ -50,6 +54,7 @@ CREATE TABLE projects (
     project_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     title_en VARCHAR(255) NOT NULL,
     title_ar VARCHAR(255) NOT NULL,
     description_en TEXT DEFAULT NULL,
@@ -65,6 +70,7 @@ CREATE TABLE records (
     record_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     year INT NOT NULL,
     action_en VARCHAR(255) NOT NULL,
     action_ar VARCHAR(255) NOT NULL,
@@ -84,6 +90,7 @@ CREATE TABLE records (
 CREATE TABLE news (
     news_id SERIAL PRIMARY KEY,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     link VARCHAR(500) NOT NULL,
     title_en VARCHAR(255) NOT NULL,
     title_ar VARCHAR(255) NOT NULL,
@@ -92,39 +99,41 @@ CREATE TABLE news (
     SDGs VARCHAR(255) NOT NULL
 );
 
-INSERT INTO users (username, email, password_hash, role, is_contributor) VALUES
-('Dr. Ali Ahmed', 'a.ahmed@uob.edu.bh', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'admin', TRUE),
-('Sarah Al-Mansoori', 's.almansoori@uob.edu.bh', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', TRUE),
-('Jassim Hassan', 'j.hassan@uob.edu.bh', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', FALSE);
+-- SHA-256 passwords ('password123')
 
-INSERT INTO locations (location_number, category, name_en, name_ar, latitude, longitude, created_by) VALUES
-('S1A', 'academic', 'College of Information Technology', 'كلية تقنية المعلومات', 26.05051200, 50.51123400, 1),
-('S40', 'facility', 'Central Student Park', 'حديقة الطلاب المركزية', 26.05210000, 50.51340000, 1),
-(NULL, 'landscape', 'Main Entrance Green Belt', 'الحزام الأخضر للمدخل الرئيسي', 26.04890000, 50.50980000, 1);
+INSERT INTO users (username, email, password_hash, role, is_contributor, updated_by) VALUES
+('Dr. Ali Ahmed', 'a.ahmed@uob.edu.bh', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'admin', TRUE, NULL),
+('Sarah Al-Mansoori', 's.almansoori@uob.edu.bh', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', TRUE, NULL),
+('Jassim Hassan', 'j.hassan@uob.edu.bh', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', FALSE, NULL);
+
+INSERT INTO locations (location_number, category, name_en, name_ar, latitude, longitude, created_by, updated_by) VALUES
+('S1A', 'academic', 'College of Information Technology', 'كلية تقنية المعلومات', 26.05051200, 50.51123400, 1, NULL),
+('S40', 'facility', 'Central Student Park', 'حديقة الطلاب المركزية', 26.05210000, 50.51340000, 1, NULL),
+(NULL, 'landscape', 'Main Entrance Green Belt', 'الحزام الأخضر للمدخل الرئيسي', 26.04890000, 50.50980000, 1, NULL);
 
 INSERT INTO plants (
-    location_id, created_by, common_name_en, common_name_ar, scientific_name, 
+    location_id, created_by, updated_by, common_name_en, common_name_ar, scientific_name, 
     image_path, quantity, category, lifecycle, water_required, sun_required, 
     height, spread, shade, waste, evaporation_mitigation, root_type, 
     drought_tolerance, heat_tolerance, bloom, environmental_impact, 
     oxygen_production, carbon_dioxide_absorption, class
 ) VALUES
 (
-    1, 2, 'Date Palm', 'نخلة البلح', 'Phoenix dactylifera', 
+    1, 2, NULL, 'Date Palm', 'نخلة البلح', 'Phoenix dactylifera', 
     'uploads/plants/date_palm.jpg', 15, 'tree', 'perennial', 'low', 'full sun', 
     '10.0-15.0 m', '3.0-5.0 m', TRUE, 'low', TRUE, 'deep taproot', 
     'high', 'high', 'Spring', 'Provides shade and natural cooling', 
     'High', '120 kg/year', 'outdoor'
 ),
 (
-    2, 2, 'Bougainvillea', 'جهنمية', 'Bougainvillea spectabilis', 
+    2, 2, 3, 'Bougainvillea', 'جهنمية', 'Bougainvillea spectabilis', 
     'uploads/plants/bougainvillea.jpg', 30, 'shrub', 'perennial', 'medium', 'full sun', 
     '1.5-3.0 m', '2.0-4.0 m', FALSE, 'medium', FALSE, 'fibrous', 
     'high', 'high', 'Year-round', 'Enhances aesthetic diversity and pollinator attraction', 
     'Medium', '45 kg/year', 'outdoor'
 ),
 (
-    1, 3, 'Peace Lily', 'زنبق السلام', 'Spathiphyllum wallisii', 
+    1, 3, NULL, 'Peace Lily', 'زنبق السلام', 'Spathiphyllum wallisii', 
     'uploads/plants/peace_lily.jpg', 8, 'indoor plant', 'perennial', 'medium', 'partial shade', 
     '0.3-0.6 m', '0.3-0.5 m', TRUE, 'low', FALSE, 'fibrous', 
     'low', 'medium', 'Summer', 'Purifies indoor air', 
@@ -132,11 +141,11 @@ INSERT INTO plants (
 );
 
 INSERT INTO projects (
-    location_id, created_by, title_en, title_ar, description_en, description_ar, 
+    location_id, created_by, updated_by, title_en, title_ar, description_en, description_ar, 
     image_before_path, image_proposal_path, image_after_path, video_proposal_link, pdf_path
 ) VALUES
 (
-    1, 2, 
+    1, 2, 3, 
     'IT College Solar Shade & Green Courtyard', 
     'مشروع المظلات الشمسية والفناء الأخضر لكلية تقنية المعلومات',
     'Transformation of the IT inner courtyard into a climate-resilient green space with automated irrigation.',
@@ -145,7 +154,7 @@ INSERT INTO projects (
     'https://www.youtube.com/watch?v=example123', 'uploads/docs/it_courtyard_proposal.pdf'
 ),
 (
-    2, 3, 
+    2, 3, NULL, 
     'S40 Smart Irrigation Expansion', 
     'توسعة نظام الري الذكي في S40',
     'Installation of smart soil moisture sensors and drought-tolerant groundcovers.',
@@ -155,12 +164,12 @@ INSERT INTO projects (
 );
 
 INSERT INTO records (
-    location_id, created_by, year, action_en, action_ar, area, green_area, 
+    location_id, created_by, updated_by, year, action_en, action_ar, area, green_area, 
     number_of_trees, previous_condition, current_condition, status, 
     start_date, expected_end_date, estimated_cost, notes_en, notes_ar
 ) VALUES
 (
-    1, 1, 2025, 
+    1, 1, NULL, 2025, 
     'Courtyard Soil Remediation & Tree Planting', 
     'استصلاح تربة الفناء وزراعة الأشجار', 
     450.00, 200.00, 15, 
@@ -170,7 +179,7 @@ INSERT INTO records (
     'Phase 1 finished within budget.', 'تمت المرحلة الأولى بنجاح ضمن الميزانية.'
 ),
 (
-    2, 1, 2026, 
+    2, 1, NULL, 2026, 
     'Central Park Expansion', 
     'توسعة الحديقة المركزية', 
     1200.00, 850.00, 40, 
@@ -181,10 +190,10 @@ INSERT INTO records (
 );
 
 INSERT INTO news (
-    created_by, link, title_en, title_ar, news_description_en, news_description_ar, SDGs
+    created_by, updated_by, link, title_en, title_ar, news_description_en, news_description_ar, SDGs
 ) VALUES
 (
-    1, 'https://www.uob.edu.bh/news/green-campus-initiative-2026', 
+    1, NULL, 'https://www.uob.edu.bh/news/green-campus-initiative-2026', 
     'UOB Launches Green Campus Initiative 2026', 
     'جامعة البحرين تطلق مبادرة الحرم الجامعي الأخضر 2026', 
     'University of Bahrain expands campus canopy area by 15% in alignment with national sustainability targets.', 
