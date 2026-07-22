@@ -1,10 +1,12 @@
+
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'creator')),
-    is_contributor BOOLEAN DEFAULT FALSE
+    is_contributor BOOLEAN DEFAULT FALSE,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL
 );
 
 CREATE TABLE locations (
@@ -15,13 +17,15 @@ CREATE TABLE locations (
     name_ar VARCHAR(255) NOT NULL,
     latitude NUMERIC(10,8) NOT NULL,
     longitude NUMERIC(11,8) NOT NULL,
-    created_by INT REFERENCES users(user_id) ON DELETE SET NULL
+    created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL
 );
 
 CREATE TABLE plants (
     plant_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     common_name_en VARCHAR(255) DEFAULT NULL,
     common_name_ar VARCHAR(255) DEFAULT NULL,
     scientific_name VARCHAR(255) NOT NULL,
@@ -50,6 +54,7 @@ CREATE TABLE projects (
     project_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     title_en VARCHAR(255) NOT NULL,
     title_ar VARCHAR(255) NOT NULL,
     description_en TEXT DEFAULT NULL,
@@ -65,6 +70,7 @@ CREATE TABLE records (
     record_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     year INT NOT NULL,
     action_en VARCHAR(255) NOT NULL,
     action_ar VARCHAR(255) NOT NULL,
@@ -84,6 +90,7 @@ CREATE TABLE records (
 CREATE TABLE news (
     news_id SERIAL PRIMARY KEY,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     link VARCHAR(500) NOT NULL,
     title_en VARCHAR(255) NOT NULL,
     title_ar VARCHAR(255) NOT NULL,
