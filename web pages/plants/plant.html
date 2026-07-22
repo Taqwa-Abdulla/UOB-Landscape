@@ -1,24 +1,22 @@
 <!--
-  This page is a read-only view for users to see all indoor plants.
-  Each plant should link to its dedicated detail page.
+  This page displays the full details for one plant
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UOB Indoor Landscape</title>
-        <link rel="stylesheet" href="../../public/css/style.css" />
-        <script src="../../js/chatbot/chatbot.js" defer></script>
-        <script src="../../js/plants/indoor_outdoor.js" defer></script>
+    <title>Plant Details</title>
+    <link rel="stylesheet" href="../../public/css/style.css">
+    <script src="../../js/plants/plant.js" defer></script>
+    <script src="../../js/chatbot/chatbot.js" defer></script>
 </head>
 <body>
-    <div class="logo-space">
+     <div class="logo-space">
     <img src="../../public/images/UOB logo.png" alt="UOB Logo">
 </div>
 <nav class="navbar">
     <div class="nav-left"></div>
-
     <div class="nav-center">
         <a href="../home.html">Home</a>
         <a href="../about.html">About</a>
@@ -27,7 +25,7 @@
         <div class="dropdown">
             <a href="#">Plants</a>
             <div class="dropdown-content">
-                <a href="#">Indoor</a>
+                <a href="../plants/indoor.html">Indoor</a>
                 <a href="../plants/outdoor.html">Outdoor</a>
             </div>
         </div>
@@ -45,12 +43,37 @@
         <a href="login.html"><button class="login-btn">Login</button></a>
     </div>
 </nav>
-    <main class="indoor">
-        <h1 class="indoor-title">Indoor plants</h1>
-        <section id="indoor-plants-list">
+    <main>
+        <div class="plant-name">
+            <h1 id="scientific-name">Scientific Plant name</h1>
+        </div>
+        <section class="plant-info">
+            <img id="plant-image" src="" alt="Plant Image">
+            <p><strong>Location ID:</strong> <span id="location-id"></span></p>
+            <p><strong>Created By:</strong> <span id="created-by"></span></p>
+            <p><strong>English Common Name:</strong> <span id="common-name-en"></span></p>
+            <p><strong>Arabic Common Name:</strong> <span id="common-name-ar"></span></p>
+            <p><strong>Quantity:</strong> <span id="quantity"></span></p>
+            <p><strong>Category:</strong> <span id="category"></span></p>
+            <p><strong>Lifecycle:</strong> <span id="lifecycle"></span></p>
+            <p><strong>Water Required:</strong> <span id="water-required"></span></p>
+            <p><strong>Sun Required:</strong> <span id="sun-required"></span></p>
+            <p><strong>Height:</strong> <span id="height"></span></p>
+            <p><strong>Spread:</strong> <span id="spread"></span></p>
+            <p><strong>Shade:</strong> <span id="shade"></span></p>
+            <p><strong>Waste:</strong> <span id="waste"></span></p>
+            <p><strong>Evaporation Mitigation:</strong> <span id="evaporation-mitigation"></span></p>
+            <p><strong>Root Type:</strong> <span id="root-type"></span></p>
+            <p><strong>Drought Tolerance:</strong> <span id="drought-tolerance"></span></p>
+            <p><strong>Heat Tolerance:</strong> <span id="heat-tolerance"></span></p>
+            <p><strong>Bloom:</strong> <span id="bloom"></span></p>
+            <p><strong>Environmental Impact:</strong> <span id="environmental-impact"></span></p>
+            <p><strong>Oxygen Production:</strong> <span id="oxygen-production"></span></p>
+            <p><strong>Carbon Dioxide Absorption:</strong> <span id="carbon-dioxide-absorption"></span></p>
+            <p><strong>Class:</strong> <span id="class"></span></p>
         </section>
     </main>
-<footer>
+    <footer>
     <div class="footer-top-container">
         <div class="footer-col">
             <h4>About</h4>
@@ -66,7 +89,7 @@
                 <li>
                     <a href="#">Plants</a>
                     <div style="padding-left: 15px;">
-                        <a href="#">Indoor</a><br>
+                        <a href="../plants/indoor.html">Indoor</a>
                         <a href="../plants/outdoor.html">Outdoor</a>
                     </div>
                 </li>
@@ -105,6 +128,7 @@
     </div>
 </div>
     </div>
+
     <div class="footer-bottom">
         <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
     </div>

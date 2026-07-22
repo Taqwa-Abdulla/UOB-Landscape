@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Plants</title>
+    <link rel="stylesheet" href="../../public/css/style.css">
+    <script src="../../js/plants/plants.js" defer></script>
+    <script src="../../js/chatbot/chatbot.js" defer></script>
+</head>
+<body>
+     <div class="logo-space">
+    <img src="../../public/images/UOB logo.png" alt="UOB Logo">
+</div>
+<nav class="navbar">
+    <div class="nav-left"></div>
+    <div class="nav-center">
+        <a href="../home.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="../locations.html">Locations</a>
+        
+        <div class="dropdown">
+            <a href="#">Plants</a>
+            <div class="dropdown-content">
+                <a href="../plants/indoor.html">Indoor</a>
+                <a href="../plants/outdoor.html">Outdoor</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <a href="#">Projects</a>
+            <div class="dropdown-content">
+                <a href="projects/before and after.html">Landscape Improvements</a>
+                <a href="projects/statistics and reports.html">Statistics And Reports</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <a href="login.html"><button class="login-btn">Login</button></a>
+    </div>
+</nav>
+    <div class="mp">
+        <h1 class="manage-plants-h1">Manage Plants</h1>
+    </div>
+    <main class="plant-CRUD">
+        <section class="create-plant">
+            <h2 class="create-plant-h2">Add a New Plant</h2>
+            <form class="plant-create-form" id="plant-form" action="#">
+                <fieldset class="plant-fieldset">
+                    <legend class="plant-legend">Plant Details</legend>
+                    <div class="plant-form-info">
+                        <label for="plant-id">Plant ID</label>
+                        <input id="plant-id" type="text" placeholder="Enter Plant ID">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="location-id">Location ID</label>
+                        <input id="location-id" type="number">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="created-by">Created By</label>
+                        <input id="created-by" type="number">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="common-name-en">English Common Name</label>
+                        <input id="common-name-en" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="common-name-ar">Arabic Common Name</label>
+                        <input id="common-name-ar" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="scientific-name">Scientific Name</label>
+                        <input id="scientific-name" type="text" required>
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="image-path">Image Path</label>
+                        <input id="image-path" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="quantity">Quantity</label>
+                        <input id="quantity" type="number">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="category">Category</label>
+                        <input id="category" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="lifecycle">Lifecycle</label>
+                        <input id="lifecycle" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="water-required">Water Required</label>
+                        <input id="water-required" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="sun-required">Sun Required</label>
+                        <input id="sun-required" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="height">Height</label>
+                        <input id="height" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="spread">Spread</label>
+                        <input id="spread" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="shade">Shade</label>
+                        <input id="shade" type="checkbox">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="waste">Waste</label>
+                        <input id="waste" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="evaporation-mitigation">Evaporation Mitigation</label>
+                        <input id="evaporation-mitigation" type="checkbox">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="root-type">Root Type</label>
+                        <input id="root-type" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="drought-tolerance">Drought Tolerance</label>
+                        <input id="drought-tolerance" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="heat-tolerance">Heat Tolerance</label>
+                        <input id="heat-tolerance" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="bloom">Bloom</label>
+                        <input id="bloom" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="environmental-impact">Environmental Impact</label>
+                        <input id="environmental-impact" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="oxygen-production">Oxygen Production</label>
+                        <input id="oxygen-production" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="carbon-dioxide-absorption">Carbon Dioxide Absorption</label>
+                        <input id="carbon-dioxide-absorption" type="text">
+                    </div>
+                    <div class="plant-form-info">
+                        <label for="plant-class">Class</label>
+                        <select id="plant-class">
+                            <option value="indoor">Indoor</option>
+                            <option value="outdoor">Outdoor</option>
+                        </select>
+                    </div>
+                    <div class="plant-form-info">
+                        <button id="add-plant" type="submit">Add Plant</button>
+                    </div>
+                </fieldset>
+            </form>
+        </section>
+        <section class="current-plants">
+            <h2 class="current-plants-h2">Current Plants</h2>
+            <table class="current-plants-table" id="plants-table">
+                <thead class="current-th">
+                    <tr class="current-tr">
+                        <th class="current-th">ID</th>
+                        <th class="current-th">Scientific Name</th>
+                        <th class="current-th">Common Name</th>
+                        <th class="current-th">Category</th>
+                        <th class="current-th">Class</th>
+                        <th class="current-th">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="current-tb" id="plants-tbody">
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+    <div class="footer-top-container">
+        <div class="footer-col">
+            <h4>About</h4>
+            <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information about plants, their locations, and ecological significance.</p>
+        </div>
+
+        <div class="footer-col">
+            <h4>Navigation</h4>
+            <ul>
+                <li><a href="../home.html">Home</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../locations.html">Locations</a></li>
+                <li>
+                    <a href="#">Plants</a>
+                    <div style="padding-left: 15px;">
+                        <a href="../plants/indoor.html">Indoor</a>
+                        <a href="../plants/outdoor.html">Outdoor</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">Projects</a>
+                    <div style="padding-left: 15px;">
+                        <a href="projects/before and after.html">Landscape Improvements</a><br>
+                        <a href="projects/statistics and reports.html">Statistics And Reports</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>External Links</h4>
+            <ul>
+                <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
+                <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of Bahrain</a></li>
+                <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank" rel="noopener noreferrer">Sustainable Development</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+    <h4>Contact</h4>
+    <div class="social-links">
+        <i class="fa-solid fa-envelope"></i> 
+        <a href="mailto:landscape@uob.edu.bh">landscape@uob.edu.bh</a>
+    </div>
+    <div class="social-links">
+        <i class="fa-solid fa-phone"></i> <span>+973 1743 8181</span>
+    </div>
+    <div class="social-links">
+        <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-youtube"></i> YouTube
+        </a>
+    </div>
+</div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
+    </div>
+</footer>
+</body>
+</html>

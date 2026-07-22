@@ -155,11 +155,11 @@ window.addEventListener('load', function() {
     });
 });
 
-// 5. Automatic Dynamic Stylesheet Linker (Handles multiple folder depths)
+// Automatic Dynamic Stylesheet Linker using Root-Relative Path
+// Automatic Dynamic Stylesheet Linker using absolute root path
 document.addEventListener("DOMContentLoaded", function () {
-    // Check if we are inside the 'projects' subfolder or the main 'web pages' folder
-    const pathPrefix = window.location.pathname.includes('/projects/') ? '../../' : '../';
-    const finalCssPath = pathPrefix + 'public/css/bot.css';
+    // This looks for public/css/bot.css starting from the root of your project domain/server
+    const finalCssPath = '/public/css/bot.css'; 
 
     if (!document.querySelector(`link[href="${finalCssPath}"]`)) {
         const botStyle = document.createElement('link');
