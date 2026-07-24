@@ -9,7 +9,7 @@
 
 async function initializePlantLists() {
   try {
-    const response = await fetch('/js/plants/plants.json');
+    const response = await fetch('/json/plants/plants.json');
     const data = await response.json();
     const plants = data.rows || data;
 

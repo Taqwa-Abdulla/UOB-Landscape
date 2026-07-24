@@ -29,7 +29,7 @@
   ],
   "rows": [
     {
-      "plant_id": "OUT-101",
+      "plant_id": "OP-101",
       "location_id": 1,
       "created_by": 2,
       "common_name_en": "Date Palm",
@@ -56,7 +56,7 @@
       "class": "outdoor"
     },
     {
-      "plant_id": "OUT-102",
+      "plant_id": "OP-102",
       "location_id": 2,
       "created_by": 2,
       "common_name_en": "Bougainvillea",
@@ -83,7 +83,7 @@
       "class": "outdoor"
     },
     {
-      "plant_id": "IND-201",
+      "plant_id": "IP-201",
       "location_id": 3,
       "created_by": 3,
       "common_name_en": "Peace Lily",
