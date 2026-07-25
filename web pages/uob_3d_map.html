@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UOB Advanced Smart Dashboard</title>
+  <link href="https://unpkg.com/maplibre-gl@4.1.2/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4.1.2/dist/maplibre-gl.js"></script>
+  <style>
+    body { margin: 0; padding: 0; display: flex; height: 100vh; font-family: system-ui, sans-serif; overflow: hidden; background: #f5f6fa; }
+    #map { flex: 1; height: 100%; }
+    
+    /* PANEL SECTOR PANELS */
+    #story-panel { width: 380px; height: 100%; background: #ffffff; padding: 24px; box-shadow: -4px 0 25px rgba(0,0,0,0.08); z-index: 10; box-sizing: border-box; border-left: 1px solid #dfe6e9; display: flex; flex-direction: column; }
+    h2 { color: #2c3e50; margin-top: 0; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .subtitle { color: #7f8c8d; font-size: 13px; margin-bottom: 20px; }
+    
+    /* SEARCH ENGINE INPUT BOX */
+    .search-container { position: relative; margin-bottom: 16px; }
+    #search-bar { width: 100%; padding: 10px 14px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 14px; box-sizing: border-box; outline: none; transition: border 0.2s; }
+    #search-bar:focus { border-color: #3498db; }
+    
+    /* SYSTEM CATEGORY FILTER TAGS */
+    .filter-group { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-chip { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid #dcdde1; background: #f8f9fa; color: #636e72; transition: all 0.2s; }
+    .filter-chip.active[data-cat="admin"] { background: #2980b9; color: white; border-color: #2980b9; }
+    .filter-chip.active[data-cat="academic"] { background: #e67e22; color: white; border-color: #e67e22; }
+    .filter-chip.active[data-cat="facility"] { background: #27ae60; color: white; border-color: #27ae60; }
+    
+    /* INFO LAYER SCREEN CONTENT BLOCK */
+    #info-content { padding-top: 16px; border-top: 1px solid #f1f2f6; flex: 1; overflow-y: auto; }
+    .placeholder-text { color: #a4b0be; font-style: italic; text-align: center; margin-top: 40px; font-size: 13px; }
+    .location-title { color: #2c3e50; font-size: 20px; font-weight: bold; margin-bottom: 6px; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; color: white; margin-bottom: 12px; }
+    .badge.admin { background: #2980b9; }
+    .badge.academic { background: #e67e22; }
+    .badge.facility { background: #27ae60; }
+    .location-desc { color: #57606f; line-height: 1.6; font-size: 14px; }
+    
+    /* CUSTOM UI PERSPECTIVE SWITCH BUTTON */
+    .custom-toggle-btn { width: 50px; height: 34px; background: #ffffff; border: 0; border-radius: 4px; box-shadow: 0 0 0 2px rgba(0,0,0,0.08); cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; color: #2c3e50; letter-spacing: 0.5px; transition: all 0.2s ease; }
+    .custom-toggle-btn:hover { background: #f1f2f6; }
+    .view-perspective-active { background: #2c3e50 !important; color: #ffffff !important; }
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+  <div id="story-panel">
+    <h2>UOB Explorer</h2>
+    <div class="subtitle">Search buildings or toggle categories to isolate facilities.</div>
+    
+    <div class="search-container">
+      <input type="text" id="search-bar" placeholder=" Search campus locations...">
+    </div>
+
+    <div class="filter-group">
+      <button class="filter-chip active" data-cat="admin">Administration</button>
+      <button class="filter-chip active" data-cat="academic">Academic Labs</button>
+      <button class="filter-chip active" data-cat="facility">Resources</button>
+    </div>
+
+    <div id="info-content">
+      <div id="fallback-msg" class="placeholder-text">Click a vector marker node or search above to load location parameters...</div>
+      <div id="active-details" style="display: none;">
+        <span id="loc-badge" class="badge"></span>
+        <div id="loc-title" class="location-title"></div>
+        <div id="loc-desc" class="location-desc"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const uobCampusBounds = [[50.49928, 26.04479], [50.51986, 26.05739]];
+    const default3DView = { center: [50.5134, 26.0506], zoom: 14.5, pitch: 100, bearing: -60 };
+    
+    let activeLocationId = null;
+    let activeFilters = { admin: true, academic: true, facility: true };
+    let currentSearchQuery = "";
+
+    // 1. EXTENDED GEOGRAPHIC DATABASE INTEGRATING STRUCTURAL CATEGORY TYPES
+    const campusLocations = [
+      { id: "main-building", title: "Administration Building", category: "admin", description: "The primary operational headquarters of the UOB Sakhir Campus housing administrative boards, registration halls, and student services infrastructure.", coordinates: [50.5126, 26.0519] },
+      { id: "main-building", title: "College of Information Technology", category: "academic", description: "Modern facility equipped with state-of-the-art computer science laboratories, advanced networks facilities, and cybersecurity engineering workspaces.", coordinates: [50.5151, 26.0538] },
+      { id: "parking", title: "Central University Library", category: "facility", description: "A multi-story academic repository featuring thousands of research journals, private study sectors, digital learning hubs, and educational resources.", coordinates: [50.5115, 26.0501] }
+    ];
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', 
+      center: default3DView.center, zoom: default3DView.zoom, pitch: default3DView.pitch, bearing: default3DView.bearing,
+      maxBounds: uobCampusBounds, minZoom: 14.5, maxZoom: 19.5,
+      pitchWithRotate: true, dragRotate: true, dragPan: true
+    });
+
+    map.on('load', () => {
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false, showZoom: true }), 'top-right');
+
+      // VIEW STATE SELECTOR
+      class ViewToggleButtonControl {
+        onAdd(map) {
+          this._map = map; this._container = document.createElement('div'); this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+          this._button = document.createElement('button'); this._button.className = 'custom-toggle-btn view-perspective-active'; this._button.innerHTML = 'view';
+          this._button.addEventListener('click', () => {
+            if (this._map.getPitch() < 1) this._map.easeTo({ bearing: default3DView.bearing, pitch: default3DView.pitch, duration: 800 });
+            else this._map.easeTo({ pitch: 0, duration: 800 });
+          });
+          this._container.appendChild(this._button); return this._container;
+        }
+        onRemove() { this._container.parentNode.removeChild(this._container); this._map = undefined; }
+      }
+      map.addControl(new ViewToggleButtonControl(), 'top-right');
+
+      // 2. VECTOR ASSET ENGINE MAP REGISTER PIPELINES
+      const pinSvg = `<svg width="32" height="42" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 0C7.16 0 0 7.16 0 16C0 28 16 42 16 42C16 42 32 28 32 16C32 7.16 24.84 0 16 0ZM16 22C12.69 22 10 19.31 10 16C10 12.69 12.69 10 16 10C19.31 10 22 12.69 22 16C22 19.31 19.31 22 16 22Z" fill="currentColor"/></svg>`;
+      
+      const img = new Image();
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(pinSvg);
+      img.onload = () => {
+        // Registers template shape structure into WebGL memory
+        map.addImage('uob-base-pin', img, { sdf: true }); // Enable Signed Distance Field (SDF) to color-code dynamically
+
+        const geojsonData = {
+          'type': 'FeatureCollection',
+          'features': campusLocations.map(loc => ({
+            'type': 'Feature',
+            'properties': { 'id': loc.id, 'title': loc.title, 'category': loc.category, 'description': loc.description },
+            'geometry': { 'type': 'Point', 'coordinates': loc.coordinates }
+          }))
+        };
+
+        map.addSource('uob-locations-source', { 'type': 'geojson', 'data': geojsonData });
+
+        // 3. INJECT CUSTOM VECTOR COMPONENT SYMBOL LAYER WITH CONDITIONAL COLORING MATCHES
+        map.addLayer({
+          'id': 'uob-interactive-pins',
+          'type': 'symbol',
+          'source': 'uob-locations-source',
+          'layout': {
+            'icon-image': 'uob-base-pin',
+            'icon-allow-overlap': true,
+            'icon-anchor': 'bottom',
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 15.0, 0.65, 17.0, 0.95, 19.0, 1.30]
+          },
+          'paint': {
+            // MATCH EXPRESSION: Reads the category property and sets the color directly in WebGL
+            'icon-color': [
+              'match', ['get', 'category'],
+              'admin', '#2980b9',    // Blue
+              'academic', '#e67e22', // Orange
+              'facility', '#27ae60', // Green
+              '#7f8c8d'              // Default Gray
+            ]
+          }
+        });
+        
+        // Execute initial filter parameters update pipeline
+        applyCombinedFilters();
+      };
+
+      // 4. MAP OBJECT CLICK INTERCEPTOR PIPELINE
+      map.on('click', 'uob-interactive-pins', (e) => {
+        const props = e.features[0].properties;
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        handleLocationSelect(props, coordinates);
+      });
+
+      map.on('mouseenter', 'uob-interactive-pins', () => { map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', 'uob-interactive-pins', () => { map.getCanvas().style.cursor = ''; });
+
+      // 5. COMBINED LOGICAL ENGINE (FILTER CHIPS + SEARCH ENGINE)
+      function applyCombinedFilters() {
+        if (!map.getLayer('uob-interactive-pins')) return;
+
+        // Build composite MapLibre GL expression conditions matrix
+        let filterExpression = ['all'];
+
+        // A. Category State Filter Validation Array checks
+        let categoryConditions = ['any'];
+        Object.keys(activeFilters).forEach(cat => {
+          if (activeFilters[cat]) {
+            categoryConditions.push(['==', ['get', 'category'], cat]);
+          }
+        });
+        
+        // Handle fallback condition if all filter buttons are completely unselected
+        if (categoryConditions.length === 1) categoryConditions.push(false);
+        filterExpression.push(categoryConditions);
+
+        // B. Search Query string parameters validation checks
+        if (currentSearchQuery.trim() !== "") {
+          filterExpression.push([
+            'in', 
+            ['downcase', currentSearchQuery.trim()], 
+            ['downcase', ['get', 'title']]
+          ]);
+        }
+
+        // Apply finalized filtered data layer down onto rendering matrix
+        map.setFilter('uob-interactive-pins', filterExpression);
+      }
+
+      // SELECT COORDINATES ACTION ROUTING ENGINE
+      function handleLocationSelect(props, coordinates) {
+        if (activeLocationId === props.id) {
+          map.flyTo({ center: default3DView.center, zoom: default3DView.zoom, pitch: default3DView.pitch, bearing: default3DView.bearing, speed: 1.2, curve: 1.42 });
+          document.getElementById('fallback-msg').style.display = 'block';
+          document.getElementById('active-details').style.display = 'none';
+          activeLocationId = null;
+        } else {
+          map.flyTo({ center: coordinates, zoom: 17.8, pitch: 55, speed: 1.2, curve: 1.42 });
+          document.getElementById('fallback-msg').style.display = 'none';
+          document.getElementById('active-details').style.display = 'block';
+          
+          const badge = document.getElementById('loc-badge');
+          badge.className = `badge ${props.category}`;
+          badge.innerText = props.category === 'admin' ? 'Administration' : props.category === 'academic' ? 'Academic Lab' : 'Resources';
+          
+          document.getElementById('loc-title').innerText = props.title;
+          document.getElementById('loc-desc').innerText = props.description;
+          activeLocationId = props.id;
+        }
+      }
+
+      // WIRE EVENTS FOR FILTER CLASSIFICATION CLIPS INTERACTION KEYS
+      document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+          const category = e.target.getAttribute('data-cat');
+          activeFilters[category] = !activeFilters[category];
+          
+          e.target.classList.toggle('active', activeFilters[category]);
+          applyCombinedFilters();
+        });
+      });
+
+      // WIRE TEXT INPUT SEARCH REAL-TIME EVENT HANDLER
+      document.getElementById('search-bar').addEventListener('input', (e) => {
+        currentSearchQuery = e.target.value;
+        applyCombinedFilters();
+      });
+
+      // BASEMAP DESIGN MODIFICATIONS
+      const allLayers = map.getStyle().layers;
+      allLayers.forEach(layer => {
+        if (layer.id === 'background') map.setPaintProperty(layer.id, 'background-color', '#E6DBD0');
+        if (layer.id.includes('landcover') || layer.id.includes('park') || layer.id.includes('landuse') || layer.id.includes('wood')) {
+          if (layer.type === 'fill') map.setPaintProperty(layer.id, 'fill-color', '#4E7D2A');
+        }
+        if (layer.type === 'line') {
+          map.setPaintProperty(layer.id, 'line-color', '#4E4E50'); map.setPaintProperty(layer.id, 'line-width', 2.2);
+        }
+        if (layer.id.includes('water') && layer.type === 'fill') map.setPaintProperty(layer.id, 'fill-color', '#5CC4D1');
+        if (layer.id === 'building') { map.setPaintProperty(layer.id, 'fill-color', '#D6B276'); map.setPaintProperty(layer.id, 'fill-opacity', 1.0); }
+      });
+
+      // INJECT 3D BUILDINGS 
+      map.addLayer({
+        'id': 'pop-out-buildings-carto', 'source': 'carto', 'source-layer': 'building', 'type': 'fill-extrusion',
+        'paint': { 'fill-extrusion-color': '#D6B276', 'fill-extrusion-height': 25, 'fill-extrusion-base': 0, 'fill-extrusion-opacity': 0.95 }
+      });
+    });
+  </script>
+</body>
+</html>
