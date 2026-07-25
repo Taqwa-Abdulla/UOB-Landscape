@@ -23,16 +23,22 @@ async function initializePlantLists() {
       // Use the custom plant_id string (e.g., "IND-201") for the URL parameter
       const uniqueId = plant.plant_id;
 
-      const card = document.createElement('div');
-      card.className = 'plant-card';
-      card.innerHTML = `
-        <a href="plant.html?id=${uniqueId}">
-          <img src="${plant.image_path || ''}" alt="${plant.scientific_name || 'Plant'}">
-          <h3>${plant.scientific_name || ''}</h3>
-          <p>English Common Name: ${plant.common_name_en || ''}</p>
-          <p>Arabic Common Name: ${plant.common_name_ar || ''}</p>
-        </a>
-      `;
+      const fallbackImage = 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=500&q=80';
+
+const card = document.createElement('div');
+card.className = 'plant-card';
+card.innerHTML = `
+  <a href="plant.html?id=${uniqueId}">
+    <img 
+      src="${plant.image_path || fallbackImage}" 
+      alt="${plant.scientific_name || 'Plant'}"
+      onerror="this.onerror=null; this.src='${fallbackImage}';"
+    >
+    <h3>${plant.scientific_name || ''}</h3>
+    <p>English Common Name: ${plant.common_name_en || ''}</p>
+    <p>Arabic Common Name: ${plant.common_name_ar || ''}</p>
+  </a>
+`;
 
       if (plant.class && plant.class.toLowerCase() === 'indoor' && indoorContainer) {
         indoorContainer.appendChild(card);

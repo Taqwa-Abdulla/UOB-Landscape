@@ -11,6 +11,9 @@
 let currentplantId = null;
 let currentComments = [];
 
+// --- Fallback Image URL ---
+const FALLBACK_IMAGE_URL = 'https://images.unsplash.com/photo-1483794344563-d27a8d18014e?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+
 // --- Element Selections ---
 const scientificNameEl = document.getElementById('scientific-name');
 const plantImageEl = document.getElementById('plant-image');
@@ -54,10 +57,19 @@ function getPlantIdFromURL() {
 function renderPlantDetails(plant) {
   if (!plant) return;
   if (scientificNameEl) scientificNameEl.textContent = plant.scientific_name || '';
+  
   if (plantImageEl) {
-    plantImageEl.src = plant.image_path || '';
+    // Check if image_path exists and is not empty; otherwise, use fallback
+    const imagePath = plant.image_path && plant.image_path.trim() !== '' ? plant.image_path : FALLBACK_IMAGE_URL;
+    plantImageEl.src = imagePath;
     plantImageEl.alt = plant.scientific_name || 'Plant Image';
+    
+    // Fallback error handler if the image fails to load dynamically from the database path
+    plantImageEl.onerror = function() {
+      this.src = FALLBACK_IMAGE_URL;
+    };
   }
+
   if (locationIdEl) locationIdEl.textContent = plant.location_id ?? '';
   if (createdByEl) createdByEl.textContent = plant.created_by ?? '';
   if (commonNameEnEl) commonNameEnEl.textContent = plant.common_name_en || '';
@@ -93,7 +105,7 @@ async function initializePage() {
   }
 
   try {
-    const response = await fetch('/js/plants/plants.json');
+    const response = await fetch('../../json/plants/plants.json');
     const data = await response.json();
     const plants = data.rows || data;
     
