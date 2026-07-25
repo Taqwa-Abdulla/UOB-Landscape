@@ -1891,3 +1891,200 @@ main {
 .delete-btn:hover {
   background-color: #b91c1c;
 }
+/* ==========================================================================
+                                  admin portal Page
+   ========================================================================== */
+/* --- Global Styles & Layout --- */
+.users-main {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.admin-h1 {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #174d1b;
+  border-bottom: 2px solid #d1d5db;
+  padding-bottom: 10px;
+}
+
+section {
+  margin-bottom: 35px;
+}
+
+/* --- Typography & Legends --- */
+.admin-portal-fieldset legend,
+.um-h1,
+.exist-users-h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.um-h1 {
+  color: #0b393b;
+}
+
+label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #666;
+}
+
+/* --- Form Fields & Inputs --- */
+.admin-portal-fieldset,
+.add-new-user-filedset {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #fafbfc;
+}
+
+legend {
+  font-weight: 600;
+  padding: 0 10px;
+  color: #174d1b;
+}
+
+input[type="password"],
+input[type="text"],
+input[type="email"],
+input[type="search"] {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+}
+
+/* --- Grid & Layout Classes --- */
+.new-p, 
+.confirm-p, 
+.grid, 
+.add-user-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .new-p, 
+  .confirm-p, 
+  .grid, 
+  .add-user-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Buttons --- */
+button {
+  cursor: pointer;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+}
+
+#change, 
+.add-user-btn {
+  background-color: #1b5e20;
+  color: white;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#change:hover, 
+.add-user-btn:hover {
+  background-color: #174d1b;
+}
+
+.edit-btn, .delete-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.edit-btn {
+  background-color: #024e33;
+  color: #fff;
+}
+
+.edit-btn:hover {
+  background-color: #046c46;
+}
+
+.delete-btn {
+  background-color: #dc2626;
+  color: #fff;
+}
+
+.delete-btn:hover {
+  background-color: #b91c1c;
+}
+
+/* --- Container Spacing --- */
+.add-new-user {
+  margin-top: 15px;
+  margin-bottom: 25px;
+}
+
+/* --- Table Styling --- */
+.exits-users-tb {
+  overflow-x: auto;
+  margin-top: 15px;
+}
+
+.user-details-tb {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #d1d5db;
+}
+
+.user-details-tb th, 
+.user-details-tb td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.user-details-tb th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+  color: #333;
+}
+
+.username, 
+.user-email, 
+.user-role {
+  color: #4b5563;
+}
