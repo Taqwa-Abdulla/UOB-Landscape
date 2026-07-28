@@ -3,9 +3,13 @@ CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    college VARCHAR(255) DEFAULT NULL,
+    major VARCHAR(255) DEFAULT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'creator')),
     is_contributor BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT NULL,
     updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL
 );
 
@@ -17,6 +21,8 @@ CREATE TABLE locations (
     name_ar VARCHAR(255) NOT NULL,
     latitude NUMERIC(10,8) NOT NULL,
     longitude NUMERIC(11,8) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL
 );
@@ -24,6 +30,8 @@ CREATE TABLE locations (
 CREATE TABLE plants (
     plant_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     common_name_en VARCHAR(255) DEFAULT NULL,
@@ -53,6 +61,8 @@ CREATE TABLE plants (
 CREATE TABLE projects (
     project_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     title_en VARCHAR(255) NOT NULL,
@@ -69,6 +79,8 @@ CREATE TABLE projects (
 CREATE TABLE records (
     record_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     year INT NOT NULL,
@@ -77,8 +89,10 @@ CREATE TABLE records (
     area NUMERIC(12,2) DEFAULT NULL,
     green_area NUMERIC(12,2) DEFAULT NULL,
     number_of_trees INT DEFAULT 0,
-    previous_condition TEXT DEFAULT NULL,
-    current_condition TEXT DEFAULT NULL,
+    previous_condition_en TEXT DEFAULT NULL,
+    current_condition_en TEXT DEFAULT NULL,
+    previous_condition_ar TEXT DEFAULT NULL,
+    current_condition_ar TEXT DEFAULT NULL,
     status VARCHAR(50) DEFAULT NULL,
     start_date DATE DEFAULT NULL,
     expected_end_date DATE DEFAULT NULL,
@@ -89,6 +103,8 @@ CREATE TABLE records (
 
 CREATE TABLE news (
     news_id SERIAL PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     link VARCHAR(500) NOT NULL,
