@@ -2101,3 +2101,136 @@ thead .exits-loc-th {
 .map-btn:active {
   transform: scale(0.98);
 }
+/* ==========================================================================
+                                   Login Page
+   ========================================================================== */
+.login-main {
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 420px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin-top:150px;
+}
+
+.login-section {
+    box-sizing: border-box;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+}
+
+.login-form {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.login-fieldset {
+    box-sizing: border-box;
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+legend.login-legend {
+    box-sizing: border-box;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1.25rem;
+    padding: 0;
+}
+
+label.login-legend {
+    box-sizing: border-box;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
+.login-detail {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    font-size: 0.95rem;
+    color: #2d3748;
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    margin-bottom: 1.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.login-detail:focus {
+    outline: none;
+    border-color: #1b5e20;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+.login-detail::placeholder {
+    color: #a0aec0;
+    font-size: 0.85rem;
+}
+
+.login-btn-form {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #024e33;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    margin-top: 0.5rem;
+}
+
+.login-btn-form:hover {
+    background-color: #2e7d32;
+}
+
+.login-btn-form:active {
+    transform: scale(0.99);
+}
+
+.login-msg {
+    box-sizing: border-box;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.login-msg.error {
+    color: #c53030;
+    background-color: #fff5f5;
+    border: 1px solid #feb2b2;
+    padding: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.login-msg.success {
+    color: #276749;
+    background-color: #f0fff4;
+    border: 1px solid #9ae6b4;
+    padding: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+/* ==========================================================================
+                                   admin Page
+   ========================================================================== */
+
+/* ==========================================================================
+                                   user Page
+   ========================================================================== */

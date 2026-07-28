@@ -3,27 +3,26 @@
 <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>UOB Landscape</title>
-        <link rel="stylesheet" href="../public/css/style.css" />
-        <script src="../js/users/login.js" defer></script>
-        <script src="../js/chatbot/chatbot.js" defer></script>
+        <title>Admin</title>
+        <link rel="stylesheet" href="../../public/css/style.css">
+        <script src="../../js/chatbot/chatbot.js" defer></script>
     </head>
     <body>
-<div class="logo-space">
-    <img src="../public/images/UOB logo.png" alt="UOB Logo">
-</div>
+        <div class="logo-space">
+        <img src="../../public/images/UOB logo.png" alt="UOB Logo">
+    </div>
 <nav class="navbar">
     <div class="nav-left"></div>
     <div class="nav-center">
-        <a href="home.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="../web pages/locations.html">Locations</a>
+        <a href="../home.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="../../web pages/locations.html">Locations</a>
         
         <div class="dropdown">
             <a href="#">Plants</a>
             <div class="dropdown-content">
-                <a href="../web pages/plants/indoor.html">Indoor</a>
-                <a href="../web pages/plants/outdoor.html">Outdoor</a>
+                <a href="../../web pages/plants/indoor.html">Indoor</a>
+                <a href="../../web pages/plants/outdoor.html">Outdoor</a>
             </div>
         </div>
         <div class="dropdown">
@@ -33,24 +32,13 @@
                 <a href="projects/statistics and reports.html">Statistics And Reports</a>
             </div>
         </div>
+        <div class="nav-right">
+        <a href="../home.html"><button class="logout-btn">Login Out</button></a>
+    </div>
     </div>
 </nav>
-    <main class="login-main">
-        <section class="login-section">
-            <form class="login-form" id="login-form" action="#">
-                <fieldset class="login-fieldset">
-                     <div class="login-msg" id="message-container"></div>
-                    <legend class="login-legend">Login credentials</legend>
-                    <label class="login-legend" for="email">Email Address</label>
-                    <input class="login-detail" type="email" id="email" name="email" placeholder="akmohammed@uob.edu.bh, 00000000@stu.uob.edu.bh">
-                    <label class="login-legend" for="password">Password</label>
-                    <input class="login-detail" type="password" id="password" name="password" required minlength="8">
-                    <button class="login-btn-form" type="submit" id="login">Log In</button>
-                </fieldset>
-            </form>
-        </section>
-    </main>
-       <footer>
+<main></main>
+<footer class="site-footer">
     <div class="footer-top-container">
         <div class="footer-col">
             <h4>About</h4>
@@ -59,14 +47,14 @@
         <div class="footer-col">
             <h4>Navigation</h4>
             <ul>
-                <li><a href="home.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="locations.html">Locations</a></li>
+                <li><a href="../home.html">Home</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../locations.html">Locations</a></li>
                 <li>
                     <a href="#">Plants</a>
                     <div style="padding-left: 15px;">
-                        <a href="../web pages/plants/indoor.html">Indoor</a>
-                        <a href="../web pages/plants/outdoor.html">Outdoor</a>
+                        <a href="../../web pages/plants/indoor.html">Indoor</a>
+                        <a href="../../web pages/plants/outdoor.html">Outdoor</a>
                     </div>
                 </li>
                 <li>
