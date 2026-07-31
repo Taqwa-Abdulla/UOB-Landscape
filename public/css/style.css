@@ -457,14 +457,24 @@ header video {
 }
 
 /* TICKER & NEWS PANEL FEED */
+/* GLOBAL & CSS VARIABLES */
+:root {
+    --text-muted: #6c757d;
+    --border-ui: #e2e8f0;
+    --primary-color: #0056b3;
+    --uob-blue: #0056b3;
+    --card-bg: #ffffff;
+}
+
+/* SECTION & MAIN PANEL CONTAINER */
 .news-section-panel {
     max-width: 1100px; 
     margin: 50px auto 0 auto; 
-    background: white;
+    background: var(--card-bg);
     border: 1px solid var(--border-ui); 
     border-radius: 16px; 
     padding: 32px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
 .panel-title-bar {
@@ -488,6 +498,8 @@ header video {
     text-align: center;
     pointer-events: none; 
 }
+
+/* HORIZONTAL ANIMATED TICKER VIEW */
 .ticker-frame { 
     width: 100%; 
     overflow: hidden; 
@@ -502,7 +514,7 @@ header video {
 .ticker-track { 
     display: flex; 
     width: max-content; 
-    animation: runTicker 240s linear infinite; 
+    animation: runTicker 1000s linear infinite; 
 }
 
 .ticker-track:hover { 
@@ -514,23 +526,64 @@ header video {
     100% { transform: translate3d(-50%, 0, 0); }
 }
 
+/* STATIC GRID VIEW (FOR FILTERED RESULTS) */
 #static-filter-viewframe {
-    display: none; /* Default state */
+    display: none; /* Controlled via JS when filters are active */
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
     gap: 20px;
-    padding: 20px;
+    padding: 20px 0;
     width: 100%;
 }
 
-.executive-news-card {
+/* UNIFIED NEWS CARDS & DB ITEMS */
+.executive-news-card,
+.news-card-db {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 15px;
+    gap: 0.75rem;
+    padding: 20px;
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin: 10px
+    min-width: 320px;
+    margin-right: 20px;
+    
+    /* DARKER BORDER HERE: */
+    border: 1.5px solid #cbd5e1; /* Use #94a3b8 if you want it even darker */
+    
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Optional: Make the border highlight when hovering over a card */
+/* 1. FORCE THE CARD TO HAVE A FIXED WIDTH */
+.executive-news-card,
+.news-card-db {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 360px;            /* Gives the card a set width so text knows where to wrap */
+    min-width: 360px;        /* Prevents flexbox from squishing the card */
+    max-width: 360px;
+    padding: 20px;
+    background: #fff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    margin-right: 20px;      /* Keeps gap between cards in the ticker */
+}
+
+/* 2. OVERRIDE TICKER NOWRAP RULES FOR THE DESCRIPTION */
+.news-desc-db {
+    margin: 8px 0;
+    font-size: 0.875rem;
+    color: #4a5568;
+    line-height: 1.5;
+    
+    /* CRITICAL OVERRIDES */
+    white-space: normal !important;   /* Overrides the ticker's single-line constraint */
+    word-break: break-word !important; /* Prevents long words from leaking out */
+    display: block !important;
 }
 
 .executive-news-card .meta-line {
@@ -538,20 +591,59 @@ header video {
     font-weight: 600; 
     text-transform: uppercase; 
     letter-spacing: 0.5px;
+    color: var(--text-muted);
 }
 
-.executive-news-card h4 {
+.executive-news-card h4,
+.news-title-link-db h3 {
     margin: 0; 
-    font-size: 0.95rem; 
+    font-size: 1rem; 
+    font-weight: 600;
     line-height: 1.4; 
-    color: black;
+    color: #1a202c;
     display: -webkit-box; 
     -webkit-line-clamp: 3; 
     -webkit-box-orient: vertical; 
     overflow: hidden;
 }
 
-.redirect-action-btn {
+.news-title-link-db {
+    text-decoration: none;
+}
+
+.news-title-link-db:hover h3 {
+    color: var(--primary-color);
+}
+
+/* CARD FOOTER & SDG TAGS */
+.news-footer-db {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.sdg-list-db {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.sdg-tag-db {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    background-color: #e2e8f0;
+    color: #2d3748;
+}
+
+/* ACTION BUTTONS & LINKS */
+.redirect-action-btn,
+.news-read-link-db {
     align-self: flex-start; 
     background: #f1f5f9; 
     color: var(--uob-blue);
@@ -563,8 +655,56 @@ header video {
     transition: background 0.2s;
 }
 
-.redirect-action-btn:hover { 
+.redirect-action-btn:hover,
+.news-read-link-db:hover { 
     background: #e2e8f0; 
+}
+
+/* HOVER EFFECT FOR NEWS CARDS (STREAM & FILTERED GRID) */
+.executive-news-card,
+.news-card-db {
+    /* Smooth transitions for all changing properties */
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.25s ease !important;
+    cursor: pointer;
+}
+
+/* INTERACTIVE HOVER STATE */
+.executive-news-card:hover,
+.news-card-db:hover {
+    /* Lifts card slightly up */
+    transform: translateY(-5px) !important; 
+    
+    /* Highlight outer border with brand blue */
+    border-color: var(--primary-color, #0056b3) !important; 
+    
+    /* Soft floating shadow */
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* OPTIONAL: Highlight title text inside the card on hover */
+.executive-news-card:hover h4,
+.news-card-db:hover .news-title-link-db h3 {
+    color: var(--primary-color, #0056b3);
+    transition: color 0.2s ease;
+}
+
+/* GLOBAL READ MORE BUTTON */
+.sdg-news-btn {
+    padding: 0.75rem 1.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, filter 0.2s ease;
+}
+
+.sdg-news-btn:hover {
+    filter: brightness(0.9);
 }
 
 /* ADDITIONAL SDG ICONS & COMPACT DETAILS */
@@ -2228,9 +2368,254 @@ label.login-legend {
 }
 
 /* ==========================================================================
-                                   admin Page
+                                   News Admin Page
    ========================================================================== */
 
+  #manage-news-page.manage_news {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #2d3748;
+}
+
+#manage-news-page .create-news, 
+#manage-news-page .current-news {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 35px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+#manage-news-page .create-news-h2, 
+#manage-news-page .current-news-h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    border-bottom: 2px solid #edf2f7;
+    padding-bottom: 12px;
+}
+
+#manage-news-page .news-fieldset {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 0;
+    background-color: #f8fafc;
+}
+
+#manage-news-page .news-legend {
+    font-weight: 600;
+    color: #4a5568;
+    padding: 0 10px;
+    font-size: 0.95rem;
+}
+
+#manage-news-page .news-form-info {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+#manage-news-page .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+#manage-news-page .form-group-row {
+    display: flex;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    #manage-news-page .form-group-row {
+        flex-direction: column;
+        gap: 18px;
+    }
+}
+
+#manage-news-page .form-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+#manage-news-page .form-group input[type="text"],
+#manage-news-page .form-group input[type="url"],
+#manage-news-page .form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #1e293b;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#manage-news-page .form-group input:focus,
+#manage-news-page .form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+#manage-news-page .form-group textarea {
+    resize: vertical;
+}
+
+#manage-news-page .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+#manage-news-page #submit-btn.btn-submit {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#manage-news-page #submit-btn.btn-submit:hover {
+    background-color: #1d4ed8;
+}
+
+#manage-news-page #cancel-btn.btn-cancel {
+    background-color: #64748b;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#manage-news-page #cancel-btn.btn-cancel:hover {
+    background-color: #475569;
+}
+
+#manage-news-page #news-table.current-news-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+#manage-news-page #news-table.current-news-table th {
+    background-color: #f1f5f9;
+    color: #334155;
+    font-weight: 700;
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #cbd5e1;
+}
+
+#manage-news-page #news-table.current-news-table td {
+    padding: 14px 16px;
+    font-size: 0.925rem;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+    vertical-align: middle;
+}
+
+#manage-news-page #news-table.current-news-table tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+#manage-news-page #news-table.current-news-table tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+#manage-news-page #news-table.current-news-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#manage-news-page #news-table.current-news-table th:first-child,
+#manage-news-page #news-table.current-news-table td:first-child {
+    width: 60px;
+    text-align: center;
+}
+
+#manage-news-page .btn-edit, 
+#manage-news-page .btn-delete {
+    padding: 6px 12px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    margin-right: 6px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#manage-news-page .btn-edit {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+#manage-news-page .btn-edit:hover {
+    background-color: #bae6fd;
+}
+
+#manage-news-page .btn-delete {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+#manage-news-page .btn-delete:hover {
+    background-color: #fca5a5;
+}
+
+#manage-news-page #submit-btn.btn-submit:active,
+#manage-news-page .btn-edit:active,
+#manage-news-page .btn-delete:active {
+    transform: scale(0.97);
+}
+
+#manage-news-page .btn-view {
+    padding: 6px 12px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    margin-right: 6px;
+    background-color: #f1f5f9;
+    color: #475569;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#manage-news-page .btn-view:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}
+
+/* ==========================================================================
+                                   admin Page
+   ========================================================================== */
+  
 /* ==========================================================================
                                    user Page
    ========================================================================== */
+  

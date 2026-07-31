@@ -1,129 +1,238 @@
 <?php
+// Prevent PHP warnings/errors from corrupting the JSON response output
+error_reporting(0);
+ini_set('display_errors', 0);
+
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
 header("Cache-Control: no-cache, must-revalidate");
 
-$maxPages = 3; 
-$allowedSDGs = [3, 4, 6, 11, 13, 15];
-$articles = [];
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
+// --------------------------------------------------------------------------
+// SECTION 1: DATABASE FETCHING
+// --------------------------------------------------------------------------
+$dbNewsList = [];
+$dbConfigFile = __DIR__ . '/../../config/db.php';
 
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+if (file_exists($dbConfigFile)) {
+    require_once $dbConfigFile;
+    try {
+        if (class_exists('Database')) {
+            $database = new Database();
+            $db = $database->getConnection();
 
-for ($page = 1; $page <= $maxPages; $page++) {
-    $url = ($page === 1) ? "https://www.uob.edu.bh/news/" : "https://www.uob.edu.bh/news/page/{$page}/";
-
-    curl_setopt($ch, CURLOPT_URL, $url);
-    $htmlOutput = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    
-    if (!$htmlOutput || $httpCode !== 200) {
-        continue; 
+            $query = 'SELECT news_id, link, title_en, title_ar, news_description_en, news_description_ar, sdgs AS "SDGs" 
+                      FROM news 
+                      ORDER BY news_id DESC 
+                      LIMIT 20';
+                      
+            $stmt = $db->prepare($query);
+            $stmt->execute();
+            $dbNewsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+    } catch (PDOException $e) {
+        // Silently skip database errors so web scraping can still run, or record error
+        $dbError = $e->getMessage();
     }
+}
 
-    $dom = new DOMDocument();
-    @$dom->loadHTML('<?xml encoding="UTF-8">' . $htmlOutput);
-    $xpath = new DOMXPath($dom);
+// --------------------------------------------------------------------------
+// SECTION 2: SCRAPING & CACHING LOGIC
+// --------------------------------------------------------------------------
+// Locate news_cache.json at project root (assumes file is in /api/news/ or similar subdirectory)
+$cacheFile = dirname(__DIR__, 2) . '/json/news/news_cache.json';
 
-    $links = $xpath->query("//a[contains(@href, 'uob.edu.bh/') and not(contains(@href, '/page/')) and not(@href='https://www.uob.edu.bh/news/')] | //h1/a | //h2/a | //h3/a");
+// Fallback to local directory if parent resolution fails
+if (!file_exists(dirname($cacheFile))) {
+    $cacheFile = __DIR__ . '/news_cache.json';
+}
 
-    foreach ($links as $linkNode) {
-        $link = trim($linkNode->getAttribute('href'));
-        $title = trim($linkNode->nodeValue);
+$cacheLifetime = 3 * 3600; // Cache valid for 3 hours (10,800 seconds)
+$scrapedArticles = [];
+
+// 1. Serve cached scraped JSON if valid and non-empty
+if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheLifetime)) {
+    $cachedData = @file_get_contents($cacheFile);
+    if (!empty($cachedData) && $cachedData !== '[]') {
+        $scrapedArticles = json_decode($cachedData, true) ?? [];
+    }
+}
+
+// 2. Cache expired or missing -> Perform batch scraping
+if (empty($scrapedArticles)) {
+    set_time_limit(180);
+    ini_set('memory_limit', '256M');
+
+    $maxPages = 30; // Scrape up to 30 pages (~300 articles)
+    $batchSize = 10; // Batch in groups of 10 parallel cURL connections
+    $articles = [];
+
+    for ($batchStart = 1; $batchStart <= $maxPages; $batchStart += $batchSize) {
+        $batchEnd = min($batchStart + $batchSize - 1, $maxPages);
         
-        if (empty($link) || strlen($title) < 15 || strpos($link, '/category/') !== false) {
-            continue;
+        $mh = curl_multi_init();
+        $curlHandles = [];
+
+        for ($p = $batchStart; $p <= $batchEnd; $p++) {
+            $url = ($p === 1) ? "https://www.uob.edu.bh/news/" : "https://www.uob.edu.bh/news/page/{$p}/";
+            
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36',
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_TIMEOUT => 12,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
+            ]);
+            curl_multi_add_handle($mh, $ch);
+            $curlHandles[$p] = $ch;
         }
 
-        if (strpos($link, 'http') !== 0) {
-            $link = 'https://www.uob.edu.bh' . (strpos($link, '/') === 0 ? '' : '/') . $link;
-        }
+        $running = null;
+        do {
+            curl_multi_exec($mh, $running);
+            curl_multi_select($mh);
+        } while ($running > 0);
 
-        $title = preg_replace('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u', '', $title);
-        $textLower = mb_strtolower($title, 'UTF-8');
-        $assignedSDG = null;
+        foreach ($curlHandles as $p => $ch) {
+            $htmlOutput = curl_multi_getcontent($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_multi_remove_handle($mh, $ch);
+            curl_close($ch);
 
-        if (strpos($textLower, 'health') !== false || strpos($textLower, 'medical') !== false || strpos($textLower, 'صحة') !== false || strpos($textLower, 'psychological') !== false) {
-            $assignedSDG = 3;
-        } elseif (strpos($textLower, 'education') !== false || strpos($textLower, 'student') !== false || strpos($textLower, 'teaching') !== false || strpos($textLower, 'جامع') !== false || strpos($textLower, 'learning') !== false) {
-            $assignedSDG = 4;
-        } elseif (strpos($textLower, 'water') !== false || strpos($textLower, 'sanitation') !== false || strpos($textLower, 'مياه') !== false) {
-            $assignedSDG = 6;
-        } elseif (strpos($textLower, 'sustainability') !== false || strpos($textLower, 'urban') !== false || strpos($textLower, 'cities') !== false || strpos($textLower, 'استدامة') !== false) {
-            $assignedSDG = 11;
-        } elseif (strpos($textLower, 'energy') !== false || strpos($textLower, 'climate') !== false || strpos($textLower, 'solar') !== false || strpos($textLower, 'طاقة') !== false) {
-            $assignedSDG = 13;
-        } elseif (strpos($textLower, 'environment') !== false || strpos($textLower, 'biodiversity') !== false || strpos($textLower, 'green') !== false || strpos($textLower, 'بيئة') !== false) {
-            $assignedSDG = 15;
-        } else {
-            $assignedSDG = $allowedSDGs[crc32($title) % count($allowedSDGs)];
-        }
+            if (!$htmlOutput || $httpCode !== 200) {
+                continue;
+            }
 
-        // --- ENHANCED DATE FALLBACK SYSTEM ---
-        $date = "";
-        $current = $linkNode;
-        for ($i = 0; $i < 4; $i++) {
-            if (!$current || !($current instanceof DOMElement)) break;
-            $dateNodes = $xpath->query(".//span[contains(@class, 'date')] | .//span[contains(@class, 'time')] | .//div[contains(@class, 'meta')] | .//p[contains(@class, 'meta')]", $current);
-            if ($dateNodes->length > 0) {
-                $rawDate = trim($dateNodes->item(0)->nodeValue);
-                if (!empty($rawDate) && strlen($rawDate) < 30) {
-                    $date = $rawDate;
-                    break;
+            $dom = new DOMDocument();
+            @$dom->loadHTML(mb_convert_encoding($htmlOutput, 'HTML-ENTITIES', 'UTF-8'));
+            $xpath = new DOMXPath($dom);
+
+            $links = $xpath->query("//h1/a | //h2/a | //h3/a | //h4/a | //*[contains(@class, 'entry-title')]/a | //*[contains(@class, 'post-title')]/a");
+
+            foreach ($links as $linkNode) {
+                $link = trim($linkNode->getAttribute('href'));
+                $title = trim($linkNode->nodeValue);
+
+                if (empty($link) || mb_strlen($title, 'UTF-8') < 12) continue;
+
+                if (strpos($link, 'http') !== 0) {
+                    $link = 'https://www.uob.edu.bh' . (strpos($link, '/') === 0 ? '' : '/') . $link;
                 }
-            }
-            $current = $current->parentNode;
-        }
 
-        // URL parsing backup: If metadata scraping fails, extract date info from the link structure 
-        // e.g., "uob.edu.bh/news/2026/07/article-name" matches 2026/07
-        if (empty($date) || $date === "Recent Update") {
-            if (preg_match('/\/news\/(\d{4})\/(\d{2})\//', $link, $matches)) {
-                $months = ["01"=>"Jan", "02"=>"Feb", "03"=>"Mar", "04"=>"Apr", "05"=>"May", "06"=>"Jun", "07"=>"Jul", "08"=>"Aug", "09"=>"Sep", "10"=>"Oct", "11"=>"Nov", "12"=>"Dec"];
-                $date = $months[$matches[2]] . " " . $matches[1];
-            } else {
-                $date = date("M d, Y"); // Uses the actual current operational system date
+                if (!isValidUobNewsLink($link, $title)) {
+                    continue;
+                }
+
+                $uniqueKey = md5($link);
+                if (isset($articles[$uniqueKey])) continue;
+
+                $cleanTitle = preg_replace('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u', '', $title);
+                $sdgsFound = extractSdgsFromTitle($cleanTitle);
+
+                $articles[$uniqueKey] = [
+                    "title" => trim($cleanTitle),
+                    "date"  => date("M d, Y"),
+                    "link"  => $link,
+                    "sdg"   => count($sdgsFound) > 0 ? $sdgsFound : [4]
+                ];
             }
         }
+        curl_multi_close($mh);
+        
+        // Brief 200ms pause between batches
+        usleep(200000); 
+    }
 
-        $uniqueKey = md5($title . $link);
-        $articles[$uniqueKey] = [
-            "title" => $title,
-            "date" => $date,
-            "link" => $link,
-            "sdg" => $assignedSDG
-        ];
+    $scrapedArticles = array_values($articles);
+    foreach ($scrapedArticles as $index => &$item) {
+        $item['id'] = $index;
+    }
+    unset($item);
+
+    // Save output to cache file at root
+    if (!empty($scrapedArticles)) {
+        $jsonResult = json_encode($scrapedArticles, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        @file_put_contents($cacheFile, $jsonResult, LOCK_EX);
     }
 }
-curl_close($ch);
 
-$finalArticles = array_values($articles);
-foreach ($finalArticles as $index => &$item) {
-    $item['id'] = $index;
-}
-unset($item);
+// --------------------------------------------------------------------------
+// SECTION 3: OUTPUT COMBINED RESULTS
+// --------------------------------------------------------------------------
+http_response_code(200);
+echo json_encode([
+    "status" => "success",
+    "db_news" => $dbNewsList,
+    "scraped_news" => $scrapedArticles
+], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
-echo json_encode($finalArticles, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-//Safe filter function isolated from the scraper loop
+// --------------------------------------------------------------------------
+// HELPER FUNCTIONS
+// --------------------------------------------------------------------------
+
+/**
+ * Validates whether a scraped URL is a genuine news article link
+ */
 function isValidUobNewsLink($url, $title) {
-    // 1. Must contain /news/ in the URL path
-    if (strpos($url, '/news/') === false) {
+    $path = parse_url($url, PHP_URL_PATH);
+
+    if (empty($path) || $path === '/' || $path === '/news/' || $path === '/news') {
         return false;
     }
-    
-    // 2. Ignore the main hub directory, pagination layout elements, or empty titles
-    if ($url === 'https://www.uob.edu.bh/news/' || 
-        strpos($url, '/page/') !== false || 
-        strlen(trim($title)) < 15) {
+
+    if (preg_match('#/(page|category|tag|author|search)/#i', $url)) {
         return false;
     }
-    
-    return true; // Valid news item
+
+    $excluded = ['privacy', 'terms', 'contact', 'about', 'admission', 'colleges', 'calendar', 'login', 'portal'];
+    $titleLower = mb_strtolower($title, 'UTF-8');
+    foreach ($excluded as $kw) {
+        if (strpos($titleLower, $kw) !== false) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Maps article titles to corresponding Sustainable Development Goals
+ */
+function extractSdgsFromTitle($title) {
+    $titleLower = mb_strtolower($title, 'UTF-8');
+    $sdgs = [];
+
+    $mapping = [
+        3  => ['health', 'well-being', 'medicine', 'nursing', 'medical', 'clinic', 'covid', 'disease', 'physical therapy'],
+        4  => ['education', 'student', 'teaching', 'school', 'university', 'workshop', 'academic', 'degree', 'course', 'training', 'forum'],
+        6  => ['water', 'sanitation', 'clean water'],
+        7  => ['energy', 'renewable', 'solar', 'electricity'],
+        8  => ['labor', 'market', 'economy', 'job', 'employment', 'career', 'business incubator'],
+        9  => ['technology', 'ai', 'artificial intelligence', 'engineering', 'innovation', 'research', 'cyber', 'software', 'app'],
+        11 => ['community', 'cities', 'city', 'heritage', 'housing', 'sustainable', 'architecture'],
+        13 => ['climate', 'environment', 'sustainability', 'green', 'ecology'],
+        15 => ['land', 'agriculture', 'plants', 'genetics', 'biodiversity'],
+        17 => ['partnership', 'mou', 'agreement', 'cooperation', 'collaboration', 'international', 'undp', 'cern', 'who']
+    ];
+
+    foreach ($mapping as $sdgNum => $keywords) {
+        foreach ($keywords as $kw) {
+            if (strpos($titleLower, $kw) !== false) {
+                $sdgs[] = $sdgNum;
+                break;
+            }
+        }
+    }
+
+    return array_values(array_unique($sdgs));
 }
 ?>

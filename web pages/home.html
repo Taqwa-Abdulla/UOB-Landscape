@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>UOB Landscape</title>
         <link rel="stylesheet" href="../public/css/style.css" />
-        <script src="../js/news/sdg.js" defer></script>
+        <script src="../js/news/news.js" defer></script>
         <script src="../js/chatbot/chatbot.js" defer></script>
     </head>
     <body>
@@ -144,7 +144,6 @@
                 </div>
             </div>
         </div>
-
         <div class="right-column">
             <div class="control-grid">
                 <button class="sdg-card-btn" data-sdg="3" onclick="handleSdgInteraction(3)">
@@ -157,10 +156,10 @@
                     <span class="badge-num">06</span><span class="label">CLEAN WATER AND SANITATION</span>
                 </button>
                 <button class="sdg-card-btn" data-sdg="11" onclick="handleSdgInteraction(11)">
-                    <span class="badge-num">11</span><span class="label">SUSTAINABLE CITITES AND COMMUNITIES</span>
+                    <span class="badge-num">11</span><span class="label">SUSTAINABLE CITIES AND COMMUNITIES</span>
                 </button>
                 <button class="sdg-card-btn" data-sdg="13" onclick="handleSdgInteraction(13)">
-                    <span class="badge-num">13</span><span class="label">CILMATE ACTION</span>
+                    <span class="badge-num">13</span><span class="label">CLIMATE ACTION</span>
                 </button>
                 <button class="sdg-card-btn" data-sdg="15" onclick="handleSdgInteraction(15)">
                     <span class="badge-num">15</span><span class="label">LIFE ON LAND</span>
@@ -169,17 +168,19 @@
             </div>
         </div>
     </div>
-
     <div class="news-section-panel">
         <div class="panel-title-bar">
-            <h2 id="stream-headline">UOB SDG News</h2>
+            <h2 id="stream-headline">Recent UOB SDG News</h2>
         </div>
         <div id="scrolling-viewframe" class="ticker-frame">
             <div class="ticker-track" id="ticker-track-injection">
-                <div style="padding: 20px; color: var(--text-muted);">Syncing with University of Bahrain news...</div>
+                <div style="padding: 20px; color: var(--text-muted, #666);">Syncing news stream...</div>
             </div>
         </div>
-        <div id="static-filter-viewframe" class="static-display-grid" style="display: none;"></div>
+        <div id="static-filter-viewframe" class="news-grid-view" style="display: none;"></div>
+    </div>
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="https://www.uob.edu.bh/news/" target="_blank"><button class="sdg-news-btn">Read more</button></a>
     </div>
 </section>
   </main>
