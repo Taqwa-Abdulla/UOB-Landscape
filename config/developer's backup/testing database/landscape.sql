@@ -73,7 +73,8 @@ CREATE TABLE projects (
     image_proposal_path VARCHAR(500) DEFAULT NULL,
     image_after_path VARCHAR(500) DEFAULT NULL,
     video_proposal_link VARCHAR(500) DEFAULT NULL, 
-    pdf_path VARCHAR(500) DEFAULT NULL             
+    pdf_path VARCHAR(500) DEFAULT NULL,
+    project_status VARCHAR(20) DEFAULT 'unknown' CHECK (project_status IN ('unknown', 'in progress', 'planning', 'completed'))           
 );
 
 CREATE TABLE records (
@@ -113,6 +114,15 @@ CREATE TABLE news (
     news_description_en TEXT DEFAULT NULL,
     news_description_ar TEXT DEFAULT NULL,
     SDGs VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE activitiy_log (
+    log_id SERIAL PRIMARY KEY,
+    created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    action_type VARCHAR(50) NOT NULL,
+    row_id INT NOT NULL,
+    table_name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- SHA-256 passwords ('password123')
