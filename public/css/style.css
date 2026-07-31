@@ -284,36 +284,56 @@ header video {
     display: flex;
     justify-content: center;
     align-items: center;   
-    gap: 20px;              
-    flex-wrap: wrap;       
+    gap: 20px;                 
+    flex-wrap: nowrap; 
+    /* background removed here to make it transparent */
+    width: 100%;
+    padding: 30px 20px;
+    overflow-x: auto; 
+    scrollbar-width: none; 
+}
+
+/* Hides scrollbar for Chrome, Safari, and Opera */
+.sdg-cards-horizontal::-webkit-scrollbar {
+    display: none;
 }
 
 .sdg-image-wrapper {
-    flex: 0 0 auto;         
-    width: 120px; 
+    flex: 1 1 auto; 
+    max-width: 180px; 
+    min-width: 70px; 
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .sdg-image-wrapper img {
     width: 100%;
     height: auto;
     display: block;
-    border-radius: 8px;     
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-    transition: transform 0.3s ease; 
+    border-radius: 12px;    
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); 
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease; 
+}
+
+.sdg-image-wrapper:hover {
+    transform: translateY(-8px);
 }
 
 .sdg-image-wrapper img:hover {
-  transform: scale(1.1); 
-  cursor: pointer;
+    transform: scale(1.05);
+    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
 }
 
 /* Responsive adjustment for mobile */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .sdg-cards-horizontal {
-        gap: 10px;
+        justify-content: flex-start; 
+        padding: 20px 10px;
+        gap: 12px;
     }
     .sdg-image-wrapper {
-        width: 100px;
+        min-width: 90px; 
     }
 }
 /*SDG cards and news*/
