@@ -7,7 +7,7 @@
         <div class="chat-box" id="chatBox" style="display: none;">
           
           <div class="chat-header">
-            <span>UOB Assistant</span>
+            <span>Landscape UOB Assistant (Aspen)</span>
             <button class="clear-chat-btn" onclick="resetChat()" title="Clear Chat">🔄</button>
           </div>
           
@@ -16,9 +16,14 @@
           </div>
           
           <div class="chat-options" id="chatOptions">
-            <button class="option-btn" onclick="handleOption('Admissions')">Admissions Info</button>
-            <button class="option-btn" onclick="handleOption('Courses')">Available Courses</button>
-            <button class="option-btn" onclick="handleOption('Campus Map')">Campus Map</button>
+            <button class="option-btn" onclick="handleOption('i would like to know about uob landscape website')">About</button>
+            <button class="option-btn" onclick="handleOption('who is aspen?')">Who is Aspen?</button>
+            <button class="option-btn" onclick="handleOption('lanscape campus map')">Map</button>
+            <button class="option-btn" onclick="handleOption('plants')">Plants</button>
+            <button class="option-btn" onclick="handleOption('locations')">Locations</button>
+            <button class="option-btn" onclick="handleOption('statistics')">Statistics</button>
+            <button class="option-btn" onclick="handleOption('improvements')">Improvements</button>
+            <button class="option-btn" onclick="handleOption('others')">Others</button>
           </div>
 
           <div class="chat-input-area">
@@ -46,12 +51,6 @@
 
 // 2. Set up all bot logic, message routing, and interactions
 window.addEventListener('load', function() {
-    const botKnowledge = {
-        "admissions": "Admissions are open until next month. You can apply online through the student portal.",
-        "courses": "We offer programs in Engineering, IT, Science, and Business.",
-        "campus map": "You can find our interactive landscape campus map on the main website header."
-    };
-
     const chatInput = document.getElementById('chatInput');
     if (chatInput) {
         chatInput.addEventListener('keypress', function(e) {
@@ -64,32 +63,40 @@ window.addEventListener('load', function() {
         });
     }
 
-    function processBotResponse(userInput) {
-        const cleanedInput = userInput.toLowerCase().trim();
+    async function processBotResponse(userInput) {
         const optionsContainer = document.getElementById('chatOptions');
         
-        setTimeout(() => {
-            if (cleanedInput === 'hello' || cleanedInput === 'hi') {
-                const greetingHTML = `
-                    Hello there! 👋 <br>
-                    I am your UOB Assistant. How can I help you navigate our landscape website today?
-                `;
-                appendMessage(greetingHTML, 'bot-msg');
-                if (optionsContainer) optionsContainer.style.display = 'flex';
-            } 
-            else if (botKnowledge[cleanedInput]) {
-                appendMessage(botKnowledge[cleanedInput], 'bot-msg');
-            } 
-            else {
-                const fallbackHTML = `
-                    I couldn't find an exact match for that. Would you like to reach out to us directly? <br><br>
-                    📞 Phone: +973 1743 8888<br>
-                    📧 Email: <a href="mailto:support@uob.edu.bh">support@uob.edu.bh</a><br>
-                    🌐 Web: <a href="https://www.uob.edu.bh/">Contact Form</a>
-                `;
-                appendMessage(fallbackHTML, 'bot-msg');
+        try {
+            // Send request to secure PHP backend API endpoint
+            const response = await fetch('../../api/chatbot/chatbot.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userInput })
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        }, 500); 
+
+            const data = await response.json();
+
+            setTimeout(() => {
+                appendMessage(data.reply, 'bot-msg');
+                
+                // Show options container if user greeted the bot
+                const cleanedInput = userInput.toLowerCase().trim();
+                if ((cleanedInput === 'hello' || cleanedInput === 'hi' || cleanedInput === 'السلام عليكم' || cleanedInput === 'مرحبا' || cleanedInput === 'مرحبًا') && optionsContainer) {
+                    optionsContainer.style.display = 'flex';
+                }
+            }, 500);
+
+        } catch (error) {
+            setTimeout(() => {
+                appendMessage("Sorry, I'm having trouble connecting to the server right now.", 'bot-msg');
+            }, 500);
+        }
     }
 
     function appendMessage(text, className) {
@@ -155,11 +162,9 @@ window.addEventListener('load', function() {
     });
 });
 
-// Automatic Dynamic Stylesheet Linker using Root-Relative Path
 // Automatic Dynamic Stylesheet Linker using absolute root path
 document.addEventListener("DOMContentLoaded", function () {
-    // This looks for public/css/bot.css starting from the root of your project domain/server
-    const finalCssPath = '/public/css/bot.css'; 
+    const finalCssPath = '../../public/css/bot.css'; 
 
     if (!document.querySelector(`link[href="${finalCssPath}"]`)) {
         const botStyle = document.createElement('link');
