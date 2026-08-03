@@ -3,68 +3,82 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>Locations</title>
-        <link rel="stylesheet" href="../public/css/style.css" />
-         <script src="../../public/js/chatbot.js" defer></script>
+        <title>Statistics and Reports</title>
+        <link rel="stylesheet" href="../../public/css/style.css" />
+        <script src="../../js/stats/stats.js"></script>
+         <script src="../../js/chatbot/chatbot.js" defer></script>
     </head>
-    <body>
-        <nav>
-     <img src="../public/images/UOB logo.png" alt="UOB Logo">
-    <a href="../home.html">Home</a>
-    <a href="../about.html">About</a>
-    <a href="../locations.html">Locations</a>
-    <div>
-    <a href="#">Plants</a>
-    <div>
-        <a href="indoor.html">Indoor</a>
-        <a href="outdoor.html">Outdoor</a>
+<body>
+    <div class="logo-space">
+    <img src="../../public/images/UOB logo.png" alt="UOB Logo">
+</div>
+<nav class="navbar">
+    <div class="nav-left"></div>
+
+    <div class="nav-center">
+        <a href="../home.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="../locations.html">Locations</a>
+        
+        <div class="dropdown">
+            <a href="#">Plants</a>
+            <div class="dropdown-content">
+                <a href="#">Indoor</a>
+                <a href="../plants/outdoor.html">Outdoor</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <a href="#">Projects</a>
+            <div class="dropdown-content">
+                <a href="projects/before and after.html">Landscape Improvements</a>
+                <a href="#">Statistics And Reports</a>
+            </div>
+        </div>
     </div>
-   </div>
-   <div>
-    <a href="#">Projects</a>
-    <div>
-       <a href="before and after.html">Landscape Improvements</a>
-        <a href="statistics and reports.html">Statistics And Reports</a>
+
+    <div class="nav-right">
+        <a href="login.html"><button class="login-btn">Login</button></a>
     </div>
-   </div>
-   <a href="login.html"><button>Login</button></a>
-   </nav>
-   <main>
-    <section>
-    <h1>Projects & Annual Reports</h1>
-    <p>Showcasing engineering student innovations and documenting the dedicated work
+</nav>
+   <main class="stats-main">
+    <section class="catching-section-stats">
+    <h1 class="catching-h1-stats">Projects & Annual Reports</h1>
+    <p class="catching-p-stats">Showcasing engineering student innovations and documenting the dedicated work
       of our landscaping staff in maintaining and enhancing campus green spaces</p>
+    <img class="chaching-img-stat" src="../../public/images/S18.jpg">
   </section>
-  <section>
-    <h1>UoB Landscape Statistics</h1>
-    <p>Track the growth and development of our campus landscape through comprehensive data and visual insights spanning
+  <h1 class="landscape-h1-stats">Landscape Statistics</h1>
+    <p class="landscape-p-stats">Track the growth and development of our campus landscape through comprehensive data and visual insights spanning
       multiple years of environmental enhancement.</p>
-      <div>
-        <div>100+</div>
-        <div>Total Plant Species</div>
-      </div>
-      <div>
-        <div>36K+</div>
-        <div>Square Meters</div>
-      </div>
-      <div>
-        <div>30+</div>
-        <div>Completed Projects</div>
-      </div>
-      <div>
-        <div>50+</div>
-        <div>Campus Locations</div>
+  <section class="stats">
+              <div class="stat-container">
+            <div class="num"></div>
+            <div class="num-text">Plant Species</div>
+        </div>
+        <div class="stat-container">
+            <div class="num"></div>
+            <div class="num-text">Locations</div>
+        </div>
+        <div class="stat-container">
+             <div class="num"></div>
+             <div class="num-text">Square Meters</div>
+        </div>
+        <div class="stat-container">
+            <div class="num"></div>
+            <div class="num-text">Projects</div>
+        </div>
   </section>
-  <section>
+  <section class="stat-growth">
     <h2>Annual Growth Trends</h2>
-      <p>Visualizing the expansion of our campus landscape initiatives over the years</p>
-      <p>Show charts and stats after this</p>
+      <p>Charts</p>
   </section>
   <section>
     <h2>Landscape Projects Annual Reports</h2>
-
-    <p>Reports are shown and you can view them but print only for admin</p>
-    <p>search bar by name or year for reports</p>
+    <div class="report-search-container">
+        <input type="text" id="reportSearchInput" placeholder="Search reports by name or year..." />
+    </div>
+    <p>Reports</p>
   </section>
    </main>
    <footer>

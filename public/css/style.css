@@ -2632,10 +2632,91 @@ label.login-legend {
 }
 
 /* ==========================================================================
+                                   Statistics and reports Page
+   ========================================================================== */
+   .stats-main
+   {
+    margin-top: 100px;
+   }
+   .catching-section-stats
+   {
+     width:auto;
+     height: auto;
+   }
+   .catching-h1-stats, .catching-p-stats
+   {
+     align-items: center;
+     text-align: center;
+   }
+   .landscape-h1-stats
+   {
+    align-items: center;
+    text-align: center;
+   }
+   .landscape-p-stats
+   {
+    align-items: center;
+    text-align: center;
+   }
+   .catching-section-stats {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2c3e50;
+}
+
+.catching-h1-stats {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1a252f;
+  letter-path: -0.5px;
+}
+
+.catching-p-stats {
+  max-width: 700px;
+  margin: 0 auto 2.5rem auto;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555759;
+}
+
+.chaching-img-stat {
+  width: 100%;
+  max-height: 700px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.chaching-img-stat:hover {
+  transform: translateY(-4px);
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .catching-section-stats {
+    padding: 2rem 1rem;
+  }
+
+  .catching-h1-stats {
+    font-size: 2rem;
+  }
+
+  .catching-p-stats {
+    font-size: 1rem;
+  }
+}
+
+
+
+/* ==========================================================================
                                    admin Page
    ========================================================================== */
   
 /* ==========================================================================
                                    user Page
    ========================================================================== */
-  
