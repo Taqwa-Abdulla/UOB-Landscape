@@ -33,6 +33,22 @@
                 <a href="../view/projects/before and after.html">Landscape Improvements</a>
                 <a href="../view/projects/statistics and reports.html">Statistics And Reports</a>
             </div>
+          </details>
+
+          <!-- Nested: Projects -->
+          <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
+            <summary class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
+                <span>Projects</span>
+              </div>
+              <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
+              <a href="../projects/before and after.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Landscape Improvements</a>
+              <a href="../projects/statistics and reports.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Statistics and Reports</a>
+            </div>
+          </details>
         </div>
     </div>
     <div class="nav-right">
@@ -47,88 +63,128 @@
     </div>
     <h1 class="admin-h1">Users</h1>
     
-    <section id="password-management">
-        <h2>Change Your Password</h2>
-        <form class="password-form" id="password-form" action="#" method="POST">
-            <fieldset class="admin-portal-fieldset">
-                <legend>Password Update</legend>
-                <label for="current-password">Current Password</label>
-                <input type="password" id="current-password" name="current_password" placeholder="Enter current password" required>
-                <div class="new-p">
-                    <div>
-                        <label for="new-password">New Password</label>
-                        <input type="password" id="new-password" name="new_password" minlength="8" placeholder="At least 8 characters" required>
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">User Settings & Management</h1>
+    </div>
+
+    <!-- Section 1: Change Password Form -->
+    <section class="space-y-4" id="password-management">
+        <h2 class="text-xl font-semibold text-gray-700">Change Your Password</h2>
+        
+        <form class="bg-white rounded-xl border border-gray-200 shadow-sm p-6" id="password-form" action="#" method="POST">
+            <fieldset class="space-y-6">
+                <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">Password Update</legend>
+                
+                <!-- Current Password Field -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-medium text-gray-700" for="current-password">Current Password</label>
+                    <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="password" id="current-password" name="current_password" placeholder="Enter current password" required>
+                </div>
+
+                <!-- New Password Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 new-p">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-sm font-medium text-gray-700" for="new-password">New Password</label>
+                        <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="password" id="new-password" name="new_password" minlength="8" placeholder="At least 8 characters" required>
                     </div>
-                    <div class="confirm-p">
-                        <label for="confirm-password">Confirm New Password</label>
-                        <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm new password" required>
+                    
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-sm font-medium text-gray-700" for="confirm-password">Confirm New Password</label>
+                        <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="password" id="confirm-password" name="confirm_password" placeholder="Confirm new password" required>
                     </div>
                 </div>
-                <button type="submit" id="change">Update Password</button>
+
+                <!-- Submit Action -->
+                <div class="pt-2 flex justify-end">
+                    <button type="submit" id="change" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 transition">Update Password</button>
+                </div>
             </fieldset>
         </form>
     </section>
 
-    <section class="um" id="user-management">
-        <h2 class="um-h1">Manage Users</h2>
+    <!-- Section 2: Manage Users -->
+    <section class="space-y-6" id="user-management">
+        <h2 class="text-xl font-semibold text-gray-700">Manage Users</h2>
         
-        <!-- Dropdown removed: Form is now permanently visible inside an article block -->
-        <article class="add-new-user">
+        <!-- Add New User Form Card -->
+        <article class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
             <form id="add-user-form" action="#" method="POST">
-                <fieldset class="add-new-user-filedset">
-                    <legend>New User Information</legend>
-                    <div class="add-user-details">
-                        <div>
-                            <label for="user-name">Full Name</label>
-                            <input type="text" id="user-name" name="name" placeholder="John Doe" required>
+                <fieldset class="space-y-6 add-new-user-filedset">
+                    <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">New User Information</legend>
+                    
+                    <!-- Row 1: Name & Email -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 add-user-details">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="user-name">Full Name</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="user-name" name="name" placeholder="John Doe" required>
                         </div>
-                        <div>
-                            <label for="user-email">Email Address</label>
-                            <input type="email" id="user-email" name="user_email" placeholder="username@uob.edu.bh" required>
-                        </div>
-                    </div>
-                    <div class="grid">
-                        <div>
-                            <label for="user-role">Role</label>
-                            <input type="text" id="user-role" name="role" placeholder="e.g., Student, Admin" required>
-                        </div>
-                        <div>
-                            <label for="default-password">Password</label>
-                            <input type="text" id="default-password" name="password" value="password123">
+                        
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="user-email">Email Address</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="email" id="user-email" name="user_email" placeholder="username@uob.edu.bh" required>
                         </div>
                     </div>
-                    <button class="add-user-btn" type="submit" id="add">Add User</button>
+
+                    <!-- Row 2: Role & Default Password -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 grid">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="user-role">Role</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="user-role" name="role" placeholder="e.g., Student, Admin" required>
+                        </div>
+                        
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="default-password">Password</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-slate-50" type="text" id="default-password" name="password" value="password123">
+                        </div>
+                    </div>
+
+                    <!-- Submit Action -->
+                    <div class="pt-2 flex justify-end">
+                        <button class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 transition" type="submit" id="add">Add User</button>
+                    </div>
                 </fieldset>
             </form>
         </article>
 
-        <h3 class="exist-users-h1">Registered Users</h3>
-        <input type="search" id="search-input" placeholder="Search registered users by name or email...">
-        
-        <div class="exits-users-tb">
-            <table class="user-details-tb" id="users-table">
-                <thead>
-                    <tr>
-                        <th scope="col">User Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="username"></td>
-                        <td class="user-email"></td>
-                        <td class="user-role"></td>
-                        <td>
-                            <div>
-                                <button class="edit-btn secondary outline" data-id="alimansoor@uob.edu.bh">Edit</button>
-                                <button class="delete-btn" data-id="alimansoor@uob.edu.bh">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Registered Users Section -->
+        <div class="pt-4 space-y-4">
+            <h3 class="text-xl font-semibold text-gray-700">Registered Users</h3>
+            
+            <div class="flex justify-end">
+                <input class="w-full sm:w-80 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" type="search" id="search-input" placeholder="Search registered users by name or email...">
+            </div>
+
+            <!-- Users Table Card -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-gray-600" id="users-table">
+                        <thead class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase font-semibold">
+                            <tr>
+                                <th class="px-6 py-3.5" scope="col">User Name</th>
+                                <th class="px-6 py-3.5" scope="col">Email</th>
+                                <th class="px-6 py-3.5" scope="col">Role</th>
+                                <th class="px-6 py-3.5" scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-semibold text-gray-900">Ali Mansoor</td>
+                                <td class="px-6 py-4 text-gray-600">alimansoor@uob.edu.bh</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">Admin</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <button class="px-3 py-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg transition" data-id="alimansoor@uob.edu.bh">Edit</button>
+                                        <button class="px-3 py-1.5 text-xs font-medium text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition" data-id="alimansoor@uob.edu.bh">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </section>
 </main>
@@ -177,21 +233,7 @@
         <i class="fa-solid fa-envelope"></i> 
         <a href="mailto:landscape@uob.edu.bh">landscape@uob.edu.bh</a>
     </div>
-    <div class="social-links">
-        <i class="fa-solid fa-phone"></i> <span>+973 1743 8181</span>
     </div>
-    <div class="social-links">
-        <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
-            <i class="fab fa-youtube"></i> YouTube
-        </a>
-    </div>
-</div>
-    </div>
-
-    <div class="footer-bottom">
-        <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
-    </div>
-</footer>
 </body>
 </html>
 

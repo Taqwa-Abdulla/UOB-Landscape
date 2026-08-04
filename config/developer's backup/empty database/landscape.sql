@@ -55,7 +55,8 @@ CREATE TABLE plants (
     environmental_impact VARCHAR(255) DEFAULT NULL,
     oxygen_production VARCHAR(150) DEFAULT NULL,
     carbon_dioxide_absorption VARCHAR(150) DEFAULT NULL,
-    class VARCHAR(20) CHECK (class IN ('indoor', 'outdoor'))
+    class VARCHAR(20) CHECK (class IN ('indoor', 'outdoor')),
+    qr_image BYTEA DEFAULT NULL
 );
 
 CREATE TABLE projects (
@@ -124,3 +125,11 @@ CREATE TABLE activitiy_log (
     table_name VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE annual_reports (
+            report_id SERIAL PRIMARY KEY,
+            title_en VARCHAR(255) NOT NULL,
+            title_ar VARCHAR(255) NOT NULL,
+            report_year INT NOT NULL,
+            pdf_path VARCHAR(500) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );

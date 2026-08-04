@@ -12,6 +12,15 @@
     <script src="../../../js/chatbot/chatbot.js" defer></script>
 </head>
 <body>
+<div class="flex h-screen overflow-hidden">
+    <!-- Main Navigation Bar -->
+<aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen">
+  <div>
+    <!-- 1. Brand Logo -->
+    <div class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
+    <img class="rounded-xl w-12 h-15" src="../../public/images/UOB logo.png" alt="UOB Logo">
+    <div>Admin<span class="text-blue-600">Panel</span></div>
+</div>
 
     <!-- Header & Logo Section -->
     <div class="logo-space">
@@ -41,109 +50,48 @@
                     <a href="../view/projects/statistics and reports.html">Statistics And Reports</a>
                 </div>
             </div>
+          </details>
+
+          <!-- Nested: Projects -->
+          <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
+            <summary class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
+                <span>Projects</span>
+              </div>
+              <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
+              <a href="../projects/before and after.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Landscape Improvements</a>
+              <a href="../projects/statistics and reports.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Statistics and Reports</a>
+            </div>
+          </details>
         </div>
         <div class="nav-right">
             <a href="../../../login/login.html"><button class="login-btn">Logout</button></a>
         </div>
     </nav>
-    <main class="locations-main">
-        <div>
-            <h1 class="location-admin">Locations</h1>
+  </div>
+
+  <!-- Footer Action -->
+  <div class="p-4 border-t border-slate-800">
+    <p class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-400  rounded-lg transition-colors">
+      &copy; 2026 University of Bahrain. All rights reserved.
+    </p>
+  </div>
+</aside>
+    <div class="flex-1 flex flex-col overflow-y-auto">
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+        <h1 class="text-2xl font-bold text-gray-800">Manage Locations</h1>
+        
+        <div class="flex items-center gap-4">
+          <button class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition">
+            logout
+          </button>
         </div>
-        <section class="locations-details" id="location-management">
-            <h2 class="manage-location-h1">Manage Locations</h2>
-            <article class="ml-article">
-                <form class="ml-form" id="add-location-form">
-                    <fieldset class="ml-filedset">
-                        <legend class="ml-legend">New Location Information</legend>
-                        <input type="hidden" id="location-id">
-                        <div class="ml-div">
-                            <div class="ml-data">
-                                <label class="ml-legend" for="location-number">Location Number</label>
-                                <input type="text" id="location-number" name="location_number" placeholder="e.g. S40, G1, Gate 2-S55">
-                            </div>
-                            <div class="ml-data">
-                                <label class="ml-legend" for="location-category">Category</label>
-                                <input type="text" id="location-category" name="category" placeholder="e.g., Building, Gate, Roadside" required>
-                            </div>
-                        </div>
-                        <div class="ml-div">
-                            <div class="ml-data">
-                                <label class="ml-legend" for="name-en">English Name</label>
-                                <input type="text" id="name-en" name="name_en" placeholder="English Name" required>
-                            </div>
-                            <div class="ml-data">
-                                <label class="ml-legend" for="name-ar">Arabic Name</label>
-                                <input type="text" id="name-ar" name="name_ar" placeholder="Arabic Name" required dir="rtl">
-                            </div>
-                        </div>
-                        <div class="ml-div">
-                            <div class="ml-data">
-                                <label class="ml-legend" for="latitude">Latitude</label>
-                                <input type="number" step="any" id="latitude" name="latitude" placeholder="26.0667" required>
-                            </div>
-                            <div class="ml-data">
-                                <label class="ml-legend" for="longitude">Longitude</label>
-                                <input type="number" step="any" id="longitude" name="longitude" placeholder="50.5577" required>
-                            </div>
-                        </div>
-                        <div class="ml-div">
-                            <div class="ml-data">
-                                <label class="ml-legend" for="created-by">Created By (User ID)</label>
-                                <input type="number" id="created-by" name="created_by" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
-                            </div>
-                            <div class="ml-data">
-                                <label class="ml-legend" for="updated-by">Updated By (User ID)</label>
-                                <input type="number" id="updated-by" name="updated_by" readonly>
-                            </div>
-                        </div>
-                        <button class="add-loc-btn" type="submit" id="submit-location-btn">Add Location</button>
-                    </fieldset>
-                </form>
-            </article>
-            <h3 class="ml-h3">Registered Locations</h3>
-            <div class="ml-order-and-sort">
-                <select class="ml-sort" id="sort-select">
-                    <option value="location_id">Sort By: ID</option>
-                    <option value="location_number">Sort By: Number</option>
-                    <option value="category">Sort By: Category</option>
-                    <option value="name_en">Sort By: English Name</option>
-                    <option value="name_ar">Sort By: Arabic Name</option>
-                </select>
-                <select class="ml-order" id="order-select">
-                    <option value="asc">Ascending</option>
-                    <option value="desc">Descending</option>
-                </select>
-            </div>
-            <input class="ml-search" type="search" id="search-input" placeholder="Search locations by category, name, or number...">
-            <div class="exits-loc">
-                <table class="exits-loc-t" id="locations-table">
-                    <thead class="exits-loc-th">
-                        <tr class="exits-loc-tr">
-                            <th class="exits-loc-th" scope="col">ID</th>
-                            <th class="exits-loc-th" scope="col">Number</th>
-                            <th class="exits-loc-th" scope="col">Category</th>
-                            <th class="exits-loc-th" scope="col">English Name</th>
-                            <th class="exits-loc-th" scope="col">Arabic Name</th>
-                            <th class="exits-loc-th" scope="col">Coordinates</th>
-                            <th class="exits-loc-th" scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="ml-tb">
-                        <tr class="ml-tr">
-                            <td class="ml-td" colspan="7"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-    <footer>
-        <div class="footer-top-container">
-            <div class="footer-col">
-                <h4>About</h4>
-                <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information about plants, their locations, and ecological significance.</p>
-            </div>
+      </header>
+<main class="p-8 space-y-8">
+  <!-- Page Header -->
 
             <div class="footer-col">
                 <h4>Navigation</h4>
@@ -168,35 +116,129 @@
                 </ul>
             </div>
 
-            <div class="footer-col">
-                <h4>External Links</h4>
-                <ul>
-                    <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
-                    <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of Bahrain</a></li>
-                    <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank" rel="noopener noreferrer">Sustainable Development</a></li>
-                </ul>
-            </div>
+  <!-- Location Management Section -->
+  <section class="space-y-6" id="location-management">
 
-            <div class="footer-col">
-                <h4>Contact</h4>
-                <div class="social-links">
-                    <i class="fa-solid fa-envelope"></i> 
-                    <a href="mailto:landscape@uob.edu.bh">landscape@uob.edu.bh</a>
-                </div>
-                <div class="social-links">
-                    <i class="fa-solid fa-phone"></i> <span>+973 1743 8181</span>
-                </div>
-                <div class="social-links">
-                    <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
-                        <i class="fab fa-youtube"></i> YouTube
-                    </a>
-                </div>
+    <!-- Add Location Form Card -->
+    <article class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <form id="add-location-form">
+        <fieldset class="space-y-6">
+          <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">
+            New Location Information
+          </legend>
+          
+          <input type="hidden" id="location-id">
+
+          <!-- Row 1: Location Number & Category -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-700" for="location-number">Location Number</label>
+              <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="location-number" name="location_number" placeholder="e.g. S40, G1, Gate 2-S55">
             </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-700" for="location-category">Category</label>
+              <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="location-category" name="category" placeholder="e.g., Building, Gate, Roadside" required>
+            </div>
+          </div>
+
+          <!-- Row 2: English & Arabic Names -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-700" for="name-en">English Name</label>
+              <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="name-en" name="name_en" placeholder="English Name" required>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-700" for="name-ar">Arabic Name</label>
+              <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="name-ar" name="name_ar" placeholder="Arabic Name" required dir="rtl">
+            </div>
+          </div>
+
+          <!-- Row 3: Coordinates -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-700" for="latitude">Latitude</label>
+              <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="number" step="any" id="latitude" name="latitude" placeholder="26.0667" required>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-700" for="longitude">Longitude</label>
+              <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="number" step="any" id="longitude" name="longitude" placeholder="50.5577" required>
+            </div>
+          </div>
+
+          <!-- Row 4: Audit Fields -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-700" for="created-by">Created By (User ID)</label>
+              <input class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-slate-100 text-gray-500 cursor-not-allowed" type="number" id="created-by" name="created_by" readonly>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-gray-700" for="updated-by">Updated By (User ID)</label>
+              <input class="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-slate-100 text-gray-500 cursor-not-allowed" type="number" id="updated-by" name="updated_by" readonly>
+            </div>
+          </div>
+
+          <!-- Submit Action -->
+          <div class="pt-2 flex justify-end">
+            <button class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 transition" type="submit" id="submit-location-btn">
+              Add Location
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </article>
+
+    <!-- Table Section Header & Filters -->
+    <div class="pt-4 space-y-4">
+      <h3 class="text-lg font-bold text-gray-800">Registered Locations</h3>
+      
+      <!-- Sorting & Search Toolbar -->
+      <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <select class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="sort-select">
+            <option value="location_id">Sort By: ID</option>
+            <option value="location_number">Sort By: Number</option>
+            <option value="category">Sort By: Category</option>
+            <option value="name_en">Sort By: English Name</option>
+            <option value="name_ar">Sort By: Arabic Name</option>
+          </select>
+          <select class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="order-select">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
         </div>
 
-        <div class="footer-bottom">
-            <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
+        <input class="w-full sm:w-80 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" type="search" id="search-input" placeholder="Search locations by category, name, or number...">
+      </div>
+
+      <!-- Data Table Card -->
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-600" id="locations-table">
+            <thead class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase font-semibold">
+              <tr>
+                <th class="px-6 py-3.5" scope="col">ID</th>
+                <th class="px-6 py-3.5" scope="col">Number</th>
+                <th class="px-6 py-3.5" scope="col">Category</th>
+                <th class="px-6 py-3.5" scope="col">English Name</th>
+                <th class="px-6 py-3.5" scope="col">Arabic Name</th>
+                <th class="px-6 py-3.5" scope="col">Coordinates</th>
+                <th class="px-6 py-3.5" scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-gray-400 text-center" colspan="7">
+                  No registered locations found.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </footer>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+</div>
 </body>
 </html>

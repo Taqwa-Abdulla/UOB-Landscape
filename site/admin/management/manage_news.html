@@ -50,47 +50,53 @@
             <!-- Hidden input to store ID during update operations -->
             <input type="hidden" id="news_id" name="id">
 
-            <fieldset class="news-fieldset">
-                <legend class="news-legend">News Details</legend>
-                <div class="news-form-info">
+            <fieldset class="space-y-6">
+                <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">News Details</legend>
+                
+                <div class="space-y-6">
                     
-                    <div class="form-group-row">
-                        <div class="form-group">
-                            <label for="title_en">English Title *</label>
-                            <input type="text" id="title_en" name="title_en" required placeholder="Enter English title">
+                    <!-- Titles Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="title_en">English Title <span class="text-rose-500">*</span></label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="title_en" name="title_en" required placeholder="Enter English title">
                         </div>
 
-                        <div class="form-group">
-                            <label for="title_ar">Arabic Title *</label>
-                            <input type="text" id="title_ar" name="title_ar" required placeholder="Enter Arabic title">
-                        </div>
-                    </div>
-
-                    <div class="form-group-row">
-                        <div class="form-group">
-                            <label for="link">Source / Link</label>
-                            <input type="url" id="link" name="link" placeholder="https://example.com/news">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="SDGs">SDGs (comma-separated)</label>
-                            <input type="text" id="SDGs" name="SDGs" placeholder="e.g. 3, 11, 13">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="title_ar">Arabic Title <span class="text-rose-500">*</span></label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="title_ar" name="title_ar" required placeholder="Enter Arabic title" dir="rtl">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="news_description_en">English Description</label>
-                        <textarea id="news_description_en" name="news_description_en" rows="4" placeholder="Full English news content or summary"></textarea>
+                    <!-- Source Link & SDGs Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="link">Source / Link</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="url" id="link" name="link" placeholder="e.g. Social media link">
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="SDGs">SDGs (comma-separated)</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="SDGs" name="SDGs" placeholder="e.g. 3, 11, 13">
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="news_description_ar">Arabic Description</label>
-                        <textarea id="news_description_ar" name="news_description_ar" rows="4" placeholder="Full Arabic news content or summary"></textarea>
+                    <!-- English Description -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-sm font-medium text-gray-700" for="news_description_en">English Description</label>
+                        <textarea class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition resize-y" id="news_description_en" name="news_description_en" rows="4" placeholder="Full English news content or summary"></textarea>
                     </div>
 
-                    <div class="form-actions">
-                        <button type="submit" id="submit-btn" class="btn-submit">Save News</button>
-                        <button type="button" id="cancel-btn" class="btn-cancel" style="display: none;">Cancel Edit</button>
+                    <!-- Arabic Description -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-sm font-medium text-gray-700" for="news_description_ar">Arabic Description</label>
+                        <textarea class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition resize-y" id="news_description_ar" name="news_description_ar" rows="4" placeholder="Full Arabic news content or summary" dir="rtl"></textarea>
+                    </div>
+
+                    <!-- Form Buttons -->
+                    <div class="pt-2 flex items-center justify-end gap-3">
+                        <button type="button" id="cancel-btn" class="hidden px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition">Cancel Edit</button>
+                        <button type="submit" id="submit-btn" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 transition">Save News</button>
                     </div>
 
                 </div>
@@ -98,23 +104,37 @@
         </form>
     </section>
 
-    <section class="current-news">
-        <h2 class="current-news-h2">Current News</h2>
-        <table class="current-news-table" id="news-table">
-            <thead class="current-th">
-                <tr class="current-tr">
-                    <th class="current-th">ID</th>
-                    <th class="current-th">English Title</th>
-                    <th class="current-th">Arabic Title</th>
-                    <th class="current-th">SDGs</th>
-                    <th class="current-th">Link</th>
-                    <th class="current-th">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="current-tb" id="newsTableBody"></tbody>
-        </table>
+    <!-- Section 2: News Table -->
+    <section class="space-y-4 pt-4">
+        <h2 class="text-xl font-semibold text-gray-700">Current News</h2>
+        
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-600" id="news-table">
+                    <thead class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase font-semibold">
+                        <tr>
+                            <th class="px-6 py-3.5" scope="col">ID</th>
+                            <th class="px-6 py-3.5" scope="col">English Title</th>
+                            <th class="px-6 py-3.5" scope="col">Arabic Title</th>
+                            <th class="px-6 py-3.5" scope="col">SDGs</th>
+                            <th class="px-6 py-3.5" scope="col">Link</th>
+                            <th class="px-6 py-3.5" scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200" id="newsTableBody">
+                        <!-- Dynamic content injected here via JS -->
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-gray-400 text-center" colspan="6">
+                                No news records found.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- In-Page Detail View Container -->
-        <div id="news-detail-view" style="display: none;"></div>
+        <div id="news-detail-view" class="hidden bg-white rounded-xl border border-gray-200 shadow-sm p-6 space-y-4"></div>
     </section>
 </main>
     <footer>
@@ -171,11 +191,6 @@
         </a>
     </div>
 </div>
-    </div>
 
-    <div class="footer-bottom">
-        <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
-    </div>
-</footer>
 </body>
 </html>
