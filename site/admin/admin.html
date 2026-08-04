@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Admin Dashboard</title>
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <script src="../../js/chatbot/chatbot.js" defer></script>
+    </head>
+    <body>
+        <!-- Root Container (Full Screen Flex) -->
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- 1. Sidebar -->
+<aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen">
+  <div>
+    <!-- 1. Brand Logo -->
+    <div class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
+    <img class="rounded-xl w-12 h-15" src="../../public/images/UOB logo.png" alt="UOB Logo">
+    <div>Admin<span class="text-blue-600">Panel</span></div>
+</div>
+
+
+    <!-- 2. User Profile (Top Position) -->
+    <div class="p-4 mx-3 mt-4 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
+        JD
+      </div>
+      <div class="overflow-hidden">
+        <p class="text-sm font-semibold text-white truncate">Jane Doe</p>
+        <p class="text-xs text-slate-400 truncate">admin@company.com</p>
+      </div>
+    </div>
+
+    <!-- 3. Navigation Menu -->
+    <nav class="mt-4 px-3 space-y-1">
+      
+      <!-- Dashboard -->
+      <a href="#" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-800 rounded-lg font-medium shadow-sm">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6"/></svg>
+        <span>Dashboard</span>
+      </a>
+
+      <!-- View Dropdown Menu -->
+      <details class="group [&_summary::-webkit-details-marker]:hidden">
+        <summary class="flex items-center justify-between px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium cursor-pointer">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span>View</span>
+          </div>
+          <svg class="w-4 h-4 transition-transform duration-200 group-open:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+
+        <div class="mt-1 pl-4 space-y-1">
+          <!-- Home -->
+          <a href="view/home.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6"/></svg>
+            <span>Home</span>
+          </a>
+
+          <!-- About -->
+          <a href="view/about.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>About</span>
+          </a>
+
+          <!-- Locations -->
+          <a href="view/locations.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span>Locations</span>
+          </a>
+
+          <!-- Nested: Plants -->
+          <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
+            <summary class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                <span>Plants</span>
+              </div>
+              <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
+              <a href="view/plants/indoor.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Indoor</a>
+              <a href="view/plants/outdoor.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Outdoor</a>
+            </div>
+          </details>
+
+          <!-- Nested: Projects -->
+          <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
+            <summary class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
+                <span>Projects</span>
+              </div>
+              <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
+              <a href="view/projects/before and after.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Landscape Improvements</a>
+              <a href="view/projects/statistics and reports.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Statistics and Reports</a>
+            </div>
+          </details>
+        </div>
+      </details>
+
+      <!-- Manage Users -->
+      <a href="management/manage_users.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <span>Users</span>
+      </a>
+
+      <!-- Manage Locations -->
+      <a href="management/manage_locations.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4"/></svg>
+        <span>Locations</span>
+      </a>
+
+      <!-- Manage Reports -->
+      <a href="management/manage_reports.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span>Reports</span>
+      </a>
+
+      <!-- Manage News -->
+      <a href="management/manage_news.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+        <span>News</span>
+      </a>
+
+    </nav>
+  </div>
+
+  <!-- Footer Action -->
+  <div class="p-4 border-t border-slate-800">
+    <p class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-400  rounded-lg transition-colors">
+      &copy; 2026 University of Bahrain. All rights reserved.
+    </p>
+  </div>
+</aside>
+
+    <!-- 2. Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-y-auto">
+
+      <!-- Top Header -->
+      <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+        <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+        
+        <div class="flex items-center gap-4">
+          <button class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition">
+            logout
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+     <!-- Main Content Body -->
+<main class="p-8 space-y-8">
+
+  <!-- 1. Top Stat Cards Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+      <p class="text-sm font-medium text-gray-500">Projects</p>
+      <p class="text-3xl font-extrabold text-gray-900 mt-2">28</p>
+    </div>
+    
+    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+      <p class="text-sm font-medium text-gray-500">Locations</p>
+      <p class="text-3xl font-extrabold text-gray-900 mt-2">30</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+      <p class="text-sm font-medium text-gray-500">Indoor Plants</p>
+      <p class="text-3xl font-extrabold text-gray-900 mt-2">14</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+      <p class="text-sm font-medium text-gray-500">Outdoor Plants</p>
+      <p class="text-3xl font-extrabold text-gray-900 mt-2">340</p>
+    </div>
+
+  </div>
+
+  <!-- 2. Dual Column Section: User Activity & Recent Projects -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left Column: User Activity Log (1 Column wide on desktop) -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            User Activity Log
+          </h2>
+        </div>
+
+        <!-- Timeline Items -->
+        <div class="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200">
+          
+          <!-- Event 1 -->
+          <div class="relative">
+            <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white"></span>
+            <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">Sarah Connor</span> created a report</p>
+            <p class="text-xs text-gray-500 mt-0.5">Updated "Q3 Landscape Report"</p>
+            <span class="text-[10px] text-gray-400">12 min ago</span>
+          </div>
+
+          <!-- Event 2 -->
+          <div class="relative">
+            <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-indigo-500 ring-4 ring-white"></span>
+            <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">Alex Miller</span> updated plant profile</p>
+            <p class="text-xs text-gray-500 mt-0.5">Added 4 indoor species under 'West Wing'</p>
+            <span class="text-[10px] text-gray-400">45 min ago</span>
+          </div>
+
+          <!-- Event 3 -->
+          <div class="relative">
+            <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-4 ring-white"></span>
+            <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">Marcus Vance</span> logged out</p>
+            <p class="text-xs text-gray-500 mt-0.5">Session length: 2h 15m</p>
+            <span class="text-[10px] text-gray-400">2 hours ago</span>
+          </div>
+
+          <!-- Event 4 -->
+          <div class="relative">
+            <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-white"></span>
+            <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">Elena Rostova</span> created a project</p>
+            <p class="text-xs text-gray-500 mt-0.5">New entry: "South Courtyard Renewal"</p>
+            <span class="text-[10px] text-gray-400">3 hours ago</span>
+          </div>
+
+        </div>
+      </div>
+
+      <button class="w-full mt-6 py-2 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors">
+        View Full Audit Log
+      </button>
+    </div>
+
+    <!-- Right Column: Recent Projects (2 Columns wide on desktop) -->
+    <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
+      <div>
+        <!-- Table Header -->
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
+            Recent Projects
+          </h2>
+          <button class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">View all projects</button>
+        </div>
+
+        <!-- Projects Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-600">
+            <thead class="bg-gray-50 text-xs text-gray-500 uppercase font-semibold">
+              <tr>
+                <th class="px-6 py-3">Project Name</th>
+                <th class="px-6 py-3">Location</th>
+                <th class="px-6 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              
+              <!-- Project 1 -->
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 font-semibold text-gray-900">
+                  Botanical Garden Atrium
+                </td>
+                <td class="px-6 py-4">North Wing</td>
+                <td class="px-6 py-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">In Progress</span>
+                </td>
+              </tr>
+
+              <!-- Project 2 -->
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 font-semibold text-gray-900">
+                  Rooftop Terrace Greenery
+                </td>
+                <td class="px-6 py-4">Main HQ Building</td>
+                <td class="px-6 py-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>
+                </td>
+              </tr>
+
+              <!-- Project 3 -->
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 font-semibold text-gray-900">
+                  South Courtyard Renewal
+                </td>
+                <td class="px-6 py-4">Campus South</td>
+                <td class="px-6 py-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+    </div>
+
+  </div>
+        
+    </body>
+</html>

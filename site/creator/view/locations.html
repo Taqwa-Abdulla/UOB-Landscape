@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Locations</title>
+        <link rel="stylesheet" href="../../../public/css/style.css" />
+        <script src="../js/locations/location.js" defer></script>
+        <script src="../../../js/chatbot/chatbot.js" defer></script>
+    </head>
+    <div class="logo-space">
+    <img src="../../../public/images/UOB logo.png" alt="UOB Logo">
+</div>
+<nav class="navbar">
+    <div class="nav-left"></div>
+
+    <div class="nav-center">
+        <a href="home.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="#">Locations</a>
+        
+        <div class="dropdown">
+            <a href="#">Plants</a>
+            <div class="dropdown-content">
+                <a href="plants/indoor.html">Indoor</a>
+                <a href="plants/outdoor.html">Outdoor</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <a href="#">Projects</a>
+            <div class="dropdown-content">
+                <a href="projects/before and after.html">Landscape Improvements</a>
+                <a href="projects/statistics and reports.html">Statistics And Reports</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <a href="../../../login/login.html"><button class="login-btn">Login</button></a>
+    </div>
+</nav>
+  <body>
+    <section>
+     <div>
+  <nav class="category-nav">
+    <ul>
+      <li>
+        <button class="nav-btn" data-target="buildings-section">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-building" viewBox="0 0 16 16">
+            <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+            <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"/>
+          </svg>
+          <span>BUILDINGS</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" data-target="gates-section">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" d="M2 21h20" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 21V9h3v12H5z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 9h5V7H4v2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 21V9h3v12h-3z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h5V7h-5v2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 7s1-2 5-2 5 2 5 2" />
+            <path stroke-linecap="round" d="M8 14h3M13 14h3M8 17h2M14 17h2" />
+          </svg>
+          <span>GATES</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" data-target="roadside-section">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 21L10 3" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 21L14 3" />
+            <path stroke-linecap="round" d="M12 21v-3M12 14v-4M12 6V3" />
+          </svg>
+          <span>ROADSIDE</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" data-target="infrastructure-section">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-tools" viewBox="0 0 16 16">
+            <path d="M1 0 0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.27 3.27a.997.997 0 0 0 1.414 0l1.586-1.586a.997.997 0 0 0 0-1.414l-3.27-3.27a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3q0-.405-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814zm9.646 10.646a.5.5 0 0 1 .708 0l2.914 2.915a.5.5 0 0 1-.707.707l-2.915-2.914a.5.5 0 0 1 0-.708M3 11l.471.242.529.026.287.445.445.287.026.529L5 13l-.242.471-.026.529-.445.287-.287.445-.529.026L3 15l-.471-.242L2 14.732l-.287-.445L1.268 14l-.026-.529L1 13l.242-.471.026-.529.445-.287.287-.445.529-.026z"/>
+          </svg>
+          <span>INFRASTRUCTURE</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" data-target="facilities-section">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21h3V10a2 2 0 0 0-2-2h-1M5 21H2v10a2 2 0 0 0 2 2h1" />
+            <path stroke-linecap="round" d="M9 7h2M9 11h2M9 15h2M13 7h2M13 11h2M13 15h2" />
+          </svg>
+          <span>FACILITIES</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" data-target="car-park-section">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7h4a3 3 0 0 1 0 6H9" />
+          </svg>
+          <span>CAR PARK</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+    </section>
+  <main class="content-container">
+    <section id="buildings-section" class="content-panel active">
+      <div class="cards-grid" id="buildings-grid"></div>
+    </section>
+
+    <section id="gates-section" class="content-panel">
+      <div class="cards-grid" id="gates-grid"></div>
+    </section>
+
+    <section id="roadside-section" class="content-panel">
+      <div class="cards-grid" id="roadside-grid"></div>
+    </section>
+
+    <section id="infrastructure-section" class="content-panel">
+      <div class="cards-grid" id="infrastructure-grid"></div>
+    </section>
+
+    <section id="facilities-section" class="content-panel">
+      <div class="cards-grid" id="facilities-grid"></div>
+    </section>
+
+    <section id="car-park-section" class="content-panel">
+      <div class="cards-grid" id="car-park-grid"></div>
+    </section>
+    <section class="map">
+      <h2 class="map-h2">Discover locations using UOB 3D interactive map</h2>
+  <a class="map-a" href="uob_3d_map.html">
+    <button class="map-btn">Open 3D Map</button>
+  </a>
+</section>
+   </main>
+   <footer>
+    <div class="footer-top-container">
+        <div class="footer-col">
+            <h4>About</h4>
+            <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information about plants, their locations, and ecological significance.</p>
+        </div>
+
+        <div class="footer-col">
+            <h4>Navigation</h4>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#">Locations</a></li>
+                <li>
+                    <a href="#">Plants</a>
+                    <div style="padding-left: 15px;">
+                        <a href="plants/indoor.html">Indoor</a>
+                        <a href="plants/outdoor.html">Outdoor</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">Projects</a>
+                    <div style="padding-left: 15px;">
+                        <a href="projects/before and after.html">Landscape Improvements</a><br>
+                        <a href="projects/statistics and reports.html">Statistics And Reports</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>External Links</h4>
+            <ul>
+                <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
+                <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of Bahrain</a></li>
+                <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank" rel="noopener noreferrer">Sustainable Development</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+    <h4>Contact</h4>
+    <div class="social-links">
+        <i class="fa-solid fa-envelope"></i> 
+        <a href="mailto:landscape@uob.edu.bh">landscape@uob.edu.bh</a>
+    </div>
+    <div class="social-links">
+        <i class="fa-solid fa-phone"></i> <span>+973 1743 8181</span>
+    </div>
+    <div class="social-links">
+        <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-youtube"></i> YouTube
+        </a>
+    </div>
+</div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
+    </div>
+</footer>
+</body>
+</html>
