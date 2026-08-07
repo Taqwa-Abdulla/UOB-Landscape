@@ -133,3 +133,11 @@ CREATE TABLE annual_reports (
             pdf_path VARCHAR(500) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+
+CREATE TABLE contributors (
+    contributor_id SERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    college VARCHAR(255) DEFAULT NULL,
+    major VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

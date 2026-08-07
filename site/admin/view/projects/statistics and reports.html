@@ -4,13 +4,14 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>Statistics and Reports</title>
-        <link rel="stylesheet" href="../../public/css/style.css" />
-        <script src="../../js/stats/stats.js"></script>
-         <script src="../../js/chatbot/chatbot.js" defer></script>
+        <link rel="stylesheet" href="../../../../public/css/style.css" />
+        <script src="../../../../js/stats/stats.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+         <script src="../../../../js/chatbot/chatbot.js" defer></script>
     </head>
 <body>
     <div class="logo-space">
-    <img src="../../public/images/UOB logo.png" alt="UOB Logo">
+    <img src="../../../../public/images/UOB logo.png" alt="UOB Logo">
 </div>
 <nav class="navbar">
     <div class="nav-left"></div>
@@ -23,7 +24,7 @@
         <div class="dropdown">
             <a href="#">Plants</a>
             <div class="dropdown-content">
-                <a href="#">Indoor</a>
+                <a href="../plants/indoor.html">Indoor</a>
                 <a href="../plants/outdoor.html">Outdoor</a>
             </div>
         </div>
@@ -31,14 +32,14 @@
         <div class="dropdown">
             <a href="#">Projects</a>
             <div class="dropdown-content">
-                <a href="before and after.html">Landscape Improvements</a>
+                <a href="../projects/before and after.html">Landscape Improvements</a>
                 <a href="#">Statistics And Reports</a>
             </div>
         </div>
     </div>
 
     <div class="nav-right">
-        <a href="login.html"><button class="login-btn">Login</button></a>
+       <button id="logout-btn">Logout</button>
     </div>
 </nav>
    <main class="stats-main">
@@ -71,15 +72,32 @@
   </section>
   <section class="stat-growth">
     <h2>Annual Growth Trends</h2>
-      <p>Charts</p>
-  </section>
-  <section>
+    <p>Visualizing the expansion of our campus landscape initiatives over the years</p>
+    
+    <!-- Chart Canvas Containers -->
+    <div class="charts-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+        
+        <!-- 1. Pie/Doughnut Chart for Indoor vs Outdoor -->
+        <div class="chart-box" style="flex: 1; min-width: 300px;">
+            <h3>Indoor vs Outdoor Species</h3>
+            <canvas id="indoorOutdoorChart"></canvas>
+        </div>
+
+        <!-- 2. Bar Chart for Green Area Growth -->
+        <div class="chart-box" style="flex: 1; min-width: 300px;">
+            <h3>Green Area Expansion (sq. meters)</h3>
+            <canvas id="areaYearChart"></canvas>
+        </div>
+
+    </div>
+</section>
+
+<section class="stat-reports">
     <h2>Landscape Projects Annual Reports</h2>
     <div class="report-search-container">
         <input type="text" id="reportSearchInput" placeholder="Search reports by name or year..." />
     </div>
-    <p>Reports</p>
-  </section>
+</section>
    </main>
    <footer>
       <div>
@@ -97,7 +115,7 @@
       <a href="../about.html">About</a>
     </li>
     <li>
-      <a href="../locations.html">Locations</a>
+      <a href="../locations/locations.html">Locations</a>
     </li>
     <li>
     <div>
@@ -112,7 +130,7 @@
    <div>
     <a href="#">Projects</a>
     <div>
-   <a href="before and after.html">Landscape Improvements</a>
+   <a href="../projects/before and after.html and after.html">Landscape Improvements</a>
         <a href="#">Statistics And Reports</a>
     </div>
    </div>

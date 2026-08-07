@@ -29,8 +29,8 @@ const sdgFullNames = {
     17: "SDG 17: Partnerships for the Goals"
 };
 
-// Combined PHP API Endpoint path
-const finalApiPath = '../../api/news/sdg_news.php'; 
+// Origin-relative API path dynamically works across Guest (2 deep) & Admin/Creator (3 deep)
+const finalApiPath = window.location.origin + '/api/news/sdg_news.php'; 
 
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Fetch combined news feed

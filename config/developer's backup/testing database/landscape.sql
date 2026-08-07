@@ -28,7 +28,7 @@ CREATE TABLE locations (
 );
 
 CREATE TABLE plants (
-    plant_id SERIAL PRIMARY KEY,
+    plant_id VARCHAR (50) PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
@@ -135,14 +135,22 @@ CREATE TABLE annual_reports (
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
+CREATE TABLE contributors (
+    contributor_id SERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    college VARCHAR(255) DEFAULT NULL,
+    major VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- SHA-256 passwords ('password123')
 
 INSERT INTO users (username, email, college, major, password_hash, role, is_contributor, updated_by) VALUES
 ('Dr. Ali Ahmed', 'a.ahmed@uob.edu.bh', NULL, NULL, 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'admin', TRUE, NULL),
-('Sarah Al-Mansoori', '202809102@stu.uob.edu.bh', 'College of Information Technology', 'Software Engneering', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', TRUE, NULL),
+('Sarah Al-Mansoori', '202809102@stu.uob.edu.bh', 'College of Information Technology', 'Software Engineering', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', TRUE, NULL),
 ('Khalil Ali', '202805102@stu.uob.edu.bh', 'College of Information Technology', 'Computer Science', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', TRUE, NULL),
 ('Hawra Abdulla', '202806102@stu.uob.edu.bh', 'College of Science', 'Biology', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', TRUE, NULL),
-('Jassim Hassan', '202807102@stu.uob.edu.bh', 'College of Engneering', 'Landscape Architecture', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', FALSE, NULL);
+('Jassim Hassan', '202807102@stu.uob.edu.bh', 'College of Engineering', 'Landscape Architecture', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'creator', FALSE, NULL);
 
 INSERT INTO locations (location_number, category, name_en, name_ar, latitude, longitude, created_by, updated_by) VALUES
 ('S1A', 'building', 'College of Arts', 'كلية الآداب', 26.05128300, 50.51433110, 1, NULL),
@@ -153,28 +161,28 @@ INSERT INTO locations (location_number, category, name_en, name_ar, latitude, lo
 (NULL, 'infrastructure', 'Inner Fence', 'السور الداخلي', 26.057222, 50.510361, 1, NULL);
 
 INSERT INTO plants (
-    location_id, created_by, updated_by, common_name_en, common_name_ar, scientific_name, 
+    plant_id,location_id, created_by, updated_by, common_name_en, common_name_ar, scientific_name, 
     image_path, quantity, category, lifecycle, water_required, sun_required, 
     height, spread, shade, waste, evaporation_mitigation, root_type, 
     drought_tolerance, heat_tolerance, bloom, environmental_impact, 
     oxygen_production, carbon_dioxide_absorption, class
 ) VALUES
 (
-    5, 5, NULL, 'Date Palm', 'نخلة البلح', 'Phoenix dactylifera', 
+    'OP-101',5, 5, NULL, 'Date Palm', 'نخلة البلح', 'Phoenix dactylifera', 
     'uploads/plants/outdoor/date_palm.jpg', 15, 'tree', 'perennial', 'low', 'full sun', 
     '10.0-15.0 m', '3.0-5.0 m', TRUE, 'low', TRUE, 'deep taproot', 
     'high', 'high', 'no', 'high', 
     'High', '120000 g/year', 'outdoor'
 ),
 (
-    3, 5, 3, 'Bougainvillea', 'جهنمية', 'Bougainvillea spectabilis', 
+    'OP-102',3, 5, 3, 'Bougainvillea', 'جهنمية', 'Bougainvillea spectabilis', 
     'uploads/plants/bougainvillea.jpg', 30, 'shrub', 'perennial', 'medium', 'full sun', 
     '1.5-3.0 m', '2.0-4.0 m', FALSE, 'medium', FALSE, 'fibrous', 
     'high', 'high', 'seasonal', 'low', 
     'Medium', '45000 g/year', 'outdoor'
 ),
 (
-    1, 4, NULL, 'Peace Lily', 'زنبق السلام', 'Spathiphyllum wallisii', 
+    'IP-101',1, 4, NULL, 'Peace Lily', 'زنبق السلام', 'Spathiphyllum wallisii', 
     'uploads/plants/peace_lily.jpg', 8, 'indoor plant', 'perennial', 'medium', 'partial shade', 
     '0.3-0.6 m', '0.3-0.5 m', TRUE, 'low', FALSE, 'fibrous', 
     'low', 'medium', 'Summer', 'medium', 
@@ -247,3 +255,9 @@ These sincere efforts represent a milestone in the journey towards environmental
 إن هذه الجهود المخلصة تمثل علامة فارقة في مسيرة الاستدامة البيئية، وستظل آثارها شاهدة على وعيكم وحرصكم، وأجرها ممتد بإذن الله. فبكم يزهو الوطن، وتبقى أرضه خضراء نابضة بالحياة.', 
     'SDG 13, SDG 15'
 );
+
+INSERT INTO contributors (contributor_id, username, college, major)
+SELECT user_id, username, college, major
+FROM users
+WHERE is_contributor = TRUE OR role = 'creator'
+ON CONFLICT (contributor_id) DO NOTHING;

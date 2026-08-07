@@ -109,6 +109,15 @@
   </nav>
     </section>
   <main class="content-container">
+    <div class="top-filter-bar" style="display: flex; gap: 15px; justify-content: center; align-items: center; margin: 20px auto;">
+    <div id="location-dropdown-container"></div>
+    <select id="plant-class-filter" style="padding: 10px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; font-size: 14px; cursor: pointer; min-width: 200px;">
+        <option value="" disabled selected>-- Select Plant Type --</option>
+        <option value="all">Indoor and Outdoor</option>
+        <option value="indoor">Indoor Plants</option>
+        <option value="outdoor">Outdoor Plants</option>
+    </select>
+</div>
     <section id="buildings-section" class="content-panel active">
       <div class="cards-grid" id="buildings-grid"></div>
     </section>
@@ -134,7 +143,7 @@
     </section>
     <section class="map">
       <h2 class="map-h2">Discover locations using UOB 3D interactive map</h2>
-  <a class="map-a" href="uob_3d_map.html">
+  <a class="map-a" href="uob_3d_map.html" target="_blank">
     <button class="map-btn">Open 3D Map</button>
   </a>
 </section>

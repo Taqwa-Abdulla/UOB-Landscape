@@ -16,8 +16,8 @@
           </div>
           
           <div class="chat-options" id="chatOptions">
-            <button class="option-btn" onclick="handleOption('i would like to know about uob landscape website')">About</button>
             <button class="option-btn" onclick="handleOption('who is aspen?')">Who is Aspen?</button>
+            <button class="option-btn" onclick="handleOption('i would like to know about uob landscape website')">About</button>
             <button class="option-btn" onclick="handleOption('lanscape campus map')">Map</button>
             <button class="option-btn" onclick="handleOption('plants')">Plants</button>
             <button class="option-btn" onclick="handleOption('locations')">Locations</button>
@@ -164,7 +164,7 @@ window.addEventListener('load', function() {
 
 // Automatic Dynamic Stylesheet Linker using absolute root path
 document.addEventListener("DOMContentLoaded", function () {
-    const finalCssPath = '../../public/css/bot.css'; 
+    const finalCssPath = '/public/css/bot.css'; 
 
     if (!document.querySelector(`link[href="${finalCssPath}"]`)) {
         const botStyle = document.createElement('link');

@@ -52,24 +52,22 @@
         </div>
     </div>
     <div class="nav-right">
-        <a href="../../../../login/login.html"><button class="login-btn">Logout</button></a>
+        <button id="logout-btn">Logout</button>
     </div>
 </nav>
 </head>
 <body>
-<main class="users-main">
-    <div class="admin">
-        <h1 class="admin-h1">Admin Portal</h1>
+<main class="users-main max-w-7xl mx-auto px-4 py-8">
+    <div class="admin mb-2">
+        <h1 class="admin-h1 text-3xl font-bold text-gray-900">Manage Users</h1>
     </div>
-    <h1 class="admin-h1">Users</h1>
-    
     <!-- Page Header -->
-    <div>
+    <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-800">User Settings & Management</h1>
     </div>
 
     <!-- Section 1: Change Password Form -->
-    <section class="space-y-4" id="password-management">
+    <section class="space-y-4 mb-10" id="password-management">
         <h2 class="text-xl font-semibold text-gray-700">Change Your Password</h2>
         
         <form class="bg-white rounded-xl border border-gray-200 shadow-sm p-6" id="password-form" action="#" method="POST">
@@ -109,39 +107,65 @@
         
         <!-- Add New User Form Card -->
         <article class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <form id="add-user-form" action="#" method="POST">
+            <form id="add-user-form" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="form-mode" value="create">
                 <fieldset class="space-y-6 add-new-user-filedset">
-                    <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">New User Information</legend>
+                    <legend id="modal-title" class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">New User Information</legend>
                     
-                    <!-- Row 1: Name & Email -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 add-user-details">
+                    <!-- Row 1: User ID & Username -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-sm font-medium text-gray-700" for="user-name">Full Name</label>
-                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="user-name" name="name" placeholder="John Doe" required>
+                            <label class="text-sm font-medium text-gray-700" for="user-id">User ID</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="user-id" name="user_id" placeholder="e.g., 202112345" required>
                         </div>
-                        
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-sm font-medium text-gray-700" for="user-email">Email Address</label>
-                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="email" id="user-email" name="user_email" placeholder="username@uob.edu.bh" required>
+                            <label class="text-sm font-medium text-gray-700" for="user-username">Username</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="user-username" name="username" placeholder="John Doe" required>
                         </div>
                     </div>
 
-                    <!-- Row 2: Role & Default Password -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 grid">
+                    <!-- Row 2: Email & Password Container -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="user-email">Email Address</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="email" id="user-email" name="user_email" placeholder="user@uob.edu.bh or user@stu.uob.edu.bh" required>
+                        </div>
+                        <div class="flex flex-col gap-1.5" id="password-field-container">
+    <label class="text-sm font-medium text-gray-700" for="user-password">Password</label>
+    <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-slate-50" type="text" id="user-password" name="password" value="Pass@word1234" required>
+</div>
+                    </div>
+
+                    <!-- Row 3: College & Dynamic Field (Major / Department) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="user-college">College</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="user-college" name="college" placeholder="e.g., College of Information Technology">
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" id="dynamic-field-label" for="user-dynamic-field">Major</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="user-dynamic-field" name="dynamic_field" placeholder="e.g., Computer Science">
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Role & Contributor Checkbox -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                         <div class="flex flex-col gap-1.5">
                             <label class="text-sm font-medium text-gray-700" for="user-role">Role</label>
-                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="text" id="user-role" name="role" placeholder="e.g., Student, Admin" required>
+                            <select class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" id="user-role" name="role">
+                                <option value="creator">Creator</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </div>
-                        
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-sm font-medium text-gray-700" for="default-password">Password</label>
-                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-slate-50" type="text" id="default-password" name="password" value="password123">
+                        <div class="flex items-center mt-6">
+                            <input type="checkbox" id="user-is-contributor" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="user-is-contributor" class="ml-2 block text-sm text-gray-900 font-medium">Is Contributor</label>
                         </div>
                     </div>
 
                     <!-- Submit Action -->
                     <div class="pt-2 flex justify-end">
-                        <button class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 transition" type="submit" id="add">Add User</button>
+                        <button class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 transition" type="submit" id="add">Save User</button>
                     </div>
                 </fieldset>
             </form>
@@ -151,8 +175,34 @@
         <div class="pt-4 space-y-4">
             <h3 class="text-xl font-semibold text-gray-700">Registered Users</h3>
             
-            <div class="flex justify-end">
-                <input class="w-full sm:w-80 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" type="search" id="search-input" placeholder="Search registered users by name or email...">
+            <!-- Search and Filter Controls Bar -->
+            <div class="flex flex-col sm:flex-row justify-between gap-4">
+                <div class="w-full sm:w-1/2">
+                    <select class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full" id="unified-filter">
+                        <option value="">Show All</option>
+                        
+                        <optgroup label="Roles">
+                            <option value="role:admin">Role: Admin</option>
+                            <option value="role:creator">Role: Creator</option>
+                        </optgroup>
+
+                        <optgroup label="Contributor Status">
+                            <option value="is_contributor:1">Contributor: Yes</option>
+                            <option value="is_contributor:0">Contributor: No</option>
+                        </optgroup>
+
+                        <optgroup label="Colleges" id="college-optgroup">
+                            <!-- Populated dynamically via JS from DB -->
+                        </optgroup>
+
+                        <optgroup label="Majors" id="major-optgroup">
+                            <!-- Populated dynamically via JS from DB -->
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="w-full sm:w-1/2 flex justify-end">
+                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" type="search" id="search-input" placeholder="Search by name, email, ID...">
+                </div>
             </div>
 
             <!-- Users Table Card -->
@@ -161,26 +211,17 @@
                     <table class="w-full text-left text-sm text-gray-600" id="users-table">
                         <thead class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase font-semibold">
                             <tr>
-                                <th class="px-6 py-3.5" scope="col">User Name</th>
+                                <th class="px-6 py-3.5" scope="col">User ID</th>
+                                <th class="px-6 py-3.5" scope="col">Username</th>
                                 <th class="px-6 py-3.5" scope="col">Email</th>
+                                <th class="px-6 py-3.5" scope="col">College / Dept or Major</th>
                                 <th class="px-6 py-3.5" scope="col">Role</th>
-                                <th class="px-6 py-3.5" scope="col">Actions</th>
+                                <th class="px-6 py-3.5" scope="col">Contributor</th>
+                                <th class="px-6 py-3.5 text-right" scope="col">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 font-semibold text-gray-900">Ali Mansoor</td>
-                                <td class="px-6 py-4 text-gray-600">alimansoor@uob.edu.bh</td>
-                                <td class="px-6 py-4">
-                                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">Admin</span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg transition" data-id="alimansoor@uob.edu.bh">Edit</button>
-                                        <button class="px-3 py-1.5 text-xs font-medium text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition" data-id="alimansoor@uob.edu.bh">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody class="divide-y divide-gray-200" id="users-table-body">
+                            <!-- Rows populated dynamically via JavaScript -->
                         </tbody>
                     </table>
                 </div>

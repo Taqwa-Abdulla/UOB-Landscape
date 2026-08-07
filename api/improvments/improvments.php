@@ -4,11 +4,10 @@ header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/../../config/db.php';
 
-$database = new Database();
-$db = $database->getConnection();
-
 try {
-    // Query to fetch locations along with their associated project data
+    $database = new Database();
+    $db = $database->getConnection();
+
     $query = "
         SELECT 
             l.location_id,
@@ -29,35 +28,37 @@ try {
             p.project_status
         FROM locations l
         LEFT JOIN projects p ON l.location_id = p.location_id
+        ORDER BY l.category ASC, l.name_en ASC
     ";
 
     $stmt = $db->prepare($query);
     $stmt->execute();
-    $rows = $stmt->fetchAll();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $locations = [];
+    $categories = [];
 
-    //  Fallback pics URLs for missing or empty database values
-    $default_proposal = "https://images.unsplash.com/photo-1699115835921-e610e40bdd8f?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-    $default_before = "https://images.unsplash.com/photo-1676477134998-42bf379c8307?q=80&w=716&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-    $default_after = "https://images.unsplash.com/photo-1614631362236-c4937f6d5ed8?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+    // Working, direct Unsplash Fallback URLs
+    $default_proposal = "https://images.unsplash.com/photo-1541888946425-d0fbb18f86f6?auto=format&fit=crop&w=800&q=80";
+    $default_before   = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80";
+    $default_after    = "https://images.unsplash.com/photo-1558449028-b53a39d100fc?auto=format&fit=crop&w=800&q=80";
 
     foreach ($rows as $row) {
-        // Fallback logic: if column value is empty, use pics fallback. Otherwise, keep the real path from uploads folder.
-        $imageProposal = !empty($row['image_proposal_path']) ? $row['image_proposal_path'] : $default_proposal;
-        $imageBefore = !empty($row['image_before_path']) ? $row['image_before_path'] : $default_before;
-        $imageAfter = !empty($row['image_after_path']) ? $row['image_after_path'] : $default_after;
+        $cat = trim($row['category']);
+        if (!empty($cat) && !in_array($cat, $categories)) {
+            $categories[] = $cat;
+        }
 
         $locations[] = [
-            "location_id" => $row['location_id'],
+            "location_id"     => (int)$row['location_id'],
             "location_number" => $row['location_number'],
-            "category" => $row['category'],
+            "category"        => $cat,
             "name" => [
                 "en" => $row['name_en'],
                 "ar" => $row['name_ar']
             ],
             "project" => $row['project_id'] ? [
-                "project_id" => $row['project_id'],
+                "project_id"    => (int)$row['project_id'],
                 "title" => [
                     "en" => $row['title_en'],
                     "ar" => $row['title_ar']
@@ -66,27 +67,28 @@ try {
                     "en" => $row['description_en'] ?? "No description available.",
                     "ar" => $row['description_ar'] ?? "لا يتوفر وصف."
                 ],
-                "image_proposal" => $imageProposal,
-                "image_before" => $imageBefore,
-                "image_after" => $imageAfter,
-                "video_link" => $row['video_proposal_link'],
-                "pdf_path" => $row['pdf_path'],
-                "status" => $row['project_status']
+                "image_proposal" => !empty($row['image_proposal_path']) ? $row['image_proposal_path'] : $default_proposal,
+                "image_before"   => !empty($row['image_before_path'])   ? $row['image_before_path']   : $default_before,
+                "image_after"    => !empty($row['image_after_path'])    ? $row['image_after_path']    : $default_after,
+                "video_link"     => $row['video_proposal_link'],
+                "pdf_path"       => $row['pdf_path'],
+                "status"         => $row['project_status']
             ] : null
         ];
     }
 
     http_response_code(200);
     echo json_encode([
-        "success" => true,
-        "data" => $locations
+        "success"    => true,
+        "categories" => array_values($categories),
+        "data"       => $locations
     ], JSON_UNESCAPED_UNICODE);
 
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "error" => "Query failed: " . $e->getMessage()
+        "error"   => "Query failed: " . $e->getMessage()
     ]);
 }
 ?>

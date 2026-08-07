@@ -122,7 +122,7 @@ async function handleAddPlant(event) {
     };
 
     try {
-      const response = await fetch('../../api/plants/plants_management.php?resource=plants', {
+      const response = await fetch('/api/plants/plants_management.php?resource=plants', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData)
@@ -183,7 +183,7 @@ async function handleAddPlant(event) {
     };
 
     try {
-      const response = await fetch('../../api/plants/plants_management.php?resource=plants', {
+      const response = await fetch('/api/plants/plants_management.php?resource=plants', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newPlant)
@@ -210,7 +210,7 @@ function handleTableClick(event) {
   if (event.target.classList.contains('delete-btn')) {
     const id = event.target.getAttribute('data-id');
     
-    fetch(`../../api/plants/plants_management.php?resource=plants&id=${id}`, {
+    fetch(`/api/plants/plants_management.php?resource=plants&id=${id}`, {
       method: 'DELETE'
     })
       .then(async res => {
@@ -290,19 +290,21 @@ function handleTableClick(event) {
 
 /**IP and OP ID */
 const plantClassSelect = document.getElementById('plant-class');
-    const plantIdPrefix = document.getElementById('plant-id-prefix');
+const plantIdPrefix = document.getElementById('plant-id-prefix');
 
-    plantClassSelect.addEventListener('change', function() {
-        if (this.value === 'indoor') {
-            plantIdPrefix.textContent = 'IP-';
-        } else if (this.value === 'outdoor') {
-            plantIdPrefix.textContent = 'OP-';
-        }
-    });
+if (plantClassSelect && plantIdPrefix) {
+  plantClassSelect.addEventListener('change', function() {
+    if (this.value === 'indoor') {
+      plantIdPrefix.textContent = 'IP-';
+    } else if (this.value === 'outdoor') {
+      plantIdPrefix.textContent = 'OP-';
+    }
+  });
+}
 
 async function loadPlantsFromServer() {
   try {
-    const response = await fetch('../../api/plants/plants_management.php?resource=plants');
+    const response = await fetch('/api/plants/plants_management.php?resource=plants');
     const data = await response.json();
     plants = Array.isArray(data) ? data : (data.rows || []);
   } catch (error) {

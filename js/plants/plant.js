@@ -1,13 +1,13 @@
 /*
-  Requirement: Populate the plant page
-
-  Instructions:
-  1. In `plant.html`, add matching IDs for each detail.
-  2. Implement the TODOs below.
+  Requirement: Populate the plant page directly from the Database API
+  Target API path: /api/plants/plant.php
 */
 
+// --- API Configuration ---
+// Adjust the path to match where plant.php sits relative to plant.html
+const API_ENDPOINT = '../../../../api/plants/plant.php';
+
 // --- Global Data Store ---
-// These will hold the data related to *this* plant.
 let currentplantId = null;
 let currentComments = [];
 
@@ -43,7 +43,7 @@ const classEl = document.getElementById('class');
 // --- Functions ---
 
 /**
- * Gets the plant ID string from the URL query string.
+ * Gets the plant ID string (e.g., "OP-001" or "IP-123") from the URL query string.
  */
 function getPlantIdFromURL() {
   const queryString = window.location.search;
@@ -59,12 +59,10 @@ function renderPlantDetails(plant) {
   if (scientificNameEl) scientificNameEl.textContent = plant.scientific_name || '';
   
   if (plantImageEl) {
-    // Check if image_path exists and is not empty; otherwise, use fallback
     const imagePath = plant.image_path && plant.image_path.trim() !== '' ? plant.image_path : FALLBACK_IMAGE_URL;
     plantImageEl.src = imagePath;
     plantImageEl.alt = plant.scientific_name || 'Plant Image';
     
-    // Fallback error handler if the image fails to load dynamically from the database path
     plantImageEl.onerror = function() {
       this.src = FALLBACK_IMAGE_URL;
     };
@@ -95,22 +93,31 @@ function renderPlantDetails(plant) {
 }
 
 /**
- * Initializes the page by loading JSON data and finding the target plant by its plant_id.
+ * Initializes the page by fetching the database records from plant.php and finding the target plant by string ID.
  */
 async function initializePage() {
   currentplantId = getPlantIdFromURL();
+  
   if (!currentplantId) {
     document.body.innerHTML = '<h2>Error: Plant ID not provided in URL.</h2>';
     return;
   }
 
   try {
-    const response = await fetch('../../json/plants/plants.json');
-    const data = await response.json();
-    const plants = data.rows || data;
+    // Fetch directly from plant.php without passing query params
+    const response = await fetch(API_ENDPOINT);
     
-    // Finds the plant where plant_id matches the requested URL parameter string
-    const plant = plants.find(p => String(p.plant_id) === String(currentplantId));
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Supports arrays directly or wrapped objects like { rows: [...] } or { data: [...] }
+    const plants = Array.isArray(data) ? data : (data.rows || data.data || []);
+    
+    // Find plant where plant_id matches string ID (e.g., "OP-001" or "IP-000") case-insensitively
+    const plant = plants.find(p => String(p.plant_id).trim().toUpperCase() === String(currentplantId).trim().toUpperCase());
 
     if (plant) {
       renderPlantDetails(plant);
@@ -118,7 +125,7 @@ async function initializePage() {
       document.body.innerHTML = '<h2>Error: Plant not found.</h2>';
     }
   } catch (error) {
-    console.error('Error loading plant data:', error);
+    console.error('Error loading plant data from API:', error);
     document.body.innerHTML = '<h2>Error loading plant data.</h2>';
   }
 }

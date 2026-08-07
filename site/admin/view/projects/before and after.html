@@ -16,9 +16,9 @@
     <div class="nav-left"></div>
 
     <div class="nav-center">
-        <a href="../../view/home.html">Home</a>
-        <a href="../../view/about.html">About</a>
-        <a href="../../view/locations.html">Locations</a>
+        <a href="../home.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="../locations/locations.html">Locations</a>
         
         <div class="dropdown">
             <a href="#">Plants</a>
@@ -32,51 +32,43 @@
             <a href="#">Projects</a>
             <div class="dropdown-content">
                 <a href="#">Landscape Improvements</a>
-                <a href="statistics and reports.html">Statistics And Reports</a>
+                <a href="../projects/statistics and reports.html">Statistics And Reports</a>
             </div>
         </div>
     </div>
 
     <div class="nav-right">
-        <a href="../../../../login/login.html"><button class="login-btn">Login</button></a>
+        <button id="logout-btn">Logout</button>
     </div>
 </nav>
-   <main class="improvements">
+<main class="improvements" style="max-width: 1200px; margin: 0 auto; padding: 20px; margin-top:100px;">
     <section class="improvments-info">
-        <h1 class="improvements-h1">Locations Improvements</h1>
-        <p class="improvements-p">Slide for location to pick one and see their projects and improvements (before & after) with description</p>
+        <h1 class="improvements-h1">Locations & Improvements</h1>
+        <p class="improvements-p">Browse campus locations and view their landscape improvement projects across stages (Proposal, Before, After).</p>
     </section>
 
-    <div class="slider-container" id="slider-app">
-        <div class="location-header">
-            <h2 id="loc-name">Loading locations...</h2>
-            <span id="loc-category" style="background:#e0f2fe; color:#0369a1; padding:4px 8px; border-radius:4px; font-size:0.85rem;"></span>
-        </div>
-        
-        <div id="project-details">
-            <h3 id="proj-title"></h3>
-            <p id="proj-desc"></p>
-            
-            <div class="image-stages">
-                <div class="stage-box">
-                    <p>Proposal</p>
-                    <img id="img-proposal" src="" alt="Proposal">
-                </div>
-                <div class="stage-box">
-                    <p>Before</p>
-                    <img id="img-before" src="" alt="Before">
-                </div>
-                <div class="stage-box">
-                    <p>After</p>
-                    <img id="img-after" src="" alt="After">
-                </div>
-            </div>
+    <!-- Filter Controls -->
+    <div class="filters-bar" style="display: flex; gap: 15px; margin: 20px 0; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div class="filter-group" style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
+            <label for="category-select" style="font-weight: 600; font-size: 0.85rem; color: #475569;">Filter Category:</label>
+            <select id="category-select" style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; background: #fff;">
+                <option value="ALL">All Categories</option>
+            </select>
         </div>
 
-        <div class="controls">
-            <button class="improvements-btn" onclick="nextLocation()">Next Location ➔</button>
+        <div class="filter-group" style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
+            <label for="location-select" style="font-weight: 600; font-size: 0.85rem; color: #475569;">Select Location:</label>
+            <select id="location-select" style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; background: #fff;">
+                <option value="ALL">All Locations</option>
+            </select>
         </div>
-   </main>
+    </div>
+
+    <!-- Grid Container to render all locations -->
+    <div id="improvements-grid" class="improvements-grid" style="display: flex; flex-direction: column; gap: 30px;">
+        <p>Loading location projects...</p>
+    </div>
+</main>
 <footer>
       <div>
         <h4>About</h4>
@@ -87,13 +79,13 @@
         <h4>Navigation</h4>
   <ul>
     <li>
-     <a href="../../view/home.html">Home</a>
+     <a href="../home.html">Home</a>
     </li>
     <li>
-      <a href="../../view/about.html">About</a>
+      <a href="../about.html">About</a>
     </li>
     <li>
-      <a href="../../view/locations.html">Locations</a>
+      <a href="../locations/locations.html">Locations</a>
     </li>
     <li>
     <div>
@@ -109,7 +101,7 @@
     <a href="#">Projects</a>
     <div>
    <a href="#">Landscape Improvements</a>
-        <a href="statistics and reports.html">Statistics And Reports</a>
+        <a href="../projects/statistics and reports.html">Statistics And Reports</a>
     </div>
    </div>
    </li>

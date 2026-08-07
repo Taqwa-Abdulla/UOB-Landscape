@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Locations</title>
+        <link rel="stylesheet" href="../../../public/css/style.css" />
+        <script src="../../../js/plants/location-plants.js" defer></script>
+        <script src="../../../js/chatbot/chatbot.js" defer></script>
+    </head>
+    <div class="logo-space">
+    <img src="../../../public/images/UOB logo.png" alt="UOB Logo">
+</div>
+<nav class="navbar">
+    <div class="nav-left"></div>
+
+    <div class="nav-center">
+        <a href="../home.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="../locations/locations.html">Locations</a>
+        
+        <div class="dropdown">
+            <a href="#">Plants</a>
+            <div class="dropdown-content">
+                <a href="../plants/indoor.html">Indoor</a>
+                <a href="../plants/outdoor.html">Outdoor</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <a href="#">Projects</a>
+            <div class="dropdown-content">
+                <a href="../projects/before and after.html">Landscape Improvements</a>
+                <a href="../projects/statistics and reports.html">Statistics And Reports</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <button id="login-btn">Logout</button>
+    </div>
+</nav>
+  <body>
+<main class="content-container" style="margin-top: 100px;">
+    <div class="header-section" style="text-align: center; margin: 30px auto;">
+        <h1 id="location-title" style="font-size: 2em; margin-bottom: 5px;">Loading Location...</h1>
+        <p id="location-subtitle" style="color: #666; font-size: 1.1em;"></p>
+    </div>
+
+    <div class="top-filter-bar" style="display: flex; gap: 15px; justify-content: center; align-items: center; margin: 20px auto;">
+        <select id="location-plant-class-filter" style="padding: 10px 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; font-size: 14px; cursor: pointer; min-width: 200px;">
+            <option value="all">All Plants at this Location</option>
+            <option value="indoor">Indoor Plants</option>
+            <option value="outdoor">Outdoor Plants</option>
+        </select>
+    </div>
+
+    <section class="content-panel active" style="margin-top: 20px;">
+        <div class="cards-grid" id="location-plants-grid">
+            <!-- Dynamic location plants cards will be injected here -->
+        </div>
+    </section>
+</main>
+</body>
+</html>

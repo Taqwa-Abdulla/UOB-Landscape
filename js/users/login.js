@@ -1,20 +1,11 @@
-// --- Element Selections ---.
+// --- Element Selections ---
 const loginForm = document.getElementById("login-form");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const messageContainer = document.getElementById("message-container");
+const logoutBtn = document.getElementById("logout-btn");
+
 // --- Functions ---
-/**
- * TODO: Implement the displayMessage function.
- * This function takes two arguments:
- * 1. message (string): The message to display.
- * 2. type (string): "success" or "error".
- *
- * It should:
- * 1. Set the text content of `messageContainer` to the `message`.
- * 2. Set the class name of `messageContainer` to `type`
- * (this will allow for CSS styling of 'success' and 'error' states).
- */
 function displayMessage(message, type) {
   if (messageContainer) {
     messageContainer.textContent = message;
@@ -23,33 +14,24 @@ function displayMessage(message, type) {
 }
 
 /**
- * TODO: Implement the isValidEmail function.
- * This function takes one argument:
- * 1. email (string): The email string to validate.
- *
- * It should:
- * 1. Use a regular expression to check if the email format is valid.
- * 2. Return `true` if the email is valid ("akmohhamed@uob.edu.bh.com" if name is ali kahlid mohammed for example and for other 000000000@stu.uob.edu.bh where zeros can be any numbers but must be 9 digits).
- * 3. Return `false` if the email is invalid (e.g., "test@", "test.com", "test@.com").
- *
- * A simple regex for this purpose is: /\S+@\S+\.\S+/
+ * Validates email to match either:
+ * 1. 9 digits followed by @stu.uob.edu.bh (e.g., 202801234@stu.uob.edu.bh)
+ * 2. Staff / Faculty format ending with @uob.edu.bh (e.g., aikhalifa@uob.edu.bh)
  */
 function isValidEmail(email) {
-  const regex = /\S+@\S+\.\S+/;
-  return regex.test(email);
+  if (!email || typeof email !== 'string') return false;
+  
+  const patternStu = /^\d{9}@stu\.uob\.edu\.bh$/i;
+  const patternStaff = /^[a-z](\.[a-z]+)+@uob\.edu\.bh$|^[a-z]{2,}[a-z0-9._%+-]*@uob\.edu\.bh$/i;
+
+  return patternStu.test(email) || patternStaff.test(email);
 }
 
 /**
- * TODO: Implement the isValidPassword function.
- * This function takes one argument:
- * 1. password (string): The password string to validate.
- *
- * It should:
- * 1. Check if the password length is 8 characters or more, contains a capital letter, and a special character.
- * 2. Return `true` if the password is valid.
- * 3. Return `false` if the password is not valid.
+ * Validates password: at least 8 characters, at least one uppercase letter, at least one special character.
  */
 function isValidPassword(password) {
+  if (!password || typeof password !== 'string') return false;
   const hasMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
   const hasSpecialChar = /[\W_]/.test(password);
@@ -57,20 +39,6 @@ function isValidPassword(password) {
   return hasMinLength && hasUppercase && hasSpecialChar;
 }
 
-/**
- * TODO: Implement the handleLogin function.
- * This function will be the event handler for the form's "submit" event.
- * It should:
- * 1. Prevent the form's default submission behavior.
- * 2. Get the `value` from `emailInput` and `passwordInput`, trimming any whitespace.
- * 3. Validate the email using `isValidEmail()`.
- * - If invalid, call `displayMessage("Invalid email format.", "error")` and stop.
- * 4. Validate the password using `isValidPassword()`.
- * - If invalid, call `displayMessage("Password must be at least 8 characters, with 1 uppercase letter and 1 special character.", "error")` and stop.
- * 5. If both email and password are valid:
- * - Send a POST request using Fetch API to the PHP backend.
- * - Call `displayMessage()` depending on the API response.
- */
 async function handleLogin(event) {
   event.preventDefault();
 
@@ -78,17 +46,17 @@ async function handleLogin(event) {
   const password = passwordInput.value;
 
   if (!isValidEmail(email)) {
-    displayMessage("Invalid email format.", "error");
+    displayMessage("Invalid Credentails", "error");
     return;
   }
 
   if (!isValidPassword(password)) {
-    displayMessage("Password must be at least 8 characters long, contain at least one uppercase letter, and one special character.", "error");
+    displayMessage("Credentails", "error");
     return;
   }
 
   try {
-    const response = await fetch("../../api/aut/login.php", {
+    const response = await fetch("/api/auth/auth.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -102,6 +70,18 @@ async function handleLogin(event) {
       displayMessage(result.message || "Login successful!", "success");
       emailInput.value = "";
       passwordInput.value = "";
+      
+      // Redirect dashboard based on user role returned from backend
+      setTimeout(() => {
+        if (result.user && result.user.role === 'admin') {
+          window.location.href = "/site/admin/admin.html";
+        } else if (result.user && result.user.role === 'creator') {
+          window.location.href = "/site/creator/creator.html";
+        } else {
+          window.location.href = "/site/guest/home.html";
+        }
+      }, 1000);
+
     } else {
       displayMessage(result.message || "Invalid credentials.", "error");
     }
@@ -110,28 +90,16 @@ async function handleLogin(event) {
   }
 }
 
-/**
- * TODO: Implement the setupLoginForm function.
- * This function will be called once to set up the form.
- * It should:
- * 1. Check if `loginForm` exists.
- * 2. If it exists, add a "submit" event listener to it.
- * 3. The event listener should call the `handleLogin` function.
- */
 function setupLoginForm() {
   if (loginForm) {
     loginForm.addEventListener("submit", handleLogin);
   }
 }
 
-// --- Initial Page Load ---
-// Call the main setup function to attach the event listener.
-setupLoginForm();
-
-//logout
+// --- Logout Handler ---
 async function handleLogout() {
   try {
-    const response = await fetch("logout.php", {
+    const response = await fetch("/api/auth/logout.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -141,10 +109,25 @@ async function handleLogout() {
     const result = await response.json();
 
     if (result.success) {
-      // Redirect to login page after successful logout
-      window.location.href = "home.html";
+      window.location.href = "/site/guest/home.html";
     }
   } catch (error) {
     console.error("Error logging out:", error);
   }
 }
+
+// --- Setup Logout Button ---
+function setupLogoutButton() {
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      handleLogout();
+    });
+  }
+}
+
+// --- Initial Page Load ---
+document.addEventListener("DOMContentLoaded", () => {
+  setupLoginForm();
+  setupLogoutButton();
+});

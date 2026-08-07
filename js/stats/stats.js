@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const apiEndpoint = "../../api/stats/stats.php"; // Update with your actual PHP endpoint URL
+    // Dynamically build the path to api/stats/stats.php regardless of current file name or folder
+    const apiEndpoint = "/api/stats/stats.php";
 
-    // Function to fetch data and populate the page
     async function fetchDashboardData(searchQuery = "") {
         try {
             let url = apiEndpoint;
@@ -10,6 +10,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP Error Status: ${response.status}`);
+            }
+
             const data = await response.json();
 
             if (!data.success) {
@@ -28,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
 
-            // 2. Render Charts (Assuming Chart.js is used)
+            // 2. Render Charts
             renderCharts(data.charts_data);
 
             // 3. Render Annual Reports Section
@@ -39,14 +43,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Function to render charts
+    // Chart rendering logic
     function renderCharts(chartsData) {
-        // Example using Chart.js - make sure Chart.js script is included in your HTML
-        
-        // A. Indoor vs Outdoor Plants Chart
+        if (typeof Chart === "undefined") {
+            console.warn("Chart.js library is not loaded.");
+            return;
+        }
+
         const indoorOutdoorCtx = document.getElementById("indoorOutdoorChart")?.getContext("2d");
         if (indoorOutdoorCtx && chartsData.indoor_outdoor_plants) {
-            const labels = chartsData.indoor_outdoor_plants.map(item => item.class || 'Unknown');
+            const labels = chartsData.indoor_outdoor_plants.map(item => item.class ? item.class.toUpperCase() : 'Unclassified');
             const counts = chartsData.indoor_outdoor_plants.map(item => item.count);
 
             new Chart(indoorOutdoorCtx, {
@@ -55,36 +61,42 @@ document.addEventListener("DOMContentLoaded", () => {
                     labels: labels,
                     datasets: [{
                         data: counts,
-                        backgroundColor: ['#4CAF50', '#8BC34A', '#CDDC39']
+                        backgroundColor: ['#2e7d32', '#81c784', '#a5d6a7']
                     }]
                 }
             });
         }
 
-        // B. Plants Added Per Year
-        const plantsYearCtx = document.getElementById("plantsYearChart")?.getContext("2d");
-        if (plantsYearCtx && chartsData.plants_added_per_year) {
-            // Grouping logic or direct mapping depending on dataset structure
-            // ... configure your chart here based on your canvas element IDs
-        }
+        const areaYearCtx = document.getElementById("areaYearChart")?.getContext("2d");
+        if (areaYearCtx && chartsData.outdoor_area_per_year) {
+            const years = chartsData.outdoor_area_per_year.map(item => item.year);
+            const areas = chartsData.outdoor_area_per_year.map(item => item.total_green_area);
 
-        // C. Outdoor Area Per Year
-        // D. Completed Projects Per Year
+            new Chart(areaYearCtx, {
+                type: 'bar',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Green Area (sq meters)',
+                        data: areas,
+                        backgroundColor: '#388e3c'
+                    }]
+                }
+            });
+        }
     }
 
-    // Function to render Annual Reports with role-based print check
-    // Pass user role from your PHP session/global variable (e.g., window.userRole = 'admin' or 'creator')
+    // Reports rendering logic
     function renderReports(reports) {
-        const reportsSection = document.querySelector(".stat-reports") || document.querySelector("section:nth-of-type(3)");
+        const reportsSection = document.querySelector(".stat-reports") || document.querySelector("section:nth-of-type(2)");
         if (!reportsSection) return;
 
-        // Check if search bar already exists, if not, create it
         let searchInput = document.getElementById("reportSearchInput");
         if (!searchInput) {
             const searchContainer = document.createElement("div");
             searchContainer.className = "report-search-container";
             searchContainer.innerHTML = `
-                <input type="text" id="reportSearchInput" placeholder="Search reports by name or year..." />
+                <input type="text" id="reportSearchInput" placeholder="Search reports by title or year..." />
             `;
             reportsSection.querySelector("p")?.after(searchContainer);
 
@@ -94,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Remove old report list container if it exists to refresh results
         let reportsListContainer = document.getElementById("reportsListContainer");
         if (reportsListContainer) {
             reportsListContainer.remove();
@@ -103,11 +114,11 @@ document.addEventListener("DOMContentLoaded", () => {
         reportsListContainer = document.createElement("div");
         reportsListContainer.id = "reportsListContainer";
         
-        const isAdmin = window.userRole === 'admin'; // Adjust based on how you expose user role to JS
+        const isAdmin = window.userRole === 'admin'; 
 
         let html = '<ul class="reports-list">';
         if (reports.length === 0) {
-            html += '<li>No reports found.</li>';
+            html += '<li>No matching reports found.</li>';
         } else {
             reports.forEach(report => {
                 html += `
@@ -125,6 +136,5 @@ document.addEventListener("DOMContentLoaded", () => {
         reportsSection.appendChild(reportsListContainer);
     }
 
-    // Initial data fetch on page load
     fetchDashboardData();
 });

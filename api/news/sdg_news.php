@@ -53,7 +53,8 @@ if (!file_exists(dirname($cacheFile))) {
     $cacheFile = __DIR__ . '/news_cache.json';
 }
 
-$cacheLifetime = 3 * 3600; // Cache valid for 3 hours (10,800 seconds)
+// Cache valid for 24 hours / 1 day (86,400 seconds)
+$cacheLifetime = 24 * 3600; 
 $scrapedArticles = [];
 
 // 1. Serve cached scraped JSON if valid and non-empty

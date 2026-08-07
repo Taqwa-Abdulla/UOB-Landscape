@@ -2,7 +2,7 @@
 // CONFIGURATION & GLOBAL STATE
 // ============================================================================
 // Relative path so it automatically uses your current host/port/domain
-const API_BASE_URL = '/api/news/news.php';
+const API_BASE_URL = '/api/admin/manage_news.php';
 
 // DOM Element References
 const newsTableBody = document.getElementById('newsTableBody');

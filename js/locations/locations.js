@@ -1,6 +1,8 @@
-// Define global variables and functions so inline HTML onclick attributes can access them
+/**
+ * Locations Management Script
+ */
 let locations = [];
-const apiUrl = '../../api/locations/locations.php?resource=locations';
+const apiUrl = '/api/admin/manage_locations.php';
 
 document.addEventListener('DOMContentLoaded', () => {
     const addLocationForm = document.getElementById('add-location-form');
@@ -12,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to fetch locations from the PHP API
     window.fetchLocations = async function(search = '', sort = 'location_id', order = 'asc') {
         try {
-            let url = `${apiUrl}&sort=${sort}&order=${order}`;
+            // FIX: Added 'resource=locations' so the PHP backend router matches it properly
+            let url = `${apiUrl}?resource=locations&sort=${sort}&order=${order}`;
             if (search) {
                 url += `&search=${encodeURIComponent(search)}`;
             }
@@ -26,12 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTable(locations);
         } catch (error) {
             console.error('Error fetching locations:', error);
-            locationsTableBody.innerHTML = `<tr class="ml-tr"><td class="ml-td" colspan="7" style="text-align: center; color: red;">Error loading locations from database.</td></tr>`;
+            if (locationsTableBody) {
+                locationsTableBody.innerHTML = `<tr class="ml-tr"><td class="ml-td" colspan="7" style="text-align: center; color: red;">Error loading locations from database.</td></tr>`;
+            }
         }
     };
 
     // Function to render locations in the table
     function renderTable(data) {
+        if (!locationsTableBody) return;
         locationsTableBody.innerHTML = '';
         
         if (!data || data.length === 0) {
@@ -96,7 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (idField) {
                     document.getElementById('location-id').value = '';
-                    document.getElementById('submit-location-btn').textContent = 'Add Location';
+                    const submitBtn = document.getElementById('submit-location-btn');
+                    if (submitBtn) submitBtn.textContent = 'Add Location';
                 }
 
                 addLocationForm.reset();
@@ -144,7 +151,8 @@ window.editLocation = function(id) {
     document.getElementById('latitude').value = location.latitude;
     document.getElementById('longitude').value = location.longitude;
 
-    document.getElementById('submit-location-btn').textContent = 'Update Location';
+    const submitBtn = document.getElementById('submit-location-btn');
+    if (submitBtn) submitBtn.textContent = 'Update Location';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -153,7 +161,8 @@ window.deleteLocation = async function(id) {
     if (!confirm('Are you sure you want to delete this location?')) return;
 
     try {
-        const response = await fetch(`${apiUrl}&id=${id}`, {
+        // FIX: Ensure correct use of '?' for the query string parameter here too
+        const response = await fetch(`${apiUrl}?id=${id}`, {
             method: 'DELETE'
         });
 
