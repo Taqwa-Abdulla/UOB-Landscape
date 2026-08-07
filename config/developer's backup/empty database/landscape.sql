@@ -10,7 +10,7 @@ CREATE TABLE users (
     is_contributor BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
-    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 CREATE TABLE locations (
@@ -24,7 +24,7 @@ CREATE TABLE locations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 CREATE TABLE plants (
@@ -33,7 +33,7 @@ CREATE TABLE plants (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     common_name_en VARCHAR(255) DEFAULT NULL,
     common_name_ar VARCHAR(255) DEFAULT NULL,
     scientific_name VARCHAR(255) NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE projects (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     title_en VARCHAR(255) NOT NULL,
     title_ar VARCHAR(255) NOT NULL,
     description_en TEXT DEFAULT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE records (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     year INT NOT NULL,
     action_en VARCHAR(255) NOT NULL,
     action_ar VARCHAR(255) NOT NULL,
