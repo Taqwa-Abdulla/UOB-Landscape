@@ -3,20 +3,19 @@ let currentUserId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchDashboardData();
-    setupLogoutButton();
     setupPasswordForm();
 });
 
 /**
- * Fetch all admin dashboard stats & profile info from backend
+ * Fetch all creator dashboard stats & profile info from backend
  */
 async function fetchDashboardData() {
     try {
-        const response = await fetch('/api/admin/admin.php');
+        const response = await fetch('/api/creator/creator.php');
 
-        // Guard Check: Redirect unauthorized/non-admin users to guest homepage
+        // Guard Check: Redirect unauthorized/non-creator users to guest homepage
         if (response.status === 401 || response.status === 403) {
-            window.location.href = "/site/guest/home.html";
+            window.location.href = "../guest/home.html";
             return;
         }
 
@@ -34,7 +33,7 @@ async function fetchDashboardData() {
             if (data.recent_projects) updateRecentProjects(data.recent_projects);
         } else {
             console.error("Access error:", data.error);
-            window.location.href = "/site/guest/home.html";
+            window.location.href = "../guest/home.html";
         }
     } catch (error) {
         console.error("Failed to load dashboard data:", error);
@@ -52,9 +51,9 @@ function updateUserProfile(user) {
     const emailEl = document.getElementById('user-email');
     const initialsEl = document.getElementById('user-initials');
 
-    if (nameEl) nameEl.textContent = user.name || 'Admin User';
+    if (nameEl) nameEl.textContent = user.name || 'Jane Doe';
     if (emailEl) emailEl.textContent = user.email || 'admin@company.com';
-    if (initialsEl) initialsEl.textContent = user.initials || 'AD';
+    if (initialsEl) initialsEl.textContent = user.initials || 'JD';
 }
 
 /**
@@ -62,48 +61,46 @@ function updateUserProfile(user) {
  */
 function updateStats(stats) {
     setElementText('stat-projects', stats.projects ?? 0);
-    setElementText('stat-projects-sub', `${stats.projects_in_progress ?? 0} In Progress`);
-
     setElementText('stat-locations', stats.locations ?? 0);
-    setElementText('stat-users', stats.users ?? 0);
 
-    setElementText('stat-indoor-types', `${stats.indoor_types ?? 0} Species`);
-    setElementText('stat-indoor-stock', `${stats.indoor_stock ?? 0} Units`);
+    setElementText('stat-indoor-species', stats.indoor_species ?? 0);
+    setElementText('stat-indoor-qty', stats.indoor_quantity ?? 0);
 
-    setElementText('stat-outdoor-types', `${stats.outdoor_types ?? 0} Species`);
-    setElementText('stat-outdoor-stock', `${stats.outdoor_stock ?? 0} Units`);
+    setElementText('stat-outdoor-species', stats.outdoor_species ?? 0);
+    setElementText('stat-outdoor-qty', stats.outdoor_quantity ?? 0);
 }
 
 /**
  * Render User Activity Log Timeline
  */
 function updateActivityLog(activities) {
-    const container = document.getElementById('activity-log-container');
+    const container = document.querySelector('.relative.pl-6.space-y-6');
     if (!container) return;
 
     container.innerHTML = '';
     
     if (!activities || activities.length === 0) {
-        container.innerHTML = '<p class="text-xs text-gray-500">No recent activity.</p>';
+        container.innerHTML = `
+            <div class="relative group">
+                <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white group-hover:scale-110 transition-transform"></span>
+                <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">System</span></p>
+                <p class="text-xs text-gray-500 mt-0.5">No recent activity found.</p>
+            </div>`;
         return;
     }
 
-    const colorPalette = ['emerald', 'indigo', 'amber', 'blue'];
+    const colors = ['bg-emerald-500', 'bg-indigo-500', 'bg-blue-500', 'bg-amber-500'];
 
     activities.forEach((activity, index) => {
-        const color = colorPalette[index % colorPalette.length];
+        const colorClass = colors[index % colors.length];
         const timeStr = timeAgo(activity.created_at);
         
         const html = `
-            <div class="relative">
-                <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-${color}-500 ring-4 ring-white"></span>
-                <p class="text-sm font-medium text-gray-800">
-                    <span class="font-semibold text-gray-900">${escapeHtml(activity.username || 'System')}</span> performed an action
-                </p>
-                <p class="text-xs text-gray-500 mt-0.5">
-                    ${escapeHtml(activity.action_type || 'Action')} on ${escapeHtml(activity.table_name || 'System')}
-                </p>
-                <span class="text-[10px] text-gray-400">${timeStr}</span>
+            <div class="relative group">
+                <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full ${colorClass} ring-4 ring-white group-hover:scale-110 transition-transform"></span>
+                <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">${escapeHtml(activity.username || 'System')}</span></p>
+                <p class="text-xs text-gray-500 mt-0.5">${escapeHtml(activity.action_type || 'Performed action')} on ${escapeHtml(activity.table_name || 'record')}</p>
+                <span class="text-[10px] font-semibold text-gray-400 mt-1 block">${timeStr}</span>
             </div>
         `;
         container.insertAdjacentHTML('beforeend', html);
@@ -111,25 +108,28 @@ function updateActivityLog(activities) {
 }
 
 /**
- * Render Recent Projects Table
+ * Render Recent Projects Table (Limited to latest 3)
  */
 function updateRecentProjects(projects) {
-    const container = document.getElementById('recent-projects-container');
+    const container = document.querySelector('tbody.divide-y');
     if (!container) return;
 
     container.innerHTML = '';
 
     if (!projects || projects.length === 0) {
-        container.innerHTML = '<tr><td colspan="3" class="px-6 py-4 text-center text-xs text-gray-500">No projects found.</td></tr>';
+        container.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No active projects found.</td></tr>`;
         return;
     }
 
     projects.forEach(project => {
         const html = `
             <tr class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 font-semibold text-gray-900">${escapeHtml(project.project_name || 'Untitled')}</td>
-                <td class="px-6 py-4">${escapeHtml(project.location || 'Unassigned')}</td>
+                <td class="px-6 py-4 font-semibold text-gray-900">${escapeHtml(project.project_name || 'Untitled Project')}</td>
+                <td class="px-6 py-4">${escapeHtml(project.location || 'Unknown Location')}</td>
                 <td class="px-6 py-4">${getStatusBadge(project.status)}</td>
+                <td class="px-6 py-4 text-right">
+                    <a href="../projects/edit-project.php?id=${escapeHtml(project.id || '')}" class="text-indigo-600 hover:text-indigo-900 font-medium text-xs">Edit</a>
+                </td>
             </tr>
         `;
         container.insertAdjacentHTML('beforeend', html);
@@ -187,9 +187,10 @@ async function handlePasswordChange(event) {
 
     // 4. Send request to PHP API
     try {
-        const response = await fetch("/api/admin/admin.php", {
+        const response = await fetch('../../api/creator/dashboard.php', {
             method: "POST",
             headers: {
+                "Accept": "application/json",
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
@@ -202,11 +203,11 @@ async function handlePasswordChange(event) {
 
         const result = await response.json();
 
-        if (result.success) {
-            showPasswordMessage(result.message || "Password changed successfully!", "success");
+        if (response.ok && result.success) {
+            showPasswordMessage(result.message || "Password updated successfully!", "success");
             document.getElementById("password-form").reset();
         } else {
-            showPasswordMessage(result.message || "Failed to update password.", "error");
+            showPasswordMessage(result.error || result.message || "Failed to update password.", "error");
         }
     } catch (error) {
         console.error("Error changing password:", error);
@@ -254,25 +255,6 @@ function showPasswordMessage(message, type) {
 }
 
 // ==========================================
-// LOGOUT HANDLING
-// ==========================================
-
-/**
- * Setup Logout Button Listener with Event Delegation
- */
-function setupLogoutButton() {
-    document.addEventListener("click", (event) => {
-        const logoutBtn = event.target.closest("#logout-btn, .logout-btn");
-        if (logoutBtn) {
-            event.preventDefault();
-            handleLogout();
-        }
-    });
-}
-
-
-
-// ==========================================
 // UTILITY FUNCTIONS
 // ==========================================
 
@@ -282,26 +264,37 @@ function setElementText(id, value) {
 }
 
 function getStatusBadge(status) {
-    const s = (status || '').toLowerCase();
-    if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">In Progress</span>';
-    if (s === 'completed') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>';
-    if (s === 'planning') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>';
-    
-    return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 capitalize">${escapeHtml(s || 'Unknown')}</span>`;
+    const stat = (status || 'unknown').toLowerCase();
+    if (stat === 'in progress') {
+        return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">In Progress</span>`;
+    } else if (stat === 'completed') {
+        return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>`;
+    } else if (stat === 'planning') {
+        return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>`;
+    } else {
+        return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">${escapeHtml(status)}</span>`;
+    }
 }
 
 function timeAgo(dateString) {
-    if (!dateString) return '';
+    if (!dateString) return 'Unknown time';
+    
     const date = new Date(dateString);
-    const seconds = Math.floor((new Date() - date) / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (seconds < 60) return "Just now";
-    if (minutes < 60) return `${minutes} min ago`;
-    if (hours < 24) return `${hours} hours ago`;
-    return `${days} days ago`;
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + " years ago";
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + " months ago";
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + " days ago";
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + " hours ago";
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + " minutes ago";
+    
+    return "Just now";
 }
 
 function escapeHtml(str) {

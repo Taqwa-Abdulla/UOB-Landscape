@@ -3,9 +3,8 @@ const loginForm = document.getElementById("login-form");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const messageContainer = document.getElementById("message-container");
-const logoutBtn = document.getElementById("logout-btn");
 
-// --- Functions ---
+// --- Display Message Helper ---
 function displayMessage(message, type) {
   if (messageContainer) {
     messageContainer.textContent = message;
@@ -39,6 +38,7 @@ function isValidPassword(password) {
   return hasMinLength && hasUppercase && hasSpecialChar;
 }
 
+// --- Login Handler ---
 async function handleLogin(event) {
   event.preventDefault();
 
@@ -46,12 +46,12 @@ async function handleLogin(event) {
   const password = passwordInput.value;
 
   if (!isValidEmail(email)) {
-    displayMessage("Invalid Credentails", "error");
+    displayMessage("Invalid Credentials", "error");
     return;
   }
 
   if (!isValidPassword(password)) {
-    displayMessage("Credentails", "error");
+    displayMessage("Credentials", "error");
     return;
   }
 
@@ -108,22 +108,32 @@ async function handleLogout() {
 
     const result = await response.json();
 
-    if (result.success) {
+    // Clear client session/local storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    if (result && result.success) {
+      window.location.href = "/site/guest/home.html";
+    } else {
       window.location.href = "/site/guest/home.html";
     }
   } catch (error) {
     console.error("Error logging out:", error);
+    window.location.href = "/site/guest/home.html";
   }
 }
 
-// --- Setup Logout Button ---
+// --- Setup Logout Button (Global Event Listener) ---
 function setupLogoutButton() {
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (event) => {
+  document.addEventListener("click", (event) => {
+    // Intercepts clicks on any element with id="logout-btn" OR class="logout-btn" across the whole website
+    const logoutTarget = event.target.closest("#logout-btn, .logout-btn");
+    
+    if (logoutTarget) {
       event.preventDefault();
       handleLogout();
-    });
-  }
+    }
+  });
 }
 
 // --- Initial Page Load ---

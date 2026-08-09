@@ -457,69 +457,6 @@ function deleteUser($db, $userId) {
     }
 }
 
-
-/**
- * Function: Change password
- * Method: POST with action=change_password
- */
-function changePassword($db, $data) {
-    if (empty($data['user_id']) || empty($data['current_password']) || empty($data['new_password'])) {
-        sendResponse([
-            "success" => false,
-            "message" => "Missing required fields: user_id, current_password, and new_password are required."
-        ], 400);
-    }
-    
-    $userId = $data['user_id'];
-    $currentPassword = $data['current_password'];
-    $newPassword = $data['new_password'];
-
-    if (!validatePassword($newPassword)) {
-        sendResponse([
-            "success" => false,
-            "message" => "New password must be at least 8 characters long and contain at least one uppercase letter and one special character."
-        ], 400);
-    }
-    
-    $stmt = $db->prepare("SELECT password_hash FROM users WHERE user_id = ?");
-    $stmt->execute([$userId]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$user) {
-        sendResponse([
-            "success" => false,
-            "message" => "User not found."
-        ], 404);
-    }
-    
-    // Verify against sha256 hash
-    $currentPasswordHash = hash('sha256', $currentPassword);
-    if (!hash_equals($user['password_hash'], $currentPasswordHash)) {
-        sendResponse([
-            "success" => false,
-            "message" => "Current password is incorrect."
-        ], 401);
-    }
-    
-    $newPasswordHash = hash('sha256', $newPassword);
-    
-    $updateStmt = $db->prepare("UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?");
-    $success = $updateStmt->execute([$newPasswordHash, $userId]);
-    
-    if ($success) {
-        sendResponse([
-            "success" => true,
-            "message" => "Password changed successfully."
-        ], 200);
-    } else {
-        sendResponse([
-            "success" => false,
-            "message" => "Failed to update password."
-        ], 500);
-    }
-}
-
-
 // ============================================================================
 // MAIN REQUEST ROUTER
 // ============================================================================

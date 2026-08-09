@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../../../public/css/style.css">
     <script src="../../../js/users/manage_users.js" defer></script>
     <script src="../../../js/chatbot/chatbot.js" defer></script>
+    <script src="../../../js/users/login.js" defer></script>
 </head>
 <body>
      <div class="logo-space">
@@ -65,41 +66,6 @@
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-800">User Settings & Management</h1>
     </div>
-
-    <!-- Section 1: Change Password Form -->
-    <section class="space-y-4 mb-10" id="password-management">
-        <h2 class="text-xl font-semibold text-gray-700">Change Your Password</h2>
-        
-        <form class="bg-white rounded-xl border border-gray-200 shadow-sm p-6" id="password-form" action="#" method="POST">
-            <fieldset class="space-y-6">
-                <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">Password Update</legend>
-                
-                <!-- Current Password Field -->
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-sm font-medium text-gray-700" for="current-password">Current Password</label>
-                    <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="password" id="current-password" name="current_password" placeholder="Enter current password" required>
-                </div>
-
-                <!-- New Password Row -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 new-p">
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-sm font-medium text-gray-700" for="new-password">New Password</label>
-                        <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="password" id="new-password" name="new_password" minlength="8" placeholder="At least 8 characters" required>
-                    </div>
-                    
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-sm font-medium text-gray-700" for="confirm-password">Confirm New Password</label>
-                        <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="password" id="confirm-password" name="confirm_password" placeholder="Confirm new password" required>
-                    </div>
-                </div>
-
-                <!-- Submit Action -->
-                <div class="pt-2 flex justify-end">
-                    <button type="submit" id="change" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 transition">Update Password</button>
-                </div>
-            </fieldset>
-        </form>
-    </section>
 
     <!-- Section 2: Manage Users -->
     <section class="space-y-6" id="user-management">

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Reports & Analytics | UOB Landscape</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        canvas {
+            max-height: 220px !important;
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <div class="container-fluid py-4 px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h2><i class="fas fa-chart-line text-success me-2"></i>System Statistics & Financial Reports</h2>
+            
+            <!-- Streamlined 3 Export Dropdowns -->
+            <div class="d-flex gap-2 flex-wrap">
+                <!-- 1. Stats Report Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-success btn-sm dropdown-toggle" type="button" id="statsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-chart-pie me-1"></i> Stats Report
+                    </button>
+                    <ul class="dropdown-menu shadow" aria-labelledby="statsDropdown">
+                        <li><a class="dropdown-item small" href="#" id="downloadStatsCsv"><i class="fas fa-file-csv text-success me-2"></i>Download as CSV</a></li>
+                        <li><a class="dropdown-item small" href="#" id="downloadStatsPdf"><i class="fas fa-file-pdf text-danger me-2"></i>Download as PDF</a></li>
+                    </ul>
+                </div>
+
+                <!-- 2. Current Active Table Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="tableDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-table me-1"></i> Current Table
+                    </button>
+                    <ul class="dropdown-menu shadow" aria-labelledby="tableDropdown">
+                        <li><a class="dropdown-item small" href="#" id="downloadTableCsv"><i class="fas fa-file-csv text-success me-2"></i>Download as CSV</a></li>
+                        <li><a class="dropdown-item small" href="#" id="downloadTablePdf"><i class="fas fa-file-pdf text-danger me-2"></i>Download as PDF</a></li>
+                    </ul>
+                </div>
+
+                <!-- 3. Mega Report Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="megaDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-download me-1"></i> Mega Report
+                    </button>
+                    <ul class="dropdown-menu shadow" aria-labelledby="megaDropdown">
+                        <li><a class="dropdown-item small" href="#" id="downloadMegaCsv"><i class="fas fa-file-csv text-success me-2"></i>Download as CSV</a></li>
+                        <li><a class="dropdown-item small" href="#" id="downloadMegaPdf"><i class="fas fa-file-pdf text-danger me-2"></i>Download as PDF</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Cards Row -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm bg-white border-start border-success border-4">
+                    <div class="card-body">
+                        <h6 class="text-muted">Total Registered Users</h6>
+                        <h3 id="stat-users" class="fw-bold mb-0">0</h3>
+                    </div>
+                </div>
+            </div>
+            <!-- Professional Oxygen Card with Progress Bar -->
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm bg-white border-start border-primary border-4">
+                    <div class="card-body">
+                        <h6 class="text-muted">Oxygen Output</h6>
+                        <h3 id="stat-oxygen" class="fw-bold mb-1">0</h3>
+                        <div class="progress" style="height: 6px;">
+                            <div id="oxygen-progress" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <small id="oxygen-label" class="text-muted small">0% of target goal</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm bg-white border-start border-warning border-4">
+                    <div class="card-body">
+                        <h6 class="text-muted">Water Waste Ratio</h6>
+                        <h3 id="stat-water-waste" class="fw-bold mb-0">0%</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm bg-white border-start border-info border-4">
+                    <div class="card-body">
+                        <h6 class="text-muted">Eco-Friendly Rating</h6>
+                        <h3 id="stat-eco-score" class="fw-bold mb-0">0%</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Metric Cards Row -->
+        <div class="row mb-4">
+            <div class="col-xl-4 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm bg-info text-white">
+                    <div class="card-body">
+                        <h5>Total Water Cost</h5>
+                        <h3 id="stat-water-cost" class="fw-bold">0.00 BD</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm bg-secondary text-white">
+                    <div class="card-body">
+                        <h5>Total Projects Cost</h5>
+                        <h3 id="stat-proj-cost" class="fw-bold">0.00 BD</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm bg-dark text-white">
+                    <div class="card-body">
+                        <h5>Overall Financial Outlay</h5>
+                        <h3 id="stat-overall-cost" class="fw-bold">0.00 BD</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Visualizations with Fixed Resized Containers -->
+        <div class="row mb-4">
+            <div class="col-lg-6 mb-3">
+                <div class="card border-0 shadow-sm p-3" style="height: 280px;">
+                    <h5 class="card-title text-secondary mb-2">Plant Classes Distribution</h5>
+                    <canvas id="plantsChart"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <div class="card border-0 shadow-sm p-3" style="height: 280px;">
+                    <h5 class="card-title text-secondary mb-2">Project Status Spread</h5>
+                    <canvas id="projectsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Breakdown Chart Canvas -->
+        <div class="row mb-4">
+            <div class="col-lg-12 mb-3">
+                <div class="card border-0 shadow-sm p-3" style="height: 260px;">
+                    <h5 class="card-title text-secondary mb-2">Financial Cost Breakdown Analysis</h5>
+                    <canvas id="financialChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Data Section with Controls -->
+        <div class="card border-0 shadow-sm p-4">
+            <div class="row align-items-center mb-3">
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <label class="form-label fw-bold small">Select Data Table</label>
+                    <select id="tableSelect" class="form-select form-select-sm">
+                        <option value="plants">Plants</option>
+                        <option value="projects">Projects</option>
+                        <option value="users">Users</option>
+                        <option value="locations">Locations</option>
+                        <option value="records">Records</option>
+                        <option value="news">News</option>
+                        <option value="costs">Costs (Financial Registry)</option>
+                        <option value="stats_archive">Stats Archive (Historical)</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <label class="form-label fw-bold small">Sort By Column</label>
+                    <select id="sortBySelect" class="form-select form-select-sm">
+                        <option value="">Default</option>
+                        <option value="created_at">Created Date</option>
+                        <option value="name_en">Name</option>
+                        <option value="quantity">Quantity</option>
+                        <option value="year">Year</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <label class="form-label fw-bold small">Order</label>
+                    <select id="sortOrderSelect" class="form-select form-select-sm">
+                        <option value="ASC">Ascending</option>
+                        <option value="DESC">Descending</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0 small">
+                    <thead id="tableHead" class="table-dark"></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle (includes Popper for dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Reports JavaScript -->
+    <script src="../../../js/admin/reports.js" defer></script>
+</body>
+</html>

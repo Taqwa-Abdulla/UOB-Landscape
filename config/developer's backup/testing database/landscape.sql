@@ -27,8 +27,17 @@ CREATE TABLE locations (
     updated_by INT REFERENCES users(user_id) ON DELETE SET NULL
 );
 
+CREATE TABLE qrcode (
+    qr_id SERIAL PRIMARY KEY,
+    pdf_path VARCHAR(500) NOT NULL,
+    created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT NULL
+);
+
 CREATE TABLE plants (
-    plant_id VARCHAR (50) PRIMARY KEY,
+    plant_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
@@ -56,7 +65,8 @@ CREATE TABLE plants (
     oxygen_production VARCHAR(150) DEFAULT NULL,
     carbon_dioxide_absorption VARCHAR(150) DEFAULT NULL,
     class VARCHAR(20) CHECK (class IN ('indoor', 'outdoor')),
-    qr_image BYTEA DEFAULT NULL
+    qr_image BYTEA DEFAULT NULL,
+    qr_id INT REFERENCES qrcode(qr_id) ON DELETE SET NULL
 );
 
 CREATE TABLE projects (
@@ -75,7 +85,7 @@ CREATE TABLE projects (
     image_after_path VARCHAR(500) DEFAULT NULL,
     video_proposal_link VARCHAR(500) DEFAULT NULL, 
     pdf_path VARCHAR(500) DEFAULT NULL,
-    project_status VARCHAR(20) DEFAULT 'unknown' CHECK (project_status IN ('unknown', 'in progress', 'planning', 'completed'))           
+    project_status VARCHAR(20) DEFAULT 'unknown' CHECK (project_status IN ('unknown', 'in progress', 'planning', 'completed'))                
 );
 
 CREATE TABLE records (
@@ -108,7 +118,7 @@ CREATE TABLE news (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
     link VARCHAR(500) NOT NULL,
     title_en VARCHAR(255) NOT NULL,
     title_ar VARCHAR(255) NOT NULL,
@@ -127,13 +137,13 @@ CREATE TABLE activitiy_log (
 );
 
 CREATE TABLE annual_reports (
-            report_id SERIAL PRIMARY KEY,
-            title_en VARCHAR(255) NOT NULL,
-            title_ar VARCHAR(255) NOT NULL,
-            report_year INT NOT NULL,
-            pdf_path VARCHAR(500) NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+    report_id SERIAL PRIMARY KEY,
+    title_en VARCHAR(255) NOT NULL,
+    title_ar VARCHAR(255) NOT NULL,
+    report_year INT NOT NULL,
+    pdf_path VARCHAR(500) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE contributors (
     contributor_id SERIAL PRIMARY KEY,
@@ -142,6 +152,43 @@ CREATE TABLE contributors (
     major VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS costs (
+    cost_id SERIAL PRIMARY KEY,
+    reference_type VARCHAR(50) NOT NULL, 
+    reference_name VARCHAR(100) NOT NULL, 
+    unit_cost NUMERIC(10, 2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS stats_archive (
+    stat_id SERIAL PRIMARY KEY,
+    report_year INT NOT NULL UNIQUE,
+    total_users INT DEFAULT 0,
+    total_oxygen_units NUMERIC(10, 2) DEFAULT 0,
+    total_water_waste_units NUMERIC(10, 2) DEFAULT 0,
+    eco_friendly_score NUMERIC(5, 2) DEFAULT 0,
+    total_financial_cost NUMERIC(12, 2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Trigger Function & Trigger Setup
+CREATE OR REPLACE FUNCTION nullify_plant_qr_image()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE plants
+    SET qr_image = NULL,
+        qr_id = NULL
+    WHERE qr_id = OLD.qr_id;
+    
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_nullify_qr_image_on_delete
+AFTER DELETE ON qrcode
+FOR EACH ROW
+EXECUTE FUNCTION nullify_plant_qr_image();
 
 -- SHA-256 passwords ('password123')
 
@@ -261,3 +308,21 @@ SELECT user_id, username, college, major
 FROM users
 WHERE is_contributor = TRUE OR role = 'creator'
 ON CONFLICT (contributor_id) DO NOTHING;
+
+INSERT INTO qrcode (plant_id, pdf_path, created_by) 
+VALUES ('OP-101', 'uploads/plants pdf/dummy_test.pdf', 1);
+
+-- Insert realistic dummy cost data
+INSERT INTO costs (reference_type, reference_name, unit_cost) VALUES
+('water_tier', 'Low', 0.50),     -- Cost per water unit for low requirement plants
+('water_tier', 'Medium', 1.20),  -- Cost per water unit for medium requirement plants
+('water_tier', 'High', 2.50),    -- Cost per water unit for high requirement plants
+('project', 'Campus Greenbelt Expansion', 12500.00),
+('project', 'Arboretum Irrigation Retrofit', 8400.00),
+('project', 'Botanical Courtyard Redesign', 5300.00)
+ON CONFLICT DO NOTHING;
+
+-- Insert historical dummy archive record for the current year
+INSERT INTO stats_archive (report_year, total_users, total_oxygen_units, total_water_waste_units, eco_friendly_score, total_financial_cost)
+VALUES (2026, 8, 662.5, 45.0, 85.4, 26200.00)
+ON CONFLICT (report_year) DO NOTHING;

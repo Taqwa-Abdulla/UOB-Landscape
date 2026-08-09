@@ -3,9 +3,11 @@
 <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>Admin Dashboard</title>
+        <title>Creator Dashboard</title>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <script src="../../js/chatbot/chatbot.js" defer></script>
+        <script src="../../js/creator/creator.js" defer></script>
+        <script src="../../js/users/login.js" defer></script>
     </head>
     <body>
         <!-- Root Container (Full Screen Flex) -->
@@ -17,18 +19,18 @@
     <!-- 1. Brand Logo -->
     <div class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
     <img class="rounded-xl w-12 h-15" src="../../public/images/UOB logo.png" alt="UOB Logo">
-    <div>Admin<span class="text-blue-600">Panel</span></div>
+    <div>Creator<span class="text-blue-600">Panel</span></div>
 </div>
 
 
     <!-- 2. User Profile (Top Position) -->
     <div class="p-4 mx-3 mt-4 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
+      <div id="user-initials" class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
         JD
       </div>
       <div class="overflow-hidden">
-        <p class="text-sm font-semibold text-white truncate">Jane Doe</p>
-        <p class="text-xs text-slate-400 truncate">admin@company.com</p>
+        <p id="user-name" class="text-sm font-semibold text-white truncate">Jane Doe</p>
+        <p id="user-email" class="text-xs text-slate-400 truncate">admin@company.com</p>
       </div>
     </div>
 
@@ -53,19 +55,19 @@
 
         <div class="mt-1 pl-4 space-y-1">
           <!-- Home -->
-          <a href="view/home.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+          <a href="../guest/home.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6"/></svg>
             <span>Home</span>
           </a>
 
           <!-- About -->
-          <a href="view/about.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+          <a href="../guest/about.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <span>About</span>
           </a>
 
           <!-- Locations -->
-          <a href="view/locations.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+          <a href="../guest/locations.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             <span>Locations</span>
           </a>
@@ -80,8 +82,8 @@
               <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </summary>
             <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
-              <a href="view/plants/indoor.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Indoor</a>
-              <a href="view/plants/outdoor.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Outdoor</a>
+              <a href="../plants/indoor.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Indoor</a>
+              <a href="../plants/outdoor.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Outdoor</a>
             </div>
           </details>
 
@@ -95,15 +97,15 @@
               <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </summary>
             <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
-              <a href="view/projects/before and after.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Landscape Improvements</a>
-              <a href="view/projects/statistics and reports.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Statistics and Reports</a>
+              <a href="../projects/before-and-after.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Landscape Improvements</a>
+              <a href="../projects/statistics-and-reports.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Statistics and Reports</a>
             </div>
           </details>
         </div>
       </details>
 
       <!-- Manage Plants -->
-      <a href="management/manage_plants.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+      <a href="../plants/manage-plants.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
         <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
         <span>Plants</span>
       </a>
@@ -118,173 +120,181 @@
     </p>
   </div>
 </aside>
+<!-- 2. Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-y-auto bg-gray-50 min-h-screen">
 
-    <!-- 2. Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Top Header -->
+            <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+                
+                <div class="flex items-center gap-4">
+                    <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition cursor-pointer">
+                        Logout
+                    </button>
+                </div>
+            </header>
 
-      <!-- Top Header -->
-      <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-        <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
-        
-        <div class="flex items-center gap-4">
-          <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition">
-            logout
-          </button>
-        </div>
-      </header>
+      <!-- Main Content Body -->
+      <main class="p-8 space-y-8">
 
-      <!-- Dashboard Body -->
-     <!-- Main Content Body -->
-<main class="p-8 space-y-8">
-
-  <!-- 1. Top Stat Cards Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-      <p class="text-sm font-medium text-gray-500">Projects</p>
-      <p class="text-3xl font-extrabold text-gray-900 mt-2">28</p>
-    </div>
-    
-    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-      <p class="text-sm font-medium text-gray-500">Locations</p>
-      <p class="text-3xl font-extrabold text-gray-900 mt-2">30</p>
-    </div>
-
-    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-      <p class="text-sm font-medium text-gray-500">Indoor Plants</p>
-      <p class="text-3xl font-extrabold text-gray-900 mt-2">14</p>
-    </div>
-
-    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-      <p class="text-sm font-medium text-gray-500">Outdoor Plants</p>
-      <p class="text-3xl font-extrabold text-gray-900 mt-2">340</p>
-    </div>
-
-  </div>
-
-  <!-- 2. Dual Column Section: User Activity & Recent Projects -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <!-- Left Column: User Activity Log (1 Column wide on desktop) -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between">
-      <div>
-        <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
-          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            User Activity Log
-          </h2>
+        <!-- Quick Actions Bar -->
+        <div class="flex flex-col sm:flex-row items-center justify-between bg-indigo-600 rounded-xl p-6 shadow-md text-white">
+          <div>
+            <h2 class="text-lg font-bold">Ready to create?</h2>
+            <p class="text-indigo-100 text-sm mt-1">Manage your plants, locations, and projects from your workspace.</p>
+          </div>
+          <div class="flex gap-3 mt-4 sm:mt-0">
+            <a href="../projects/new-project.php" id="btn-new-project" class="px-4 py-2 bg-white text-indigo-600 rounded-lg text-sm font-bold shadow hover:bg-indigo-50 transition flex items-center gap-2 cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              New Project
+            </a>
+            <a href="../plants/add-plant.php" id="btn-add-plant" class="px-4 py-2 bg-indigo-500 text-white border border-indigo-400 rounded-lg text-sm font-bold hover:bg-indigo-400 transition flex items-center gap-2 cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add Plant
+            </a>
+          </div>
         </div>
 
-        <!-- Timeline Items -->
-        <div class="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200">
+        <!-- 1. Top Stat Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+          <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-gray-500">Total Projects</p>
+              <span class="p-2 bg-blue-50 text-blue-600 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg></span>
+            </div>
+            <p id="stat-projects" class="text-3xl font-extrabold text-gray-900 mt-4">0</p>
+          </div>
           
-          <!-- Event 1 -->
-          <div class="relative">
-            <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white"></span>
-            <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">Sarah Connor</span> created a report</p>
-            <p class="text-xs text-gray-500 mt-0.5">Updated "Q3 Landscape Report"</p>
-            <span class="text-[10px] text-gray-400">12 min ago</span>
+          <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-gray-500">Locations Managed</p>
+              <span class="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
+            </div>
+            <p id="stat-locations" class="text-3xl font-extrabold text-gray-900 mt-4">0</p>
           </div>
 
-          <!-- Event 2 -->
-          <div class="relative">
-            <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-indigo-500 ring-4 ring-white"></span>
-            <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">Alex Miller</span> updated plant profile</p>
-            <p class="text-xs text-gray-500 mt-0.5">Added 4 indoor species under 'West Wing'</p>
-            <span class="text-[10px] text-gray-400">45 min ago</span>
+          <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-gray-500">Indoor Plants</p>
+              <span class="p-2 bg-amber-50 text-amber-600 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg></span>
+            </div>
+            <p id="stat-indoor-species" class="text-3xl font-extrabold text-gray-900 mt-4">0</p>
+            <p class="text-xs text-gray-500 mt-1">Total Quantity: <span id="stat-indoor-qty" class="font-semibold text-gray-700">0</span></p>
           </div>
 
-          <!-- Event 3 -->
-          <div class="relative">
-            <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-amber-500 ring-4 ring-white"></span>
-            <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">Marcus Vance</span> logged out</p>
-            <p class="text-xs text-gray-500 mt-0.5">Session length: 2h 15m</p>
-            <span class="text-[10px] text-gray-400">2 hours ago</span>
-          </div>
-
-          <!-- Event 4 -->
-          <div class="relative">
-            <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-white"></span>
-            <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">Elena Rostova</span> created a project</p>
-            <p class="text-xs text-gray-500 mt-0.5">New entry: "South Courtyard Renewal"</p>
-            <span class="text-[10px] text-gray-400">3 hours ago</span>
+          <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium text-gray-500">Outdoor Plants</p>
+              <span class="p-2 bg-rose-50 text-rose-600 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
+            </div>
+            <p id="stat-outdoor-species" class="text-3xl font-extrabold text-gray-900 mt-4">0</p>
+            <p class="text-xs text-gray-500 mt-1">Total Quantity: <span id="stat-outdoor-qty" class="font-semibold text-gray-700">0</span></p>
           </div>
 
         </div>
-      </div>
-
-      <button class="w-full mt-6 py-2 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors">
-        View Full Audit Log
-      </button>
-    </div>
-
-    <!-- Right Column: Recent Projects (2 Columns wide on desktop) -->
-    <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
-      <div>
-        <!-- Table Header -->
-        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
-            Recent Projects
-          </h2>
-          <button class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">View all projects</button>
-        </div>
-
-        <!-- Projects Table -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-gray-600">
-            <thead class="bg-gray-50 text-xs text-gray-500 uppercase font-semibold">
-              <tr>
-                <th class="px-6 py-3">Project Name</th>
-                <th class="px-6 py-3">Location</th>
-                <th class="px-6 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              
-              <!-- Project 1 -->
-              <tr class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 font-semibold text-gray-900">
-                  Botanical Garden Atrium
-                </td>
-                <td class="px-6 py-4">North Wing</td>
-                <td class="px-6 py-4">
-                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">In Progress</span>
-                </td>
-              </tr>
-
-              <!-- Project 2 -->
-              <tr class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 font-semibold text-gray-900">
-                  Rooftop Terrace Greenery
-                </td>
-                <td class="px-6 py-4">Main HQ Building</td>
-                <td class="px-6 py-4">
-                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>
-                </td>
-              </tr>
-
-              <!-- Project 3 -->
-              <tr class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 font-semibold text-gray-900">
-                  South Courtyard Renewal
-                </td>
-                <td class="px-6 py-4">Campus South</td>
-                <td class="px-6 py-4">
-                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>
-                </td>
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</main>
-    </div>
-
-  </div>
         
+        <!-- Section 1: Change Password Form -->
+        <section class="space-y-4 mb-10" id="password-management">
+            <h2 class="text-xl font-semibold text-gray-700">Change Your Password</h2>
+            
+            <form class="bg-white rounded-xl border border-gray-200 shadow-sm p-6" id="password-form" action="#" method="POST">
+                <fieldset class="space-y-6">
+                    <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">Password Update</legend>
+                    
+                    <!-- Current Password Field -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-sm font-medium text-gray-700" for="current-password">Current Password</label>
+                        <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="password" id="current-password" name="current_password" placeholder="Enter current password" required>
+                    </div>
+
+                    <!-- New Password Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 new-p">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="new-password">New Password</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="password" id="new-password" name="new_password" minlength="8" placeholder="At least 8 characters" required>
+                        </div>
+                        
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-medium text-gray-700" for="confirm-password">Confirm New Password</label>
+                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" type="password" id="confirm-password" name="confirm_password" placeholder="Confirm new password" required>
+                        </div>
+                    </div>
+
+                    <!-- Submit Action -->
+                    <div class="pt-2 flex justify-end">
+                        <button type="submit" id="change" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 transition cursor-pointer">Update Password</button>
+                    </div>
+                </fieldset>
+            </form>
+        </section>
+
+        <!-- 2. Dual Column Section: User Activity & Recent Projects -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <!-- Left Column: User Activity Log -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Recent Contributions
+                </h2>
+              </div>
+
+              <!-- Timeline Items -->
+              <div class="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+                <div class="relative group">
+                  <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white group-hover:scale-110 transition-transform"></span>
+                  <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">System</span></p>
+                  <p class="text-xs text-gray-500 mt-0.5">No recent activity found.</p>
+                </div>
+              </div>
+            </div>
+
+            <a href="../activity-log.php" id="btn-view-activity" class="w-full mt-6 py-2.5 text-xs font-bold text-center text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-100 cursor-pointer block">
+              View Full Activity Log
+            </a>
+          </div>
+
+          <!-- Right Column: Recent Projects -->
+          <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
+            <div>
+              <!-- Table Header -->
+              <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center bg-white">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
+                  Your Active Projects
+                </h2>
+                <a href="../projects/projects-list.php" id="btn-view-projects" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer">View all</a>
+              </div>
+
+              <!-- Projects Table -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-600">
+                  <thead class="bg-gray-50 text-xs text-gray-500 uppercase font-semibold">
+                    <tr>
+                      <th class="px-6 py-3">Project Name</th>
+                      <th class="px-6 py-3">Location</th>
+                      <th class="px-6 py-3">Status</th>
+                      <th class="px-6 py-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    <tr class="hover:bg-gray-50 transition-colors">
+                      <td class="px-6 py-4 font-semibold text-gray-900">Legacy Area 5</td>
+                      <td class="px-6 py-4">College of Arts</td>
+                      <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">unknown</span></td>
+                      <td class="px-6 py-4 text-right"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
     </body>
 </html>

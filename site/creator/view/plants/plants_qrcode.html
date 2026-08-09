@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant QR Code Manager</title>
+    <script src="../../../../public/css/style.css" defer></script>
+    <script src="../../../../js/chatbot/chatbot.js" defer></script>
+     <script src="../../../../js/plants/qrcode.js" defer></script>
+     <script src="../../../../js/users/login.js" defer></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f7f6; }
+        .container { max-width: 1500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow-x: auto; }
+        h1 { color: #1e5631; }
+        
+        .panel { background: #e9ecef; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        form, .filters { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        input[type="file"], select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; min-width: 180px; }
+        button { background-color: #1e5631; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #143d22; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; vertical-align: middle; }
+        th { background-color: #1e5631; color: white; white-space: nowrap; }
+        
+        .qr-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        img.qr-preview { border: 2px solid #1e5631; border-radius: 8px; padding: 4px; background: white; width: 90px; height: 90px; }
+        
+        .btn-download { background-color: #28a745; font-size: 0.8em; padding: 4px 8px; text-decoration: none; color: white; border-radius: 4px; display: inline-block; }
+        .btn-download:hover { background-color: #218838; }
+        .btn-update { background-color: #ffc107; color: #000; padding: 6px 10px; font-size: 0.85em; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-update:hover { background-color: #e0a800; }
+        .btn-delete { background-color: #dc3545; padding: 6px 10px; font-size: 0.85em; }
+        .btn-delete:hover { background-color: #c82333; }
+        .badge { background: #1e5631; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; }
+        
+        #updateModal { display: none; background: rgba(0,0,0,0.5); position: fixed; top:0; left:0; width:100%; height:100%; justify-content:center; align-items:center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 400px; }
+        .btn-view { background-color: #17a2b8; color: white; font-size: 0.8em; padding: 6px 10px; text-decoration: none; border-radius: 4px; display: inline-block; }
+.btn-view:hover { background-color: #138496; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Plant QR Code Manager</h1>
+    
+    <!-- Upload Form with Cascading Location Filter -->
+    <div class="panel">
+        <p style="font-size: 0.85em; color: #666; margin-top:0;">Your login session will automatically record you as the creator.</p>
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="filterFormLocation">1. Filter by Location:</label>
+                <select id="filterFormLocation" onchange="filterPlantsByLocation()">
+                    <option value="">-- All Locations --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="plant_id">2. Select Plant:</label>
+                <select id="plant_id" name="plant_id" required>
+                    <option value="">-- Choose a Location First --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pdf_file">Upload PDF:</label>
+                <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Upload & Generate QR</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Filters Bar -->
+    <div class="panel filters">
+        <strong>Filter Table By:</strong>
+        <div class="form-group">
+            <select id="filterClass" onchange="applyFilters()">
+                <option value="">All Classes</option>
+                <option value="indoor">Indoor</option>
+                <option value="outdoor">Outdoor</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <select id="filterLocation" onchange="applyFilters()">
+                <option value="">All Locations</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <select id="filterCreator" onchange="applyFilters()">
+                <option value="">All Creators</option>
+            </select>
+        </div>
+    </div>
+    <select id="sortOrder" onchange="applyFilters()">
+    <option value="asc">Sort: Ascending</option>
+    <option value="desc">Sort: Descending</option>
+</select>
+
+    <!-- Table Columns -->
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Scientific Name</th>
+                <th>Common (EN/AR)</th>
+                <th>Class</th>
+                <th>Location (EN/AR)</th>
+                <th>Category</th>
+                <th>Created By</th>
+                <th>Updated By</th>
+                <th>PDF Link</th>
+                <th>QR Code</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Populated via JS -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Update Modal Form -->
+<div id="updateModal">
+    <div class="modal-content">
+        <h3>Update QR PDF File</h3>
+        <p style="font-size: 0.85em; color: #666;">Your account credentials will be automatically logged as the updater.</p>
+        <form id="updateForm">
+            <input type="hidden" id="update_qr_id" name="qr_id">
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="update_pdf_file">New PDF File:</label>
+                <input type="file" id="update_pdf_file" name="pdf_file" accept=".pdf" required>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit">Upload & Update</button>
+                <button type="button" style="background-color: #6c757d;" onclick="closeModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
