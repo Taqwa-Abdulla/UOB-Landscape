@@ -5,173 +5,210 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>Statistics and Reports</title>
         <link rel="stylesheet" href="../../../public/css/style.css" />
-        <script src="../../../js/stats/stats.js"></script>
+        <script src="../../../js/stats/stats.js" defer></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-         <script src="../../../js/chatbot/chatbot.js" defer></script>
+        <script src="../../../js/chatbot/chatbot.js" defer></script>
     </head>
 <body>
     <div class="logo-space">
-    <img src="../../../public/images/UOB logo.png" alt="UOB Logo">
-</div>
-<nav class="navbar">
-    <div class="nav-left"></div>
+        <img src="../../../public/images/UOB logo.png" alt="UOB Logo">
+    </div>
+    <nav class="navbar">
+        <div class="nav-left"></div>
+        <div class="nav-center">
+            <a href="../home.html">Home</a>
+            <a href="../about.html">About</a>
+            <a href="../locations/locations.html">Locations</a>
+            
+            <div class="dropdown">
+                <a href="#">Plants</a>
+                <div class="dropdown-content">
+                    <a href="../plants/indoor.html">Indoor</a>
+                    <a href="../plants/outdoor.html">Outdoor</a>
+                </div>
+            </div>
 
-    <div class="nav-center">
-        <a href="../home.html">Home</a>
-        <a href="../about.html">About</a>
-        <a href="../locations/locations.html">Locations</a>
-        
-        <div class="dropdown">
-            <a href="#">Plants</a>
-            <div class="dropdown-content">
-                <a href="../plants/indoor.html">Indoor</a>
-                <a href="../plants/outdoor.html">Outdoor</a>
+            <div class="dropdown">
+                <a href="#">Projects</a>
+                <div class="dropdown-content">
+                    <a href="../projects/before and after.html">Landscape Improvements</a>
+                    <a href="#">Statistics And Reports</a>
+                </div>
             </div>
         </div>
 
-        <div class="dropdown">
-            <a href="#">Projects</a>
-            <div class="dropdown-content">
-                <a href="../projects/before and after.html">Landscape Improvements</a>
-                <a href="#">Statistics And Reports</a>
-            </div>
+        <div class="nav-right">
+            <a href="../../../login/login.html"><button class="login-btn">Login</button></a>
         </div>
-    </div>
+    </nav>
 
-    <div class="nav-right">
-        <a href="../../../login/login.html"><button class="login-btn">Login</button></a>
-    </div>
-</nav>
-   <main class="stats-main">
-    <section class="catching-section-stats">
-    <h1 class="catching-h1-stats">Projects & Annual Reports</h1>
-    <p class="catching-p-stats">Showcasing engineering student innovations and documenting the dedicated work
-      of our landscaping staff in maintaining and enhancing campus green spaces</p>
-    <img class="chaching-img-stat" src="../../../public/images/S18.jpg">
-  </section>
-  <h1 class="landscape-h1-stats">Landscape Statistics</h1>
-    <p class="landscape-p-stats">Track the growth and development of our campus landscape through comprehensive data and visual insights spanning
-      multiple years of environmental enhancement.</p>
-  <section class="stats">
-              <div class="stat-container">
-            <div class="num"></div>
-            <div class="num-text">Plant Species</div>
-        </div>
-        <div class="stat-container">
-            <div class="num"></div>
-            <div class="num-text">Locations</div>
-        </div>
-        <div class="stat-container">
-             <div class="num"></div>
-             <div class="num-text">Square Meters</div>
-        </div>
-        <div class="stat-container">
-            <div class="num"></div>
-            <div class="num-text">Projects</div>
-        </div>
-  </section>
-  <section class="stat-growth">
-    <h2>Annual Growth Trends</h2>
-    <p>Visualizing the expansion of our campus landscape initiatives over the years</p>
-    
-    <!-- Chart Canvas Containers -->
-    <div class="charts-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+<main class="stats-main">
+        <section class="catching-section-stats">
+            <h1 class="catching-h1-stats">Projects & Annual Reports</h1>
+            <p class="catching-p-stats">Showcasing engineering student innovations and documenting the dedicated work of our landscaping staff in maintaining and enhancing campus green spaces</p>
+            <img class="chaching-img-stat" src="../../../public/images/S18.jpg">
+        </section>
+
+        <h1 class="landscape-h1-stats">Landscape Statistics</h1>
+        <p class="landscape-p-stats">Track the growth and development of our campus landscape through comprehensive data and visual insights spanning multiple years of environmental enhancement.</p>
         
-        <!-- 1. Pie/Doughnut Chart for Indoor vs Outdoor -->
-        <div class="chart-box" style="flex: 1; min-width: 300px;">
-            <h3>Indoor vs Outdoor Species</h3>
-            <canvas id="indoorOutdoorChart"></canvas>
-        </div>
+        <section class="stats">
+            <div class="stat-container">
+                <div class="num"></div>
+                <div class="num-text">Plant Species</div>
+            </div>
+            <div class="stat-container">
+                <div class="num"></div>
+                <div class="num-text">Locations</div>
+            </div>
+            <div class="stat-container">
+                 <div class="num"></div>
+                 <div class="num-text">Square Meters</div>
+            </div>
+            <div class="stat-container">
+                <div class="num"></div>
+                <div class="num-text">Projects</div>
+            </div>
+            <div class="stat-container">
+                <div class="num" id="newsCountNum"></div>
+                <div class="num-text">Published News</div>
+            </div>
+        </section>
 
-        <!-- 2. Bar Chart for Green Area Growth -->
-        <div class="chart-box" style="flex: 1; min-width: 300px;">
-            <h3>Green Area Expansion (sq. meters)</h3>
-            <canvas id="areaYearChart"></canvas>
-        </div>
+        <section class="stat-growth">
+            <h2>Annual Growth Trends</h2>
+            <p>Visualizing the expansion of our campus landscape initiatives over the years</p>
+            
+            <div class="charts-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div class="chart-box" style="flex: 1; min-width: 300px;">
+                    <h3>Indoor vs Outdoor Species</h3>
+                    <canvas id="indoorOutdoorChart"></canvas>
+                </div>
 
-    </div>
-</section>
+                <div class="chart-box" style="flex: 1; min-width: 300px;">
+                    <h3>Green Area Expansion (sq. meters)</h3>
+                    <canvas id="areaYearChart"></canvas>
+                </div>
 
-<section class="stat-reports">
-    <h2>Landscape Projects Annual Reports</h2>
-    <div class="report-search-container">
-        <input type="text" id="reportSearchInput" placeholder="Search reports by name or year..." />
-    </div>
-</section>
-   </main>
-   <footer>
-      <div>
-        <h4>About</h4>
-        <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information
-          about plants, their locations, and ecological significance.</p>
-      </div>
-      <div>
-        <h4>Navigation</h4>
-  <ul>
-    <li>
-     <a href="../home.html">Home</a>
-    </li>
-    <li>
-      <a href="../about.html">About</a>
-    </li>
-    <li>
-      <a href="../locations/locations.html">Locations</a>
-    </li>
-    <li>
-    <div>
-    <a href="#">Plants</a>
-    <div>
-        <a href="../plants/indoor.html">Indoor</a>
-        <a href="../plants/outdoor.html">Outdoor</a>
-    </div>
-   </div>
-   </li>
-   <li>
-   <div>
-    <a href="#">Projects</a>
-    <div>
-   <a href="../projects/before and after.html and after.html">Landscape Improvements</a>
-        <a href="#">Statistics And Reports</a>
-    </div>
-   </div>
-   </li>
-  </ul>
-      </div>
-      <div>
-        <h4>External Links</h4>
-        <ul>
-          <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
-          <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of
-              Bahrain</a></li>
-          <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank"
-              rel="noopener noreferrer">Sustainable Development</a></li>
-        </ul>
-      </div>
-      <div >
-        <h4>Contact</h4>
+                <div class="chart-box" style="flex: 1; min-width: 300px;">
+                    <h3>Plants Added Per Year</h3>
+                    <canvas id="plantsPerYearChart"></canvas>
+                </div>
+
+                <div class="chart-box" style="flex: 1; min-width: 300px;">
+                    <h3>Completed Projects Per Year</h3>
+                    <canvas id="completedProjectsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Chart Statistics Table Section (Supports all 4 charts) -->
+        <section class="stat-reports" style="margin-top: 40px;">
+            <h2>Detailed Chart Data Breakdown</h2>
+            <p>Inspect the raw data powering the growth and species distribution charts</p>
+            
+            <div id="chartTableControls" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;">
+                <select id="chartCategoryFilter" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; background: #fff;">
+                    <option value="indoor_outdoor">Indoor vs Outdoor</option>
+                    <option value="green_area">Green Area Expansion</option>
+                    <option value="plants_added">Plants Added Per Year</option>
+                    <option value="completed_projects">Completed Projects Per Year</option>
+                </select>
+            </div>
+
+            <div id="chartTableContainer"></div>
+        </section>
+
+        <!-- Detailed Annual Reports Section with Year Tabs -->
+        <section class="stat-reports" style="margin-top: 40px;">
+            <h2>Detailed Annual Reports</h2>
+            <p>Browse detailed documentation and records by year</p>
+
+            <div id="detailedReportControls" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                <!-- Year selector tabs rendered via JS -->
+                <div id="reportYearTabs" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                <input type="text" id="detailedSearchInput" placeholder="Search report content..." style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; min-width: 220px;" />
+            </div>
+
+            <div id="detailedReportTableContainer"></div>
+        </section>
+
+        <!-- Legacy / Original Annual Reports List Section -->
+        <section class="stat-reports" style="margin-top: 40px;">
+            <h2>Landscape Projects Annual Reports (List View)</h2>
+            
+            <div id="reportControls" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;">
+                <input type="text" id="reportSearchInput" placeholder="Search reports by name..." style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex: 1; min-width: 220px;" />
+                <select id="reportYearFilter" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <option value="">All Years</option>
+                </select>
+                <select id="reportOrder" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <option value="DESC">Descending (DESC)</option>
+                    <option value="ASC">Ascending (ASC)</option>
+                </select>
+            </div>
+
+            <div id="reportsListContainer"></div>
+        </section>
+    </main>
+
+    <footer>
         <div>
-          <a target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-envelope"></i>
-          </a>
-          <span>landscape@uob.edu.bh</span>
+            <h4>About</h4>
+            <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information about plants, their locations, and ecological significance.</p>
         </div>
-        <div class="social-links">
-          <a target="_blank" rel="noopener noreferrer">
-            <i class="fa-solid fa-phone"></i>
-          </a>
-          <span>+973 1743 8181</span>
+        <div>
+            <h4>Navigation</h4>
+            <ul>
+                <li><a href="../home.html">Home</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../locations/locations.html">Locations</a></li>
+                <li>
+                    <div>
+                        <a href="#">Plants</a>
+                        <div>
+                            <a href="../plants/indoor.html">Indoor</a>
+                            <a href="../plants/outdoor.html">Outdoor</a>
+                        </div>
+                   </div>
+                </li>
+                <li>
+                   <div>
+                        <a href="#">Projects</a>
+                        <div>
+                            <a href="../projects/before and after.html">Landscape Improvements</a>
+                            <a href="#">Statistics And Reports</a>
+                        </div>
+                   </div>
+                </li>
+            </ul>
         </div>
-        <div class="social-links">
-          <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
-            <i class="fab fa-youtube"></i>
-          </a>
-          <span>YouTube</span>
+        <div>
+            <h4>External Links</h4>
+            <ul>
+                <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
+                <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of Bahrain</a></li>
+                <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank" rel="noopener noreferrer">Sustainable Development</a></li>
+            </ul>
         </div>
-      </div>
-    </div>
+        <div>
+            <h4>Contact</h4>
+            <div>
+                <a><i class="fa-solid fa-envelope"></i></a>
+                <span>landscape@uob.edu.bh</span>
+            </div>
+            <div class="social-links">
+                <a><i class="fa-solid fa-phone"></i></a>
+                <span>+973 1743 8181</span>
+            </div>
+            <div class="social-links">
+                <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+                <span>YouTube</span>
+            </div>
+        </div>
+    </footer>
     <div class="footer-bottom">
-      <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
+        <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
     </div>
-  </footer>
 </body>
 </html>
