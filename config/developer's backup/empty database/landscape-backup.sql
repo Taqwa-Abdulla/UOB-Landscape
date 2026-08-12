@@ -1,11 +1,3 @@
--- ==========================================
--- 1. TABLES (Safe Creation)
--- ==========================================
-
--- ==========================================
--- 1. TABLES (Safe Creation)
--- ==========================================
-
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
@@ -40,12 +32,11 @@ CREATE TABLE qrcode (
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT NULL,
-    plant_id VARCHAR(50) REFERENCES plants(plant_id) ON DELETE SET NULL;
+    updated_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE plants (
-    plant_id VARCHAR(50) PRIMARY KEY, -- Changed from SERIAL to VARCHAR to support 'OP-101', etc.
+    plant_id SERIAL PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
@@ -93,7 +84,7 @@ CREATE TABLE projects (
     image_after_path VARCHAR(500) DEFAULT NULL,
     video_proposal_link VARCHAR(500) DEFAULT NULL, 
     pdf_path VARCHAR(500) DEFAULT NULL,
-    project_status VARCHAR(20) DEFAULT 'unknown' CHECK (project_status IN ('unknown', 'in progress', 'planning', 'completed'))                  
+    project_status VARCHAR(20) DEFAULT 'unknown' CHECK (project_status IN ('unknown', 'in progress', 'planning', 'completed'))                
 );
 
 CREATE TABLE records (
@@ -135,15 +126,12 @@ CREATE TABLE news (
     SDGs VARCHAR(255) NOT NULL
 );
 
--- Fixed table name typo and added missing JSONB audit columns used by the trigger function
-CREATE TABLE activity_log (
+CREATE TABLE activitiy_log (
     log_id SERIAL PRIMARY KEY,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     action_type VARCHAR(50) NOT NULL,
-    row_id TEXT NOT NULL, -- Changed to TEXT to safely accommodate string primary keys like plant_id
+    row_id INT NOT NULL,
     table_name VARCHAR(100) NOT NULL,
-    old_values JSONB DEFAULT NULL,
-    new_values JSONB DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -183,11 +171,7 @@ CREATE TABLE IF NOT EXISTS stats_archive (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ==========================================
--- 2. FUNCTIONS (Safe Replacement)
--- ==========================================
-
--- QR Nullify Function
+-- Trigger Function & Trigger Setup
 CREATE OR REPLACE FUNCTION nullify_plant_qr_image()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -195,117 +179,12 @@ BEGIN
     SET qr_image = NULL,
         qr_id = NULL
     WHERE qr_id = OLD.qr_id;
+    
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
--- Logging Function
-CREATE OR REPLACE FUNCTION log_table_changes_func()
-RETURNS TRIGGER AS $$
-DECLARE
-    row_id_val INT;
-    old_data JSONB := NULL;
-    new_data JSONB := NULL;
-    current_user_val INT := NULL;
-    pk_column TEXT;
-    setting_val TEXT;
-    table_name_val TEXT;
-BEGIN
-    BEGIN
-        setting_val := current_setting('app.current_user_id', true);
-        IF setting_val IS NOT NULL AND setting_val <> '' THEN
-            current_user_val := setting_val::INT;
-        END IF;
-    EXCEPTION WHEN OTHERS THEN
-        current_user_val := NULL;
-    END;
-
-    table_name_val := TG_TABLE_NAME;
-
-    pk_column := CASE table_name_val
-        WHEN 'users' THEN 'user_id'
-        WHEN 'locations' THEN 'location_id'
-        WHEN 'qrcode' THEN 'qr_id'
-        WHEN 'plants' THEN 'plant_id'
-        WHEN 'projects' THEN 'project_id'
-        WHEN 'records' THEN 'record_id'
-        WHEN 'news' THEN 'news_id'
-        WHEN 'annual_reports' THEN 'report_id'
-        WHEN 'contributors' THEN 'contributor_id'
-        WHEN 'costs' THEN 'cost_id'
-        WHEN 'stats_archive' THEN 'stat_id'
-        ELSE 'id'
-    END;
-
-    IF (TG_OP = 'INSERT') THEN
-        new_data := to_jsonb(NEW);
-        EXECUTE format('SELECT $1.%I', pk_column) USING NEW INTO row_id_val;
-        
-        INSERT INTO activity_log (action_type, table_name, row_id, new_values, created_by, created_at)
-        VALUES ('INSERT', table_name_val, COALESCE(row_id_val, 0), new_data, current_user_val, NOW());
-        
-        RETURN NEW;
-        
-    ELSIF (TG_OP = 'UPDATE') THEN
-        old_data := to_jsonb(OLD);
-        new_data := to_jsonb(NEW);
-        EXECUTE format('SELECT $1.%I', pk_column) USING NEW INTO row_id_val;
-        
-        INSERT INTO activity_log (action_type, table_name, row_id, old_values, new_values, created_by, created_at)
-        VALUES ('UPDATE', table_name_val, COALESCE(row_id_val, 0), old_data, new_data, current_user_val, NOW());
-        
-        RETURN NEW;
-        
-    ELSIF (TG_OP = 'DELETE') THEN
-        old_data := to_jsonb(OLD);
-        EXECUTE format('SELECT $1.%I', pk_column) USING OLD INTO row_id_val;
-        
-        INSERT INTO activity_log (action_type, table_name, row_id, old_values, created_by, created_at)
-        VALUES ('DELETE', table_name_val, COALESCE(row_id_val, 0), old_data, current_user_val, NOW());
-        
-        RETURN OLD;
-    END IF;
-    
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
--- ==========================================
--- 3. TRIGGERS (Safe Re-creation)
--- ==========================================
-
-DROP TRIGGER IF EXISTS trg_nullify_qr_image_on_delete ON qrcode;
 CREATE TRIGGER trg_nullify_qr_image_on_delete
 AFTER DELETE ON qrcode
 FOR EACH ROW
 EXECUTE FUNCTION nullify_plant_qr_image();
-
-DROP TRIGGER IF EXISTS audit_plants_changes ON plants;
-CREATE TRIGGER audit_plants_changes AFTER INSERT OR UPDATE OR DELETE ON plants FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
-DROP TRIGGER IF EXISTS audit_projects_changes ON projects;
-CREATE TRIGGER audit_projects_changes AFTER INSERT OR UPDATE OR DELETE ON projects FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
-DROP TRIGGER IF EXISTS audit_locations_changes ON locations;
-CREATE TRIGGER audit_locations_changes AFTER INSERT OR UPDATE OR DELETE ON locations FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
-DROP TRIGGER IF EXISTS audit_users_changes ON users;
-CREATE TRIGGER audit_users_changes AFTER INSERT OR UPDATE OR DELETE ON users FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
-DROP TRIGGER IF EXISTS audit_news_changes ON news;
-CREATE TRIGGER audit_news_changes AFTER INSERT OR UPDATE OR DELETE ON news FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
-DROP TRIGGER IF EXISTS audit_records_changes ON records;
-CREATE TRIGGER audit_records_changes AFTER INSERT OR UPDATE OR DELETE ON records FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
-DROP TRIGGER IF EXISTS audit_qrcode_changes ON qrcode;
-CREATE TRIGGER audit_qrcode_changes AFTER INSERT OR UPDATE OR DELETE ON qrcode FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
-DROP TRIGGER IF EXISTS audit_contributors_changes ON contributors;
-CREATE TRIGGER audit_contributors_changes AFTER INSERT OR UPDATE OR DELETE ON contributors FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
-DROP TRIGGER IF EXISTS audit_costs_changes ON costs;
-CREATE TRIGGER audit_costs_changes AFTER INSERT OR UPDATE OR DELETE ON costs FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
-DROP TRIGGER IF EXISTS audit_annual_reports_changes ON annual_reports;
-CREATE TRIGGER audit_annual_reports_changes AFTER INSERT OR UPDATE OR DELETE ON annual_reports FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();

@@ -51,7 +51,7 @@ async function handleLogin(event) {
   }
 
   if (!isValidPassword(password)) {
-    displayMessage("Credentials", "error");
+    displayMessage("Invalid Credentials", "error");
     return;
   }
 

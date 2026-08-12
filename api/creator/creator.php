@@ -108,13 +108,18 @@ try {
 
     // Recent Activities
     $activitySql = "
-        SELECT a.action_type, a.table_name, a.created_at, u.username
-        FROM activitiy_log a
+        SELECT a.action_type, a.table_name, a.row_id, a.created_at, u.username
+        FROM activity_log a
         LEFT JOIN users u ON a.created_by = u.user_id
+        WHERE a.created_by = :user_id 
+          AND a.table_name != 'users'
         ORDER BY a.created_at DESC
         LIMIT 4
     ";
-    $activities = $pdo->query($activitySql)->fetchAll(PDO::FETCH_ASSOC);
+    
+    $stmt = $pdo->prepare($activitySql);
+    $stmt->execute(['user_id' => $_SESSION['user_id']]);
+    $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Recent Projects (Updated aliases to map with frontend keys: id, project_name, location, status)
     $projectsSql = "
