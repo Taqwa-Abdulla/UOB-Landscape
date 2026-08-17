@@ -12,8 +12,15 @@ Landscape Website for University Of Bahrain (UOB)
 # Website Features
 - FAQ Chatbot / Virtual Assistant (Aspen): An interactive, conversational chat window for FAQ with mitigation against Cross-Site Scripting (XSS) attacks.
 - Report generator: Generate Reports for single tables, stats and full report including tables and stats in both PDF and CSV formats.
+<<<<<<< HEAD
 - Notifications, schedule personal and non-personal events with option to print them as PDF, and email users.
+- Full audit tracking based on role with option to export it as PDF or CSV formats.
 - 3D campus locations map
 - Authentication: login & logout with Sanitization & basic Security (cleaning input and role-based access)
 #
+=======
+- Authentication: login & logout.
+- Full audit tracking based on role with option to export it as PDF or CSV formats.
+- 
+>>>>>>> ec7f1e5776c68a1aa2873c3432f5bb7b8c7dfe70
 © 2026 University of Bahrain. All rights reserved.
