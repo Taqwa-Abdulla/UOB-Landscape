@@ -1,6 +1,15 @@
 <?php
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
+
+// Check if user is logged in and has the correct role (using 'user_role')
+$role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
+
+if (!isset($_SESSION['user_id']) || ($role !== 'creator')) {
+    header('Location: /login/login.html');
+    exit;
 }
 
 header("Access-Control-Allow-Origin: *");
@@ -27,7 +36,23 @@ $db = property_exists($database, 'conn') ? $database->conn : null;
 if (!$db && method_exists($database, 'getConnection')) {
     $db = $database->getConnection();
 }
+// Check 2: Get user role (from session, fallback to database)
+    $userRole = $_SESSION['role'] ?? null;
 
+    if (!$userRole) {
+        $roleStmt = $db->prepare("SELECT role FROM users WHERE user_id = ?");
+        $roleStmt->execute([$_SESSION['user_id']]);
+        $userRole = $roleStmt->fetchColumn();
+    }
+
+    // Verify role is strictly 'creator'
+    if (strtolower(trim((string)$userRole)) !== 'creator') {
+        sendResponse([
+            'success' => false, 
+            'error' => 'Forbidden Access',
+            'redirect' => '/site/guest/home.html'
+        ], 403);
+    }
 // 1. Generate QR Code Image with Logo in Center
 if (isset($_GET['url'])) {
     $pdf_url = $_GET['url'];

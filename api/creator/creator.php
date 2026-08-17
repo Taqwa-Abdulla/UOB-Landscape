@@ -49,7 +49,7 @@ try {
     if (strtolower(trim((string)$userRole)) !== 'creator') {
         sendResponse([
             'success' => false, 
-            'error' => 'Forbidden. Creator role required.',
+            'error' => 'Forbidden Access',
             'redirect' => '/site/guest/home.html'
         ], 403);
     }

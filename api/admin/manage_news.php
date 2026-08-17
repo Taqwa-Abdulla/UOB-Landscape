@@ -14,10 +14,17 @@
  * Response Format: JSON
  */
 
-// Temporary error display for debugging
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in and has the correct role (using 'user_role')
+$role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
+
+if (!isset($_SESSION['user_id']) || ($role !== 'admin')) {
+    header('Location: /login/login.html');
+    exit;
+}
 
 // ============================================================================
 // HEADERS AND CORS CONFIGURATION
@@ -36,8 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-
-
 // ============================================================================
 // DATABASE CONNECTION
 // ============================================================================

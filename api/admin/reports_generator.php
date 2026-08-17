@@ -1,4 +1,15 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in and has the correct role (using 'user_role')
+$role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
+
+if (!isset($_SESSION['user_id']) || ($role !== 'admin')) {
+    header('Location: /login/login.html');
+    exit;
+}
 // Secure output buffering to prevent any accidental whitespace/warnings corrupting CSV/PDF headers
 ob_start();
 error_reporting(E_ALL);
@@ -11,7 +22,6 @@ require_once __DIR__ . '/../../config/db.php';
 
 $database = new Database();
 $conn = $database->getConnection();
-
 $action = $_GET['action'] ?? 'fetch';
 $allowed_tables = ['users', 'locations', 'plants', 'projects', 'records', 'news', 'activitiy_log', 'annual_reports', 'contributors', 'qrcode', 'costs', 'stats_archive'];
 

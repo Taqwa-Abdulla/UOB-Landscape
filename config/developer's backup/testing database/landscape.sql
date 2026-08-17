@@ -199,7 +199,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION log_table_changes_func()
 RETURNS TRIGGER AS $$
 DECLARE
-    row_id_val TEXT; -- Changed to TEXT to support string primary keys
+    row_id_val INT;
     old_data JSONB := NULL;
     new_data JSONB := NULL;
     current_user_val INT := NULL;
@@ -235,29 +235,29 @@ BEGIN
 
     IF (TG_OP = 'INSERT') THEN
         new_data := to_jsonb(NEW);
-        EXECUTE format('SELECT $1.%I::TEXT', pk_column) USING NEW INTO row_id_val;
+        EXECUTE format('SELECT $1.%I', pk_column) USING NEW INTO row_id_val;
         
         INSERT INTO activity_log (action_type, table_name, row_id, new_values, created_by, created_at)
-        VALUES ('INSERT', table_name_val, COALESCE(row_id_val, '0'), new_data, current_user_val, NOW());
+        VALUES ('INSERT', table_name_val, COALESCE(row_id_val, 0), new_data, current_user_val, NOW());
         
         RETURN NEW;
         
     ELSIF (TG_OP = 'UPDATE') THEN
         old_data := to_jsonb(OLD);
         new_data := to_jsonb(NEW);
-        EXECUTE format('SELECT $1.%I::TEXT', pk_column) USING NEW INTO row_id_val;
+        EXECUTE format('SELECT $1.%I', pk_column) USING NEW INTO row_id_val;
         
         INSERT INTO activity_log (action_type, table_name, row_id, old_values, new_values, created_by, created_at)
-        VALUES ('UPDATE', table_name_val, COALESCE(row_id_val, '0'), old_data, new_data, current_user_val, NOW());
+        VALUES ('UPDATE', table_name_val, COALESCE(row_id_val, 0), old_data, new_data, current_user_val, NOW());
         
         RETURN NEW;
         
     ELSIF (TG_OP = 'DELETE') THEN
         old_data := to_jsonb(OLD);
-        EXECUTE format('SELECT $1.%I::TEXT', pk_column) USING OLD INTO row_id_val;
+        EXECUTE format('SELECT $1.%I', pk_column) USING OLD INTO row_id_val;
         
         INSERT INTO activity_log (action_type, table_name, row_id, old_values, created_by, created_at)
-        VALUES ('DELETE', table_name_val, COALESCE(row_id_val, '0'), old_data, current_user_val, NOW());
+        VALUES ('DELETE', table_name_val, COALESCE(row_id_val, 0), old_data, current_user_val, NOW());
         
         RETURN OLD;
     END IF;
@@ -305,6 +305,62 @@ CREATE TRIGGER audit_costs_changes AFTER INSERT OR UPDATE OR DELETE ON costs FOR
 
 DROP TRIGGER IF EXISTS audit_annual_reports_changes ON annual_reports;
 CREATE TRIGGER audit_annual_reports_changes AFTER INSERT OR UPDATE OR DELETE ON annual_reports FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
+
+-- ==========================================
+-- 1. NOTIFICATIONS & PREFERENCES TABLES
+-- ==========================================
+
+CREATE TABLE user_notification_settings (
+    user_id INT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+    receive_all BOOLEAN DEFAULT TRUE,
+    mute_all BOOLEAN DEFAULT FALSE,
+    notify_system BOOLEAN DEFAULT TRUE,
+    notify_updates BOOLEAN DEFAULT TRUE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- In-app Notification Bell Feed
+CREATE TABLE notifications (
+    notification_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    type VARCHAR(50) CHECK (type IN ('message', 'status_change', 'deadline', 'system')),
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ==========================================
+-- 2. MESSAGING & CALENDAR (DEADLINES / MEETINGS)
+-- ==========================================
+
+-- Messages Table (with optional Outlook tracking reference)
+CREATE TABLE messages (
+    message_id SERIAL PRIMARY KEY,
+    sender_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    recipient_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    subject VARCHAR(255) NOT NULL,
+    body TEXT NOT NULL,
+    outlook_message_id VARCHAR(255) DEFAULT NULL, -- For future Microsoft Graph API sync
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Calendar & Deadlines (Collaborative between Admin and Creator)
+CREATE TABLE calendar_events (
+    event_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT NULL,
+    event_type VARCHAR(50) CHECK (event_type IN ('meeting', 'task')),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP DEFAULT NULL,
+    status VARCHAR(20) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'due_soon', 'completed', 'expired')),
+    created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_personal BOOLEAN DEFAULT TRUE,
+    assigned_to INT REFERENCES users(user_id) ON DELETE CASCADE,
+    is_completed BOOLEAN DEFAULT FALSE;
+);
 
 /*Dummy Data*/
 INSERT INTO users (username, email, college, major, password_hash, role, is_contributor, updated_by) VALUES

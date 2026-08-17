@@ -1,7 +1,13 @@
 <?php
-session_start();
 
-if (!isset($_SESSION['user_id'])) {
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in and has the correct role (using 'user_role')
+$role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
+
+if (!isset($_SESSION['user_id']) || ($role !== 'admin' && $role !== 'creator')) {
     header('Location: /login/login.html');
     exit;
 }
@@ -22,7 +28,7 @@ try {
 
     if (!$userData) {
         session_destroy();
-        header('Location: login.php');
+        header('Location: /login/login.html');
         exit;
     }
 

@@ -47,14 +47,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // ============================================================================
 // DATABASE CONNECTION
 // ============================================================================
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in and has the correct role (using 'user_role')
+$role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
+
+if (!isset($_SESSION['user_id']) || ($role !== 'admin')) {
+    header('Location: /login/login.html');
+    exit;
+}
 
 require_once __DIR__ . '/../../config/db.php';
 
 $database = new Database();
 $db = $database->getConnection();
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-
 
 // ============================================================================
 // REQUEST PARSING
@@ -64,7 +73,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 $data = json_decode(file_get_contents("php://input"), true);
 $resource = isset($_GET['resource']) ? $_GET['resource'] : '';
 $id = isset($_GET['id']) ? $_GET['id'] : null;
-
 
 // ============================================================================
 // LOCATIONS CRUD FUNCTIONS

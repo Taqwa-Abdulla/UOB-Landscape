@@ -3,11 +3,37 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// Check if user is logged in and has the correct role (using 'user_role')
+$role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
+
+if (!isset($_SESSION['user_id']) || ($role !== 'creator')) {
+    header('Location: /login/login.html');
+    exit;
+}
 require_once __DIR__ . '/../../config/db.php';
 $database = new Database();
 $conn = $database->getConnection();
+// Check 2: Get user role (from session, fallback to database)
+    $userRole = $_SESSION['role'] ?? null;
 
+    if (!$userRole) {
+        $roleStmt = $conn->prepare("SELECT role FROM users WHERE user_id = ?");
+        $roleStmt->execute([$_SESSION['user_id']]);
+        $userRole = $roleStmt->fetchColumn();
+    }
+
+    // Verify role is strictly 'creator'
+    if (strtolower(trim((string)$userRole)) !== 'creator') {
+        sendResponse([
+            'success' => false, 
+            'error' => 'Forbidden Access',
+            'redirect' => '/site/guest/home.html'
+        ], 403);
+    }
 $method = $_SERVER['REQUEST_METHOD'];
 $pathInfo = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $segments = explode('/', trim($pathInfo, '/'));

@@ -8,6 +8,17 @@
  * Response Format: JSON
  */
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in and has the correct role (using 'user_role')
+$role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
+
+if (!isset($_SESSION['user_id']) || ($role !== 'admin')) {
+    header('Location: /login/login.html');
+    exit;
+}
 // Set headers for JSON response and CORS
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
@@ -26,7 +37,6 @@ require_once __DIR__ . '/../../config/db.php';
 // Get the PDO database connection
 $database = new Database();
 $db = $database->getConnection();
-
 // Get the HTTP request method
 $method = $_SERVER['REQUEST_METHOD'];
 

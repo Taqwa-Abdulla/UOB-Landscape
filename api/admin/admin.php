@@ -49,7 +49,7 @@ try {
     if (strtolower(trim((string)$userRole)) !== 'admin') {
         sendResponse([
             'success' => false, 
-            'error' => 'Forbidden. Admin role required.',
+            'error' => 'Forbidden Access.',
             'redirect' => '/site/guest/home.html'
         ], 403);
     }
