@@ -1,7 +1,7 @@
 // --- Element Selections ---
 const loginForm = document.getElementById("login-form");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
+const UserEmail = document.getElementById("email");
+const UserPassword = document.getElementById("password");
 const messageContainer = document.getElementById("message-container");
 
 // --- Display Message Helper ---
@@ -42,8 +42,8 @@ function isValidPassword(password) {
 async function handleLogin(event) {
   event.preventDefault();
 
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
+  const email = UserEmail.value.trim();
+  const password = UserPassword.value;
 
   if (!isValidEmail(email)) {
     displayMessage("Invalid Credentials", "error");
@@ -68,8 +68,8 @@ async function handleLogin(event) {
 
     if (result.success) {
       displayMessage(result.message || "Login successful!", "success");
-      emailInput.value = "";
-      passwordInput.value = "";
+      UserEmail.value = "";
+      UserPassword.value = "";
       
       // Redirect dashboard based on user role returned from backend
       setTimeout(() => {

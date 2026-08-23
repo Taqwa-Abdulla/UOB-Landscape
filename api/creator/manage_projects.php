@@ -3,37 +3,38 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in and has the correct role (using 'user_role')
 $role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
 
 if (!isset($_SESSION['user_id']) || ($role !== 'creator')) {
     header('Location: /login/login.html');
     exit;
 }
+
 require_once __DIR__ . '/../../config/db.php';
 $database = new Database();
 $conn = $database->getConnection();
-// Check 2: Get user role (from session, fallback to database)
-    $userRole = $_SESSION['role'] ?? null;
 
-    if (!$userRole) {
-        $roleStmt = $conn->prepare("SELECT role FROM users WHERE user_id = ?");
-        $roleStmt->execute([$_SESSION['user_id']]);
-        $userRole = $roleStmt->fetchColumn();
-    }
+$userRole = $_SESSION['role'] ?? null;
 
-    // Verify role is strictly 'creator'
-    if (strtolower(trim((string)$userRole)) !== 'creator') {
-        sendResponse([
-            'success' => false, 
-            'error' => 'Forbidden Access',
-            'redirect' => '/site/guest/home.html'
-        ], 403);
-    }
+if (!$userRole) {
+    $roleStmt = $conn->prepare("SELECT role FROM users WHERE user_id = ?");
+    $roleStmt->execute([$_SESSION['user_id']]);
+    $userRole = $roleStmt->fetchColumn();
+}
+
+if (strtolower(trim((string)$userRole)) !== 'creator') {
+    sendResponse([
+        'success' => false,
+        'error' => 'Forbidden Access',
+        'redirect' => '/site/guest/home.html'
+    ], 403);
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 $pathInfo = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $segments = explode('/', trim($pathInfo, '/'));
@@ -51,11 +52,20 @@ foreach ($segments as $index => $segment) {
     }
 }
 
-$inputData = json_decode(file_get_contents("php://input"), true) ?? $_POST;
+$rawInput = file_get_contents("php://input");
+$inputData = !empty($rawInput) ? json_decode($rawInput, true) : $_POST;
+if (!is_array($inputData)) {
+    $inputData = [];
+}
+
+// Allow POST to act as PUT when updating with files if an ID is present
+if ($method === 'POST' && isset($_POST['_method']) && strtoupper($_POST['_method']) === 'PUT') {
+    $method = 'PUT';
+}
 
 switch ($resource) {
     case 'projects':
-        handleProjects($method, $id, $conn, $inputData);
+        handleProjects($method, $id, $conn, $inputData, $_FILES);
         break;
     case 'records':
         handleRecords($method, $id, $conn, $inputData);
@@ -72,10 +82,15 @@ switch ($resource) {
         break;
 }
 
-// ==========================================
-// LOCATIONS HANDLER
-// ==========================================
-function handleLocations($method, $conn) {
+function sendResponse($data, $statusCode = 200)
+{
+    http_response_code($statusCode);
+    echo json_encode($data);
+    exit;
+}
+
+function handleLocations($method, $conn)
+{
     if ($method === 'GET') {
         $stmt = $conn->query("SELECT location_id, name_en, category FROM locations ORDER BY category ASC, name_en ASC");
         echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -85,10 +100,8 @@ function handleLocations($method, $conn) {
     }
 }
 
-// ==========================================
-// PROJECTS HANDLER (All Columns + Sorting)
-// ==========================================
-function handleProjects($method, $id, $conn, $data) {
+function handleProjects($method, $id, $conn, $data, $files)
+{
     switch ($method) {
         case 'GET':
             if ($id) {
@@ -102,12 +115,11 @@ function handleProjects($method, $id, $conn, $data) {
                 $sort = $_GET['sort'] ?? 'created_at';
                 $order = strtoupper($_GET['order'] ?? 'DESC') === 'ASC' ? 'ASC' : 'DESC';
 
-                // Allowed sort columns for safety
                 $allowedSorts = ['project_id', 'title_en', 'project_status', 'created_at'];
                 if (!in_array($sort, $allowedSorts)) {
                     $sort = 'created_at';
                 }
-                
+
                 $sql = "SELECT p.*, l.name_en AS location_name, l.category AS location_category FROM projects p LEFT JOIN locations l ON p.location_id = l.location_id WHERE 1=1";
                 $params = [];
 
@@ -132,63 +144,81 @@ function handleProjects($method, $id, $conn, $data) {
         case 'POST':
         case 'PUT':
             $locationId = null;
-            if (!empty($data['location_name'])) {
+            // Fallback to $_POST if $data is empty due to multipart POST request
+            $requestData = !empty($data) ? $data : $_POST;
+
+            if (!empty($requestData['location_name'])) {
                 $locStmt = $conn->prepare("SELECT location_id FROM locations WHERE name_en = ?");
-                $locStmt->execute([trim($data['location_name'])]);
+                $locStmt->execute([trim($requestData['location_name'])]);
                 $loc = $locStmt->fetch(PDO::FETCH_ASSOC);
                 if ($loc) {
                     $locationId = $loc['location_id'];
                 }
             }
 
-            if ($method === 'POST') {
+            // Process Files or fallback to provided text/path
+            $imageBeforePath = validateAndProcessImage($files['image_before_path'] ?? null, 'before') ?? ($requestData['image_before_path'] ?? null);
+            $imageProposalPath = validateAndProcessImage($files['image_proposal_path'] ?? null, 'proposal') ?? ($requestData['image_proposal_path'] ?? null);
+            $imageAfterPath = validateAndProcessImage($files['image_after_path'] ?? null, 'after') ?? ($requestData['image_after_path'] ?? null);
+            $pdfPath = validateAndProcessPDF($files['pdf_path'] ?? null) ?? ($requestData['pdf_path'] ?? null);
+
+            // Sanitize video proposal link
+            $videoLink = !empty($requestData['video_proposal_link']) ? filter_var(trim($requestData['video_proposal_link']), FILTER_SANITIZE_URL) : null;
+            if ($videoLink && !filter_var($videoLink, FILTER_VALIDATE_URL)) {
+                $videoLink = null;
+            }
+
+            if ($method === 'POST' && !$id) {
                 $sql = "INSERT INTO projects (location_id, created_by, title_en, title_ar, description_en, description_ar, image_before_path, image_proposal_path, image_after_path, video_proposal_link, pdf_path, project_status) 
                         VALUES (:location_id, :created_by, :title_en, :title_ar, :description_en, :description_ar, :image_before_path, :image_proposal_path, :image_after_path, :video_proposal_link, :pdf_path, :project_status)";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([
                     ':location_id' => $locationId,
-                    ':created_by' => $data['created_by'] ?? null,
-                    ':title_en' => htmlspecialchars(strip_tags($data['title_en'] ?? '')),
-                    ':title_ar' => htmlspecialchars(strip_tags($data['title_ar'] ?? '')),
-                    ':description_en' => $data['description_en'] ?? null,
-                    ':description_ar' => $data['description_ar'] ?? null,
-                    ':image_before_path' => $data['image_before_path'] ?? null,
-                    ':image_proposal_path' => $data['image_proposal_path'] ?? null,
-                    ':image_after_path' => $data['image_after_path'] ?? null,
-                    ':video_proposal_link' => $data['video_proposal_link'] ?? null,
-                    ':pdf_path' => $data['pdf_path'] ?? null,
-                    ':project_status' => $data['project_status'] ?? 'unknown'
+                    ':created_by' => $requestData['created_by'] ?? $_SESSION['user_id'],
+                    ':title_en' => htmlspecialchars(strip_tags($requestData['title_en'] ?? '')),
+                    ':title_ar' => htmlspecialchars(strip_tags($requestData['title_ar'] ?? '')),
+                    ':description_en' => $requestData['description_en'] ?? null,
+                    ':description_ar' => $requestData['description_ar'] ?? null,
+                    ':image_before_path' => $imageBeforePath,
+                    ':image_proposal_path' => $imageProposalPath,
+                    ':image_after_path' => $imageAfterPath,
+                    ':video_proposal_link' => $videoLink,
+                    ':pdf_path' => $pdfPath,
+                    ':project_status' => $requestData['project_status'] ?? 'unknown'
                 ]);
-                http_response_code(201);
-                echo json_encode(["message" => "Project created successfully."]);
+                sendResponse(["message" => "Project created successfully."], 201);
             } else {
-                if (!$id) { echo json_encode(["error" => "ID required"]); return; }
+                if (!$id) {
+                    sendResponse(["error" => "ID required"], 400);
+                }
                 $sql = "UPDATE projects SET location_id = :location_id, updated_by = :updated_by, updated_at = CURRENT_TIMESTAMP, title_en = :title_en, title_ar = :title_ar, description_en = :description_en, description_ar = :description_ar, image_before_path = :image_before_path, image_proposal_path = :image_proposal_path, image_after_path = :image_after_path, video_proposal_link = :video_proposal_link, pdf_path = :pdf_path, project_status = :project_status WHERE project_id = :id";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([
                     ':id' => $id,
                     ':location_id' => $locationId,
-                    ':updated_by' => $data['updated_by'] ?? null,
-                    ':title_en' => htmlspecialchars(strip_tags($data['title_en'] ?? '')),
-                    ':title_ar' => htmlspecialchars(strip_tags($data['title_ar'] ?? '')),
-                    ':description_en' => $data['description_en'] ?? null,
-                    ':description_ar' => $data['description_ar'] ?? null,
-                    ':image_before_path' => $data['image_before_path'] ?? null,
-                    ':image_proposal_path' => $data['image_proposal_path'] ?? null,
-                    ':image_after_path' => $data['image_after_path'] ?? null,
-                    ':video_proposal_link' => $data['video_proposal_link'] ?? null,
-                    ':pdf_path' => $data['pdf_path'] ?? null,
-                    ':project_status' => $data['project_status'] ?? 'unknown'
+                    ':updated_by' => $_SESSION['user_id'],
+                    ':title_en' => htmlspecialchars(strip_tags($requestData['title_en'] ?? '')),
+                    ':title_ar' => htmlspecialchars(strip_tags($requestData['title_ar'] ?? '')),
+                    ':description_en' => $requestData['description_en'] ?? null,
+                    ':description_ar' => $requestData['description_ar'] ?? null,
+                    ':image_before_path' => $imageBeforePath,
+                    ':image_proposal_path' => $imageProposalPath,
+                    ':image_after_path' => $imageAfterPath,
+                    ':video_proposal_link' => $videoLink,
+                    ':pdf_path' => $pdfPath,
+                    ':project_status' => $requestData['project_status'] ?? 'unknown'
                 ]);
-                echo json_encode(["message" => "Project updated successfully."]);
+                sendResponse(["message" => "Project updated successfully."]);
             }
             break;
 
         case 'DELETE':
-            if (!$id) { echo json_encode(["error" => "ID required"]); return; }
+            if (!$id) {
+                sendResponse(["error" => "ID required"], 400);
+            }
             $stmt = $conn->prepare("DELETE FROM projects WHERE project_id = ?");
             $stmt->execute([$id]);
-            echo json_encode(["message" => "Project deleted successfully."]);
+            sendResponse(["message" => "Project deleted successfully."]);
             break;
     }
 }
@@ -196,7 +226,8 @@ function handleProjects($method, $id, $conn, $data) {
 // ==========================================
 // RECORDS HANDLER (All Columns + Sorting)
 // ==========================================
-function handleRecords($method, $id, $conn, $data) {
+function handleRecords($method, $id, $conn, $data)
+{
     switch ($method) {
         case 'GET':
             if ($id) {
@@ -225,10 +256,9 @@ function handleRecords($method, $id, $conn, $data) {
                     $params[] = "%$search%";
                 }
                 if (!empty($year)) {
-                    $sql .= " AND r.year = ?";
-                    $params[] = $year;
+                    $sql .= " AND CAST(r.year AS CHAR(4)) LIKE ?";
+                    $params[] = '%' . $year . '%';
                 }
-
                 $sql .= " ORDER BY r.$sort $order";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute($params);
@@ -248,7 +278,7 @@ function handleRecords($method, $id, $conn, $data) {
                 }
             }
 
-            if ($method === 'POST') {
+            if ($method === 'POST' && !$id) {
                 $sql = "INSERT INTO records (location_id, created_by, year, action_en, action_ar, area, green_area, number_of_trees, previous_condition_en, current_condition_en, previous_condition_ar, current_condition_ar, status, start_date, expected_end_date, estimated_cost, notes_en, notes_ar) 
                         VALUES (:location_id, :created_by, :year, :action_en, :action_ar, :area, :green_area, :number_of_trees, :prev_en, :curr_en, :prev_ar, :curr_ar, :status, :start_date, :end_date, :estimated_cost, :notes_en, :notes_ar)";
                 $stmt = $conn->prepare($sql);
@@ -275,7 +305,10 @@ function handleRecords($method, $id, $conn, $data) {
                 http_response_code(201);
                 echo json_encode(["message" => "Record created successfully."]);
             } else {
-                if (!$id) { echo json_encode(["error" => "ID required"]); return; }
+                if (!$id) {
+                    echo json_encode(["error" => "ID required"]);
+                    return;
+                }
                 $sql = "UPDATE records SET location_id = :location_id, updated_by = :updated_by, updated_at = CURRENT_TIMESTAMP, year = :year, action_en = :action_en, action_ar = :action_ar, area = :area, green_area = :green_area, number_of_trees = :number_of_trees, previous_condition_en = :prev_en, current_condition_en = :curr_en, previous_condition_ar = :prev_ar, current_condition_ar = :curr_ar, status = :status, start_date = :start_date, expected_end_date = :end_date, estimated_cost = :estimated_cost, notes_en = :notes_en, notes_ar = :notes_ar WHERE record_id = :id";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([
@@ -304,7 +337,10 @@ function handleRecords($method, $id, $conn, $data) {
             break;
 
         case 'DELETE':
-            if (!$id) { echo json_encode(["error" => "ID required"]); return; }
+            if (!$id) {
+                echo json_encode(["error" => "ID required"]);
+                return;
+            }
             $stmt = $conn->prepare("DELETE FROM records WHERE record_id = ?");
             $stmt->execute([$id]);
             echo json_encode(["message" => "Record deleted successfully."]);
@@ -315,7 +351,8 @@ function handleRecords($method, $id, $conn, $data) {
 // ==========================================
 // COSTS HANDLER
 // ==========================================
-function handleCosts($method, $id, $conn, $data) {
+function handleCosts($method, $id, $conn, $data)
+{
     switch ($method) {
         case 'GET':
             if ($id) {
@@ -349,7 +386,7 @@ function handleCosts($method, $id, $conn, $data) {
 
         case 'POST':
         case 'PUT':
-            if ($method === 'POST') {
+            if ($method === 'POST' && !$id) {
                 $sql = "INSERT INTO costs (reference_type, reference_name, unit_cost) VALUES (:reference_type, :reference_name, :unit_cost)";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([
@@ -360,7 +397,10 @@ function handleCosts($method, $id, $conn, $data) {
                 http_response_code(201);
                 echo json_encode(["message" => "Cost entry created successfully."]);
             } else {
-                if (!$id) { echo json_encode(["error" => "ID required"]); return; }
+                if (!$id) {
+                    echo json_encode(["error" => "ID required"]);
+                    return;
+                }
                 $sql = "UPDATE costs SET reference_type = :reference_type, reference_name = :reference_name, unit_cost = :unit_cost WHERE cost_id = :id";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([
@@ -374,11 +414,111 @@ function handleCosts($method, $id, $conn, $data) {
             break;
 
         case 'DELETE':
-            if (!$id) { echo json_encode(["error" => "ID required"]); return; }
+            if (!$id) {
+                echo json_encode(["error" => "ID required"]);
+                return;
+            }
             $stmt = $conn->prepare("DELETE FROM costs WHERE cost_id = ?");
             $stmt->execute([$id]);
             echo json_encode(["message" => "Cost entry deleted successfully."]);
             break;
     }
 }
-?>
+
+/**
+ * Helper Function: Validate and process secure image uploads with subfolder routing
+ */
+function validateAndProcessImage($file, $subfolder)
+{
+    if (!isset($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        sendResponse(["error" => "File upload failed with error code: " . $file['error']], 400);
+    }
+
+    $maxFileSize = 5 * 1024 * 1024; // 5MB
+    if ($file['size'] > $maxFileSize) {
+        sendResponse(["error" => "Image file size exceeds the maximum allowed limit of 5MB."], 400);
+    }
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->file($file['tmp_name']);
+
+    $allowedMimeTypes = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png'
+    ];
+
+    if (!array_key_exists($mimeType, $allowedMimeTypes)) {
+        sendResponse(["error" => "Invalid image file type. Only JPG and PNG images are allowed."], 400);
+    }
+
+    $extension = $allowedMimeTypes[$mimeType];
+    $secureFileName = bin2hex(random_bytes(16)) . '.' . $extension;
+
+    $rootPath = dirname(__DIR__, 2);
+    $uploadDir = $rootPath . '/uploads/projects/' . $subfolder . '/';
+
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $destination = $uploadDir . $secureFileName;
+    $dbPath = '/uploads/projects/' . $subfolder . '/' . $secureFileName;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        sendResponse(["error" => "Failed to move uploaded image file."], 500);
+    }
+
+    return $dbPath;
+}
+
+/**
+ * Helper Function: Validate and process secure PDF uploads
+ */
+function validateAndProcessPDF($file)
+{
+    if (!isset($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        sendResponse(["error" => "PDF upload failed with error code: " . $file['error']], 400);
+    }
+
+    $maxFileSize = 10 * 1024 * 1024; // 10MB
+    if ($file['size'] > $maxFileSize) {
+        sendResponse(["error" => "PDF file size exceeds the maximum allowed limit of 10MB."], 400);
+    }
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->file($file['tmp_name']);
+
+    $allowedMimeTypes = [
+        'application/pdf' => 'pdf'
+    ];
+
+    if (!array_key_exists($mimeType, $allowedMimeTypes)) {
+        sendResponse(["error" => "Invalid file type. Only PDF documents are allowed."], 400);
+    }
+
+    $secureFileName = bin2hex(random_bytes(16)) . '.pdf';
+
+    $rootPath = dirname(__DIR__, 2);
+    $uploadDir = $rootPath . '/uploads/projects/pdf/';
+
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $destination = $uploadDir . $secureFileName;
+    $dbPath = '/uploads/projects/pdf/' . $secureFileName;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        sendResponse(["error" => "Failed to move uploaded PDF file."], 500);
+    }
+
+    return $dbPath;
+}

@@ -1,284 +1,568 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Plants</title>
-    <link rel="stylesheet" href="../../../public/css/style.css">
-    <script src="../../../js/plants/plants.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="../../../js/creator/plants.js" defer></script>
     <script src="../../../js/chatbot/chatbot.js" defer></script>
     <script src="../../../js/users/login.js" defer></script>
 </head>
-<body>
-     <div class="logo-space">
-    <img src="../../../public/images/UOB logo.png" alt="UOB Logo">
-</div>
-<nav class="navbar">
-    <div class="nav-left"></div>
-    <div class="nav-center">
-        <a href="../view/home.html">Home</a>
-        <a href="../view/about.html">About</a>
-        <a href="../view/locations.html">Locations</a>
-        
-        <div class="dropdown">
-            <a href="#">Plants</a>
-            <div class="dropdown-content">
-                <a href="../view/plants/indoor.html">Indoor</a>
-                <a href="../view/plants/outdoor.html">Outdoor</a>
+<body class="bg-slate-50">
+    <!-- Root Container (Full Screen Flex) -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- 1. Sidebar -->
+        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen">
+            <div>
+                <!-- Brand Logo -->
+                <div
+                    class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
+                    <img class="rounded-xl w-12 h-15" src="/public/images/UOB logo.png" alt="UOB Logo">
+                    <div>Admin<span class="text-blue-600">Panel</span></div>
+                </div>
+
+                <!-- Dynamic User Profile -->
+                <div class="p-4 mx-3 mt-4 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center gap-3">
+                    <div id="user-initials"
+                        class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
+                        --
+                    </div>
+                    <div class="overflow-hidden">
+                        <p id="user-name" class="text-sm font-semibold text-white truncate">Loading...</p>
+                        <p id="profile-user-email" class="text-xs text-slate-400 truncate">...</p>
+                    </div>
+                </div>
+
+                                <!-- Navigation Menu -->
+                <nav class="mt-4 px-3 space-y-1">
+                    <a href="../creator.html"
+                        class="flex items-center gap-3 px-4 py-3 text-white bg-blue-800 rounded-lg font-medium shadow-sm">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6" />
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <details class="group [&_summary::-webkit-details-marker]:hidden">
+                        <summary
+                            class="flex items-center justify-between px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <span>View</span>
+                            </div>
+                            <svg class="w-4 h-4 transition-transform duration-200 group-open:-rotate-180 text-slate-400"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+
+                        <div class="mt-1 pl-4 space-y-1">
+                            <a href="../view/home.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Home</a>
+                            <a href="../view/about.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">About</a>
+                            <a href="../view/locations.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Locations</a>
+                            <a href="../view/plants/indoor.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Indoor
+                                Plants</a>
+                            <a href="../view/plants/outdoor.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Outdoor
+                                Plants</a>
+                            <a href="../view/projects/before and after.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Landscape
+                                Improvemnts</a>
+                            <a href="../view/projects/statistics and reports.html" target="_blank"
+                                rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Statistics
+                                And Reports</a>
+                        </div>
+                    </details>
+
+
+                    <a href="manage_plants.html" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span>Manage Plants</span>
+                    </a>
+
+                    <a href="../view/plants/plants_qrcode.html" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4" />
+                        </svg>
+                        <span>Manage plants QR-code</span>
+                    </a>
+
+                    <a href="manage_projects.html" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-newspaper" viewBox="0 0 16 16">
+                            <path
+                                d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z" />
+                            <path
+                                d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z" />
+                        </svg>
+                        <span>Manage Projects</span>
+                    </a>
+
+                    <a href="manage_activity.html" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Manage Activity (Audit Logs)</span>
+                    </a>
+                </nav>
             </div>
-        </div>
 
-        <div class="dropdown">
-            <a href="#">Projects</a>
-            <div class="dropdown-content">
-                <a href="../view/projects/before and after.html">Landscape Improvements</a>
-                <a href="../view/projects/statistics and reports.html">Statistics And Reports</a>
+            <!-- Footer Action -->
+            <div class="p-4 border-t border-slate-800">
+                <p class="w-full flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium text-slate-400">
+                    &copy; 2026 University of Bahrain.
+                </p>
             </div>
-        </div>
-    </div>
+        </aside>
+        <!-- 2. Main Content Area -->
+        <div class="flex-1 flex flex-col h-screen overflow-y-auto">
 
-    <div class="nav-right">
-        <button id="logout-btn">Logout</button>
-    </div>
-</nav>
-    <div class="mp">
-        <h1 class="manage-plants-h1">Manage Plants</h1>
-    </div>
-    <main class="plant-CRUD">
-     <section class="create-plant">
-        <h2 class="create-plant-h2">Add a New Plant</h2>
-        <form class="plant-create-form" id="plant-form" action="#">
-            <fieldset class="plant-fieldset">
-                <legend class="plant-legend">Plant Details</legend>
-                
-                <div class="plant-form-info">
-                    <label for="plant-id">Plant ID</label>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <span id="plant-id-prefix" style="padding: 6px 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; font-weight: bold;">IP-</span>
-                        <input id="plant-id" type="text" placeholder="001" style="flex: 1;" required>
+            <!-- Top Header -->
+            <header
+                class="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+
+                <div class="flex items-center gap-4">
+                    <!-- Notification Bell with Unread Badge & Popup Container -->
+                    <div class="relative">
+                        <button id="header-bell-btn"
+                            class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition relative cursor-pointer focus:outline-none">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                </path>
+                            </svg>
+                            <!-- Badge showing count: turns blue when 0 -->
+                            <span id="header-unread-badge"
+                                class="absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+                        </button>
+
+                        <!-- Notification Popup Box -->
+                        <div id="notification-popup"
+                            class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 flex flex-col overflow-hidden">
+                            <div
+                                class="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-bold text-gray-800 text-sm">Notifications</h3>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button id="notif-settings-btn" title="Notification Settings"
+                                        class="text-gray-500 hover:text-gray-800 cursor-pointer p-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </button>
+                                    <button onclick="clearAllNotifications()"
+                                        class="text-xs text-red-500 hover:underline cursor-pointer font-medium">Clear
+                                        Notifications</button>
+                                </div>
+                            </div>
+
+                            <!-- Notification Settings Sub-Panel -->
+                            <div id="notif-settings-panel"
+                                class="hidden bg-slate-50 p-3 border-b border-gray-200 text-xs space-y-2">
+                                <div class="font-semibold text-gray-700">Notification Preferences</div>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="pref-all" checked
+                                        class="rounded text-blue-600 focus:ring-blue-500">
+                                    <span>Receive All</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="pref-mute"
+                                        class="rounded text-blue-600 focus:ring-blue-500">
+                                    <span>Mute All</span>
+                                </label>
+                                <div class="pt-1 border-t border-gray-200 space-y-1">
+                                    <span class="text-gray-500 block">Specific Types:</span>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox"
+                                            class="specific-pref rounded text-blue-600 focus:ring-blue-500"
+                                            value="system" checked>
+                                        <span>System Alerts</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox"
+                                            class="specific-pref rounded text-blue-600 focus:ring-blue-500"
+                                            value="updates" checked>
+                                        <span>Updates</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="notificationList" class="max-h-72 overflow-y-auto divide-y divide-gray-100">
+                                <div class="p-4 text-sm text-gray-500 text-center">Loading notifications...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="logout-btn"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition cursor-pointer">
+                        Logout
+                    </button>
+                </div>
+            </header>
+            <!-- Dashboard Body -->
+            <main class="px-6 py-6 space-y-6 w-full flex-1 max-w-none">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <main class="flex flex-col gap-8">
+                        <!-- Add New Plant Form Section -->
+                        <section class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 w-full">
+                            <h2 class="text-xl font-semibold text-gray-700 mb-6 pb-2 border-b border-gray-100">Add a New
+                                Plant</h2>
+                            <form class="w-full" id="plant-form" action="#">
+                                <fieldset>
+                                    <legend class="sr-only">Plant Details</legend>
+
+                                    <!-- Multi-column grid container for fields -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                                        <!-- Plant ID -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="plant-id">Plant ID</label>
+                                            <div class="flex items-center gap-2">
+                                                <span id="plant-id-prefix"
+                                                    class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-600 font-semibold text-sm">IP-</span>
+                                                <input id="plant-id" type="text" placeholder="001"
+                                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                                    required>
+                                            </div>
+                                        </div>
+
+                                        <!-- Location Category -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="location-category">Location Category</label>
+                                            <select id="location-category"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+                                                required>
+                                                <option value="" disabled selected>Select category...</option>
+                                                <option value="Building">Building</option>
+                                                <option value="Gate">Gate</option>
+                                                <option value="Roadside">Roadside</option>
+                                                <option value="Parking">Parking</option>
+                                                <option value="Facility">Facility</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Location ID (Changed from input text to select dropdown) -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="location-id">Location</label>
+                                            <select id="location-id"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+                                                required>
+                                                <option value="">Select Category First</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Created By -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="created-by">Created By</label>
+                                            <input id="created-by" type="text" readonly
+                                                class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-500 cursor-not-allowed text-sm">
+                                        </div>
+
+                                        <!-- English Common Name -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="common-name-en">English Common Name</label>
+                                            <input id="common-name-en" type="text"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        </div>
+
+                                        <!-- Arabic Common Name -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="common-name-ar">Arabic Common Name</label>
+                                            <input id="common-name-ar" type="text"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        </div>
+
+                                        <!-- Scientific Name -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="scientific-name">Scientific Name</label>
+                                            <input id="scientific-name" type="text"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                                required>
+                                        </div>
+
+                                        <!-- Plant Image -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="image-file">Plant Image</label>
+                                            <input id="image-file" type="file" accept="image/*"
+                                                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                                            <input id="image-path" type="hidden">
+                                        </div>
+
+                                        <!-- Quantity -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="quantity">Quantity</label>
+                                            <input id="quantity" type="number" placeholder="10"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        </div>
+
+                                        <!-- Category -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="category">Category</label>
+                                            <input id="category" type="text" placeholder="tree"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        </div>
+
+                                        <!-- Lifecycle -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="lifecycle">Lifecycle</label>
+                                            <input id="lifecycle" type="text" placeholder="Annual"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        </div>
+
+                                        <!-- Water Required -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="water-required">Water Required</label>
+                                            <select id="water-required"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option>Low</option>
+                                                <option>Medium</option>
+                                                <option>High</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Sun Required -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="sun-required">Sun Required</label>
+                                            <select id="sun-required"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option>Full Sun</option>
+                                                <option>Partial Sun</option>
+                                                <option>Partial Shade</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Height -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="height">Height (m)</label>
+                                            <input id="height" name="height" type="text"
+                                                pattern="^\d+(\.\d+)?m-\d+(\.\d+)?m$" placeholder="0.3m-0.6m"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                                required>
+                                        </div>
+
+                                        <!-- Spread -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="spread">Spread (m)</label>
+                                            <input id="spread" name="spread" type="text"
+                                                pattern="^\d+(\.\d+)?m-\d+(\.\d+)?m$" placeholder="0.3m-0.6m"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                                required>
+                                        </div>
+
+                                        <!-- Waste -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="waste">Waste</label>
+                                            <select id="waste"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option>Low</option>
+                                                <option>Medium</option>
+                                                <option>High</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Root Type -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="root-type">Root Type</label>
+                                            <input id="root-type" type="text"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        </div>
+
+                                        <!-- Drought Tolerance -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="drought-tolerance">Drought Tolerance</label>
+                                            <select id="drought-tolerance"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option>Low</option>
+                                                <option>Medium</option>
+                                                <option>High</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Heat Tolerance -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="heat-tolerance">Heat Tolerance</label>
+                                            <select id="heat-tolerance"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option>Low</option>
+                                                <option>Medium</option>
+                                                <option>High</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Bloom -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="bloom">Bloom</label>
+                                            <select id="bloom"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option>Continuous</option>
+                                                <option>Seasonal</option>
+                                                <option>No</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Environmental Impact -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="environmental-impact">Environmental Impact</label>
+                                            <select id="environmental-impact"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option>Low</option>
+                                                <option>Medium</option>
+                                                <option>High</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Oxygen Production -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="oxygen-production">Oxygen Production (g/year)</label>
+                                            <input id="oxygen-production" name="oxygen" type="text"
+                                                pattern="^\d+(-\d+)?$" required placeholder="150 or 100-150"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        </div>
+
+                                        <!-- Carbon Dioxide Absorption -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="carbon-dioxide-absorption">Carbon Dioxide Absorption</label>
+                                            <input id="carbon-dioxide-absorption" name="carbon" type="text"
+                                                pattern="^\d+(-\d+)?$" required placeholder="150 or 100-150"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        </div>
+
+                                        <!-- Class -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                for="plant-class">Class</label>
+                                            <select id="plant-class"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option value="indoor">Indoor</option>
+                                                <option value="outdoor">Outdoor</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Checkboxes side-by-side -->
+                                        <div class="flex items-center gap-6 pt-6 md:col-span-2 lg:col-span-3">
+                                            <div class="flex items-center gap-2">
+                                                <input id="shade" type="checkbox"
+                                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                                <label for="shade"
+                                                    class="text-sm font-medium text-gray-700">Shade</label>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <input id="evaporation-mitigation" type="checkbox"
+                                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                                <label for="evaporation-mitigation"
+                                                    class="text-sm font-medium text-gray-700">Evaporation
+                                                    Mitigation</label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Submit Button spanning full width at the bottom -->
+                                        <div class="md:col-span-2 lg:col-span-3 pt-4">
+                                            <button id="add-plant" type="submit"
+                                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm text-sm">Add
+                                                Plant</button>
+                                        </div>
+
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </section>
+
+                        <!-- Current Plants Table Section -->
+                        <section
+                            class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden w-full">
+                            <h2 class="text-xl font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-100">Current
+                                Plants</h2>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse" id="plants-table">
+                                    <thead>
+                                        <tr
+                                            class="bg-gray-50 border-b border-gray-200 text-gray-600 text-xs uppercase tracking-wider">
+                                            <th class="py-3 px-4 font-semibold">ID</th>
+                                            <th class="py-3 px-4 font-semibold">Scientific Name</th>
+                                            <th class="py-3 px-4 font-semibold">Common Name</th>
+                                            <th class="py-3 px-4 font-semibold">Category</th>
+                                            <th class="py-3 px-4 font-semibold">Class</th>
+                                            <th class="py-3 px-4 font-semibold">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 text-sm text-gray-700" id="plants-tbody">
+                                        <!-- Dynamic rows will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </main>
+                </div>
+                <!-- Notification Reader Modal Popup matching your drawing -->
+                <div id="notif-detail-modal"
+                    class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 relative">
+                        <div class="flex justify-between items-center border-b pb-3">
+                            <span id="modal-notif-date" class="text-xs text-gray-400 font-medium"></span>
+                            <button onclick="closeNotifModal()"
+                                class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
+                        </div>
+                        <div>
+                            <h3 id="modal-notif-title" class="font-bold text-gray-900 text-sm mb-1"></h3>
+                            <p id="modal-notif-body" class="text-sm text-gray-600 whitespace-pre-wrap"></p>
+                        </div>
                     </div>
                 </div>
-
-                <div class="plant-form-info">
-                    <label for="location-category">Location Category</label>
-                    <select id="location-category" required>
-                     <option value="building">Building</option>
-                     <option value="gate">Gate</option>
-                     <option value="wall">Wall</option>
-                    </select>
-                </div>
-                <div class="plant-form-info">
-                    <label for="location-id">Location ID</label>
-                    <input id="location-id" type="text" placeholder="e.g. S40, Gate 1-S55, or Boundary wall" required>
-                </div>
-                <div class="plant-form-info">
-                  <label for="created-by">Created By</label>
-                  <input id="created-by" type="text" readonly style="background-color: #f0f0f0; cursor: not-allowed;">
-                </div>
-                <div class="plant-form-info">
-                    <label for="common-name-en">English Common Name</label>
-                    <input id="common-name-en" type="text">
-                </div>
-                <div class="plant-form-info">
-                    <label for="common-name-ar">Arabic Common Name</label>
-                    <input id="common-name-ar" type="text">
-                </div>
-                <div class="plant-form-info">
-                    <label for="scientific-name">Scientific Name</label>
-                    <input id="scientific-name" type="text" required>
-                </div>
-               <div class="plant-form-info">
-    <label for="image-file">Plant Image</label>
-    <input id="image-file" type="file" accept="image/*">
-    <!-- Hidden input to store the final relative path for database storage -->
-    <input id="image-path" type="hidden">
-</div>
-                <div class="plant-form-info">
-                    <label for="quantity">Quantity</label>
-                    <input id="quantity" type="number"placeholder="10">
-                </div>
-                <div class="plant-form-info">
-                    <label for="category">Category</label>
-                    <input id="category" type="text" placeholder="tree">
-                </div>
-                <div class="plant-form-info">
-                    <label for="lifecycle">Lifecycle</label>
-                    <input id="lifecycle" type="text" placeholder="Annual">
-                </div>
-                <div class="plant-form-info">
-                    <label for="water-required">Water Required</label>
-                    <select id="water-required">
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
-                    </select>
-                </div>
-                <div class="plant-form-info">
-                    <label for="sun-required">Sun Required</label>
-                    <select id="sun-required">
-                        <option>Full Sun</option>
-                        <option>Partial Sun</option>
-                        <option>Partial Shade</option>
-                    </select>
-                </div>
-                <div class="plant-form-info">
-                    <label for="height">Height (m)</label>
-                    <input id="height" name="height" type="text" pattern="^\d+(\.\d+)?m-\d+(\.\d+)?m$" placeholder="eg. 0.3m-0.6m" title="Please enter a height range using the format like 0.3m-0.6m" required>
-                </div>
-                <div class="plant-form-info">
-                    <label for="spread">Spread (m)</label>
-                    <input id="spread" name="spread" type="text" pattern="^\d+(\.\d+)?m-\d+(\.\d+)?m$" placeholder="eg. 0.3m-0.6m" title="Please enter a spread range using the format like 0.3m-0.6m" required>
-                </div>
-                <div class="plant-form-info">
-                    <label for="shade">Shade</label>
-                    <input id="shade" type="checkbox">
-                </div>
-                <div class="plant-form-info">
-                    <label for="waste">Waste</label>
-                    <select id="waste">
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
-                    </select>
-                </div>
-                <div class="plant-form-info">
-                    <label for="evaporation-mitigation">Evaporation Mitigation</label>
-                    <input id="evaporation-mitigation" type="checkbox">
-                </div>
-                <div class="plant-form-info">
-                    <label for="root-type">Root Type</label>
-                    <input id="root-type" type="text">
-                </div>
-                <div class="plant-form-info">
-                    <label for="drought-tolerance">Drought Tolerance</label>
-                    <select id="drought-tolerance">
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
-                    </select>
-                </div>
-                <div class="plant-form-info">
-                    <label for="heat-tolerance">Heat Tolerance</label>
-                    <select id="heat-tolerance">
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
-                    </select>
-                </div>
-                <div class="plant-form-info">
-                    <label for="bloom">Bloom</label>
-                    <select id="bloom">
-                        <option>Continuous</option>
-                        <option>Seasonal</option>
-                        <option>No</option>
-                    </select>
-                </div>
-                <div class="plant-form-info">
-                    <label for="environmental-impact">Environmental Impact</label>
-                    <select id="environmental-impact">
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
-                    </select>
-                </div>
-                <div class="plant-form-info">
-    <label for="oxygen-production">Oxygen Production (g/year)</label>
-    <input id="oxygen-production" name="oxygen" type="text" pattern="^\d+(-\d+)?$" required placeholder="e.g., 150 or 100-150">
-</div>
-<div class="plant-form-info">
-    <label for="carbon-dioxide-absorption">Carbon Dioxide Absorption</label>
-    <input id="carbon-dioxide-absorption" name="carbon" type="text" pattern="^\d+(-\d+)?$" required placeholder="e.g., 150 or 100-150">
-</div>
-                <div class="plant-form-info">
-                    <label for="plant-class">Class</label>
-                    <select id="plant-class">
-                        <option value="indoor">Indoor</option>
-                        <option value="outdoor">Outdoor</option>
-                    </select>
-                </div>
-                <div class="plant-form-info">
-                    <button id="add-plant" type="submit">Add Plant</button>
-                </div>
-            </fieldset>
-        </form>
-    </section>
-    <section class="current-plants">
-        <h2 class="current-plants-h2">Current Plants</h2>
-        <table class="current-plants-table" id="plants-table">
-            <thead class="current-th">
-                <tr class="current-tr">
-                    <th class="current-th">ID</th>
-                    <th class="current-th">Scientific Name</th>
-                    <th class="current-th">Common Name</th>
-                    <th class="current-th">Category</th>
-                    <th class="current-th">Class</th>
-                    <th class="current-th">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="current-tb" id="plants-tbody">
-            </tbody>
-        </table>
-    </section>
-</main>
-    <footer>
-    <div class="footer-top-container">
-        <div class="footer-col">
-            <h4>About</h4>
-            <p>UOB Landscape documents and showcases the diverse flora across our campus, providing detailed information about plants, their locations, and ecological significance.</p>
-        </div>
-
-        <div class="footer-col">
-            <h4>Navigation</h4>
-            <ul>
-                <li><a href="../view/home.html">Home</a></li>
-                <li><a href="../view/about.html">About</a></li>
-                <li><a href="../view/locations.html">Locations</a></li>
-                <li>
-                    <a href="#">Plants</a>
-                    <div style="padding-left: 15px;">
-                        <a href="../view/plants/indoor.html">Indoor</a>
-                        <a href="../view/plants/outdoor.html">Outdoor</a>
-                    </div>
-                </li>
-                <li>
-                    <a href="#">Projects</a>
-                    <div style="padding-left: 15px;">
-                        <a href="../view/projects/before and after.html and after.html">Landscape Improvements</a><br>
-                        <a href="../view/projects/statistics and reports.html">Statistics And Reports</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-
-        <div class="footer-col">
-            <h4>External Links</h4>
-            <ul>
-                <li><a href="https://www.uob.edu.bh/" target="_blank" rel="noopener noreferrer">University of Bahrain</a></li>
-                <li><a href="https://www.mun.gov.bh/newportal/ar" target="_blank" rel="noopener noreferrer">Municipality of Bahrain</a></li>
-                <li><a href="https://www.bahrain.bh/wps/portal/en/BNP/ExploreBahrain/SustainableDevelopment/" target="_blank" rel="noopener noreferrer">Sustainable Development</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-col">
-    <h4>Contact</h4>
-    <div class="social-links">
-        <i class="fa-solid fa-envelope"></i> 
-        <a href="mailto:landscape@uob.edu.bh">landscape@uob.edu.bh</a>
-    </div>
-    <div class="social-links">
-        <i class="fa-solid fa-phone"></i> <span>+973 1743 8181</span>
-    </div>
-    <div class="social-links">
-        <a href="https://www.youtube.com/channel/UCM5UfujAklBwqFCAYDWXMMA" target="_blank" rel="noopener noreferrer">
-            <i class="fab fa-youtube"></i> YouTube
-        </a>
-    </div>
-</div>
-    </div>
-
-    <div class="footer-bottom">
-        <p>&copy; 2026 University of Bahrain. All rights reserved.</p>
-    </div>
-</footer>
 </body>
 </html>

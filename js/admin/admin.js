@@ -117,7 +117,7 @@ function updateActivityLog(activities) {
         return;
     }
 
-    const colorPalette = ['emerald', 'indigo', 'amber', 'blue'];
+    const colorPalette = ['blue', 'blue', 'amber', 'blue'];
 
     activities.forEach((activity, index) => {
         const color = colorPalette[index % colorPalette.length];
@@ -271,7 +271,7 @@ function showPasswordMessage(message, type) {
     }
 
     if (type === "success") {
-        msgContainer.className = "p-3 text-sm rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 mb-4";
+        msgContainer.className = "p-3 text-sm rounded-lg bg-blue-50 text-blue-800 border border-blue-200 mb-4";
     } else {
         msgContainer.className = "p-3 text-sm rounded-lg bg-red-50 text-red-800 border border-red-200 mb-4";
     }
@@ -408,7 +408,7 @@ function renderNotifications(notifications, unreadCount) {
 
     notifications.forEach(notif => {
         const item = document.createElement("div");
-        item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-indigo-50/40'}`;
+        item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-blue-50/40'}`;
         
         const formattedDate = new Date(notif.created_at).toLocaleString();
         
@@ -668,7 +668,7 @@ async function loadSchedule() {
                     <span class="text-gray-400">Type: ${ucFirst(event.event_type)}</span>
                     ${isOwner ? `
                         <div class="flex gap-2">
-                            <button onclick='editEventById(${event.event_id})' class="text-indigo-600 hover:underline cursor-pointer">Edit</button>
+                            <button onclick='editEventById(${event.event_id})' class="text-blue-600 hover:underline cursor-pointer">Edit</button>
                             <button onclick="deleteEvent(${event.event_id})" class="text-red-500 hover:underline cursor-pointer">Delete</button>
                         </div>
                     ` : ''}
@@ -914,7 +914,7 @@ function setElementText(id, value) {
 
 function getStatusBadge(status) {
     const s = (status || '').toLowerCase();
-    if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">In Progress</span>';
+    if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">In Progress</span>';
     if (s === 'completed') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>';
     if (s === 'planning') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>';
     

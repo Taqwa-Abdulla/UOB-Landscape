@@ -9,7 +9,7 @@ const badgeColorMap = {
   building: 'bg-sky-600',
   facility: 'bg-amber-600',
   infrastructure: 'bg-purple-600',
-  roadside: 'bg-emerald-600',
+  roadside: 'bg-blue-600',
   gate: 'bg-red-600',
   park: 'bg-green-600'
 };
@@ -82,7 +82,7 @@ try {
           'building', '#0284c7',       // sky-600
           'facility', '#d97706',       // amber-600
           'infrastructure', '#9333ea', // purple-600
-          'roadside', '#059669',       // emerald-600
+          'roadside', '#059669',       // blue-600
           'gate', '#dc2626',           // red-600
           'park', '#16a34a',           // green-600
           '#64748b'                    // slate-500

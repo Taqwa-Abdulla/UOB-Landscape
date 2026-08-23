@@ -115,14 +115,14 @@ function updateActivityLog(activities) {
     if (!activities || activities.length === 0) {
         container.innerHTML = `
             <div class="relative group">
-                <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-white group-hover:scale-110 transition-transform"></span>
+                <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-white group-hover:scale-110 transition-transform"></span>
                 <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">System</span></p>
                 <p class="text-xs text-gray-500 mt-0.5">No recent activity found.</p>
             </div>`;
         return;
     }
 
-    const colors = ['bg-emerald-500', 'bg-indigo-500', 'bg-blue-500', 'bg-amber-500'];
+    const colors = ['bg-blue-500', 'bg-blue-500', 'bg-blue-500', 'bg-amber-500'];
 
     activities.forEach((activity, index) => {
         const colorClass = colors[index % colors.length];
@@ -177,7 +177,7 @@ function updateRecentProjects(projects) {
                 <td class="px-6 py-4">${escapeHtml(project.location || 'Unknown Location')}</td>
                 <td class="px-6 py-4">${getStatusBadge(project.status)}</td>
                 <td class="px-6 py-4 text-right">
-                    <a href="/api/improvments/manage_projects.php?id=${escapeHtml(project.id || '')}" class="text-indigo-600 hover:text-indigo-900 font-medium text-xs">Edit</a>
+                    <a href="/api/improvments/manage_projects.php?id=${escapeHtml(project.id || '')}" class="text-blue-600 hover:text-blue-900 font-medium text-xs">Edit</a>
                 </td>
             </tr>
         `;
@@ -295,7 +295,7 @@ function showPasswordMessage(message, type) {
     }
 
     if (type === "success") {
-        msgContainer.className = "p-3 text-sm rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 mb-4";
+        msgContainer.className = "p-3 text-sm rounded-lg bg-blue-50 text-blue-800 border border-blue-200 mb-4";
     } else {
         msgContainer.className = "p-3 text-sm rounded-lg bg-red-50 text-red-800 border border-red-200 mb-4";
     }
@@ -418,7 +418,7 @@ function renderNotifications(notifications, unreadCount) {
 
     notifications.forEach(notif => {
         const item = document.createElement("div");
-        item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-indigo-50/40'}`;
+        item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-blue-50/40'}`;
         
         const formattedDate = new Date(notif.created_at).toLocaleString();
         
@@ -678,7 +678,7 @@ async function loadSchedule() {
                     <span class="text-gray-400">Type: ${ucFirst(event.event_type)}</span>
                     ${isOwner ? `
                         <div class="flex gap-2">
-                            <button onclick='editEventById(${event.event_id})' class="text-indigo-600 hover:underline cursor-pointer">Edit</button>
+                            <button onclick='editEventById(${event.event_id})' class="text-blue-600 hover:underline cursor-pointer">Edit</button>
                             <button onclick="deleteEvent(${event.event_id})" class="text-red-500 hover:underline cursor-pointer">Delete</button>
                         </div>
                     ` : ''}
@@ -924,7 +924,7 @@ function setElementText(id, value) {
 
 function getStatusBadge(status) {
     const s = (status || '').toLowerCase();
-    if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">In Progress</span>';
+    if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">In Progress</span>';
     if (s === 'completed') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>';
     if (s === 'planning') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>';
     

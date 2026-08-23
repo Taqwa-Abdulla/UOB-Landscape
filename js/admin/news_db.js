@@ -1,3 +1,6 @@
+// ============================================================================
+// CONFIGURATION & GLOBAL STATE
+// ============================================================================
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
     initNotifications();
@@ -7,252 +10,317 @@ async function initDashboard() {
     await fetchDashboardData();
     await loadNotifications();
 }
-let currentPage = 1;
-let searchQuery = '';
-let selectedUserFilter = '';
-let debounceTimer;
-let globalUsersMap = {};
-let isDropdownInitialized = false;
+const API_BASE_URL = '/api/admin/manage_news.php';
 
-const searchInput = document.getElementById('searchInput');
-const userFilterSelect = document.getElementById('userFilterSelect'); 
-const logTableBody = document.getElementById('logTableBody');
-const tableHeaderRow = document.getElementById('tableHeaderRow');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const pageInfo = document.getElementById('pageInfo');
-const exportDropdown = document.getElementById('exportDropdown');
-const exportBtn = document.getElementById('exportBtn');
-const exportExcelLink = document.getElementById('exportExcel');
-const exportPdfLink = document.getElementById('exportPdf');
+// DOM Element References
+const newsTableBody = document.getElementById('newsTableBody');
+const newsForm = document.getElementById('news-form');
+const formHeading = document.getElementById('form-heading');
+const submitBtn = document.getElementById('submit-btn');
+const cancelBtn = document.getElementById('cancel-btn');
+const newsDetailView = document.getElementById('news-detail-view');
 
-// Dynamically configure export links using the original API path
-function setupExportLinks() {
-    const originalApiUrl = '/api/users/activity_logs.php';
-    if (exportExcelLink) exportExcelLink.href = `${originalApiUrl}?export=excel`;
-    if (exportPdfLink) exportPdfLink.href = `${originalApiUrl}?export=pdf`;
-}
+// Hidden input for tracking update mode vs create mode
+const newsIdInput = document.getElementById('news_id');
 
-// Initialize export links on script load
-setupExportLinks();
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial fetch of news list
+    fetchNewsList();
 
-// Toggle dropdown menu
-exportBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    exportDropdown.classList.toggle('active');
-});
+    // Event Listeners
+    if (newsForm) {
+        newsForm.addEventListener('submit', handleFormSubmit);
+    }
 
-window.addEventListener('click', () => {
-    if (exportDropdown.classList.contains('active')) {
-        exportDropdown.classList.remove('active');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', resetFormState);
     }
 });
 
-async function fetchLogs(page = 1, search = '', userFilter = '') {
+// ============================================================================
+// READ OPERATIONS (FETCH & DISPLAY)
+// ============================================================================
+
+/**
+ * Fetches the entire news list from the API and renders it in the HTML table
+ */
+async function fetchNewsList() {
     try {
-        let url = `/api/users/activity_logs.php?fetch_logs=1&page=${page}&search=${encodeURIComponent(search)}`;
-        if (userFilter) {
-            url += `&user_filter=${encodeURIComponent(userFilter)}`;
+        const response = await fetch(`${API_BASE_URL}?resource=news`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (!data.success) {
-            throw new Error(data.error || 'Failed to fetch logs.');
-        }
-
-        if (data.users_map) {
-            globalUsersMap = data.users_map;
-        }
-
-        // Populate dropdown only once or if it has only the default option to prevent clearing selected state
-        if (data.dropdown_users && userFilterSelect && (!isDropdownInitialized || userFilterSelect.options.length <= 1)) {
-            populateUserDropdown(data.dropdown_users, userFilter);
-            isDropdownInitialized = true;
-        }
-
-        updateHeaders(data.role);
-        await renderTable(data.logs, data.role);
-        renderPagination(data.current_page, data.total_pages);
-        currentPage = data.current_page;
+        const newsItems = await response.json();
+        renderNewsTable(newsItems);
     } catch (error) {
-        logTableBody.innerHTML = `<tr><td colspan="6" class="no-data" style="color: #ef4444;">Error: ${error.message}</td></tr>`;
-    }
-}
-
-function populateUserDropdown(users, currentSelection) {
-    let optionsHtml = `<option value="">All Users</option>`;
-    users.forEach(u => {
-        let selected = String(u.user_id) === String(currentSelection) ? 'selected' : '';
-        optionsHtml += `<option value="${u.user_id}" ${selected}>${escapeHtml(u.username)}</option>`;
-    });
-    userFilterSelect.innerHTML = optionsHtml;
-}
-
-async function resolveValue(key, val) {
-    if (val === null || val === undefined) return 'NULL';
-    
-    const userKeys = ['updated_by', 'created_by', 'user_id', 'owner_id', 'creator_id'];
-    if (userKeys.includes(key.toLowerCase()) && !isNaN(val)) {
-        const userId = Number(val);
-        if (userId === 0) return 'System';
-        
-        if (globalUsersMap[userId]) {
-            return globalUsersMap[userId];
+        console.error('Error fetching news:', error);
+        if (newsTableBody) {
+            newsTableBody.innerHTML = `<tr><td colspan="6" class="error-text">Failed to load news items.</td></tr>`;
         }
-        
-        return `User #${userId}`;
-    }
-    
-    return String(val);
-}
-
-function updateHeaders(role) {
-    if (role === 'admin') {
-        tableHeaderRow.innerHTML = `
-            <th>ID</th>
-            <th>Action Type</th>
-            <th>Table & Changes</th>
-            <th>Row ID</th>
-            <th>Performed By</th>
-            <th>Timestamp</th>
-        `;
-    } else {
-        tableHeaderRow.innerHTML = `
-            <th>ID</th>
-            <th>Action Type</th>
-            <th>Table & Changes</th>
-            <th>Row ID</th>
-            <th>Timestamp</th>
-        `;
     }
 }
 
-async function renderLogsTableRows(logs, role) {
-    const colSpan = role === 'admin' ? 6 : 5;
-    if (!logs || logs.length === 0) {
-        return `<tr><td colspan="${colSpan}" class="no-data">No audit logs found.</td></tr>`;
-    }
+/**
+ * Renders array of news items into HTML table rows
+ */
+function renderNewsTable(newsItems) {
+    if (!newsTableBody) return;
 
-    let rowsHtml = '';
-
-    for (let log of logs) {
-        let performedByText = log.creator_name ? escapeHtml(log.creator_name) : 'Unknown User';
-        let userDisplay = role === 'admin' 
-            ? `<td>${performedByText} <small style="color:var(--text-muted)">(${escapeHtml(log.creator_email || 'N/A')})</small></td>` 
-            : '';
-
-        let detailsHtml = `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">`;
-        
-        if (log.action_type === 'UPDATE' && log.old_values && log.new_values) {
-            let oldObj = typeof log.old_values === 'string' ? JSON.parse(log.old_values) : log.old_values;
-            let newObj = typeof log.new_values === 'string' ? JSON.parse(log.new_values) : log.new_values;
-            
-            let changesCount = 0;
-            for (let key in newObj) {
-                if (oldObj[key] !== newObj[key]) {
-                    changesCount++;
-                    
-                    if (key.toLowerCase().includes('password')) {
-                        detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#3b82f6; font-style:italic;">Password was changed</span></div>`;
-                    } else {
-                        let oldValStr = await resolveValue(key, oldObj[key]);
-                        let newValStr = await resolveValue(key, newObj[key]);
-                        
-                        detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#ef4444">${escapeHtml(oldValStr)}</span> → <span style="color:#10b981">${escapeHtml(newValStr)}</span></div>`;
-                    }
-                }
-            }
-            if (changesCount === 0) {
-                detailsHtml += `<em>No direct field differences detected</em>`;
-            }
-        } else if (log.action_type === 'INSERT' && log.new_values) {
-            let newObj = typeof log.new_values === 'string' ? JSON.parse(log.new_values) : log.new_values;
-            
-            for (let key in newObj) {
-                if (key.toLowerCase().includes('password')) {
-                    detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#3b82f6; font-style:italic;">[Password configured]</span></div>`;
-                } else {
-                    let valStr = await resolveValue(key, newObj[key]);
-                    detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#10b981">${escapeHtml(valStr)}</span></div>`;
-                }
-            }
-        } else if (log.action_type === 'DELETE' && log.old_values) {
-            let oldObj = typeof log.old_values === 'string' ? JSON.parse(log.old_values) : log.old_values;
-            
-            for (let key in oldObj) {
-                if (key.toLowerCase().includes('password')) {
-                    detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#3b82f6; font-style:italic;">[Protected]</span></div>`;
-                } else {
-                    let valStr = await resolveValue(key, oldObj[key]);
-                    detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#ef4444">${escapeHtml(valStr)}</span></div>`;
-                }
-            }
-        }
-        detailsHtml += `</div>`;
-
-        rowsHtml += `
-            <tr>
-                <td>#${log.log_id}</td>
-                <td><span class="badge-action">${escapeHtml(log.action_type)}</span></td>
-                <td>
-                    <strong>${escapeHtml(log.table_name)}</strong>
-                    ${detailsHtml}
-                </td>
-                <td>${log.row_id}</td>
-                ${userDisplay}
-                <td>${escapeHtml(log.created_at)}</td>
+    if (!Array.isArray(newsItems) || newsItems.length === 0) {
+        newsTableBody.innerHTML = `
+            <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-gray-400 text-center" colspan="6">No news found.</td>
             </tr>
         `;
+        return;
     }
 
-    return rowsHtml;
+    newsTableBody.innerHTML = newsItems.map(item => {
+        const id = item.news_id || item.id;
+        const titleEn = item.title_en || item.title || 'Untitled';
+        const titleAr = item.title_ar || '-';
+
+        // Robust check for SDGs field variations across backend models
+        let sdgsRaw = item.SDGs ?? item.sdgs ?? item.sdg_tags ?? item.sdg ?? '-';
+        if (Array.isArray(sdgsRaw)) {
+            sdgsRaw = sdgsRaw.join(', ');
+        }
+        const sdgs = sdgsRaw || '-';
+
+        const link = item.link || item.source_url || '';
+
+        return `
+            <tr class="hover:bg-gray-50 transition-colors border-b border-gray-100">
+                <td class="px-6 py-4 font-medium text-gray-900">${id}</td>
+                <td class="px-6 py-4 font-medium text-gray-800"><strong>${escapeHtml(titleEn)}</strong></td>
+                <td class="px-6 py-4 text-gray-600" dir="rtl">${escapeHtml(titleAr)}</td>
+                <td class="px-6 py-4 text-gray-600">${escapeHtml(String(sdgs))}</td>
+                <td class="px-6 py-4">
+                    ${link ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition shadow-sm">Source Link</a>` : '<span class="text-gray-400">-</span>'}
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition" onclick="viewSingleNews(${id})">View</button>
+                        <button type="button" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition shadow-sm" onclick="openEditMode(${id})">Edit</button>
+                        <button type="button" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-medium hover:bg-rose-700 transition shadow-sm" onclick="deleteNews(${id})">Delete</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
-async function renderTable(logs, role) {
-    logTableBody.innerHTML = await renderLogsTableRows(logs, role);
-}
+/**
+ * Fetches and displays details for a single news article inside #news-detail-view
+ */
+async function viewSingleNews(id) {
+    if (!newsDetailView) return;
 
-function renderPagination(current, total) {
-    pageInfo.textContent = `Page ${current} of ${total || 1}`;
-    prevBtn.disabled = current <= 1;
-    nextBtn.disabled = current >= total || total === 0;
-}
+    try {
+        const response = await fetch(`${API_BASE_URL}?resource=news&id=${id}`);
+        if (!response.ok) throw new Error('Failed to load news details.');
 
-searchInput.addEventListener('input', (e) => {
-    clearTimeout(debounceTimer);
-    searchQuery = e.target.value;
-    debounceTimer = setTimeout(() => {
-        fetchLogs(1, searchQuery, selectedUserFilter);
-    }, 300);
-});
+        const news = await response.json();
 
-if (userFilterSelect) {
-    userFilterSelect.addEventListener('change', (e) => {
-        selectedUserFilter = e.target.value;
-        fetchLogs(1, searchQuery, selectedUserFilter);
-    });
-}
+        // Safe resolution for SDGs field in details view
+        let sdgsVal = news.SDGs ?? news.sdgs ?? news.sdg_tags ?? news.sdg ?? '-';
+        if (Array.isArray(sdgsVal)) {
+            sdgsVal = sdgsVal.join(', ');
+        }
 
-prevBtn.addEventListener('click', () => {
-    if (currentPage > 1) {
-        fetchLogs(currentPage - 1, searchQuery, selectedUserFilter);
+        const link = news.link || news.source_url || '';
+
+        newsDetailView.innerHTML = `
+            <div class="news-detail-card" style="padding: 15px; border: 1px solid #ccc; margin-top: 15px; background: #f9f9f9;">
+                <h3>${escapeHtml(news.title_en || news.title || '')}</h3>
+                <h4 dir="rtl">${escapeHtml(news.title_ar || '')}</h4>
+                <p><strong>SDGs:</strong> ${escapeHtml(String(sdgsVal))}</p>
+                <p><strong>English Content:</strong> ${escapeHtml(news.news_description_en || news.content || news.summary || '')}</p>
+                <p dir="rtl"><strong>Arabic Content:</strong> ${escapeHtml(news.news_description_ar || '')}</p>
+                
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    ${link ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="btn-source-link" style="display:inline-block; padding:6px 12px; background:#007bff; color:#fff; text-decoration:none; border-radius:4px; font-size:14px;">Visit Source</a>` : ''}
+                    <button type="button" onclick="document.getElementById('news-detail-view').style.display='none'" style="padding:6px 12px; background:#6c757d; color:#fff; border:none; border-radius:4px; cursor:pointer;">Close View</button>
+                </div>
+            </div>
+        `;
+        newsDetailView.style.display = 'block';
+        newsDetailView.scrollIntoView({ behavior: 'smooth' });
+
+    } catch (error) {
+        console.error('Error fetching detail view:', error);
+        alert('Could not load article details.');
     }
-});
-
-nextBtn.addEventListener('click', () => {
-    fetchLogs(currentPage + 1, searchQuery, selectedUserFilter);
-});
-
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-    );
 }
 
-fetchLogs();
+// ============================================================================
+// EDIT FORM PRE-FILL LOGIC
+// ============================================================================
+
+/**
+ * Fetches item by ID and PRE-FILLS form fields for EDITING
+ */
+async function openEditMode(id) {
+    try {
+        const response = await fetch(`${API_BASE_URL}?resource=news&id=${id}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch article details.');
+        }
+
+        const news = await response.json();
+
+        // 1. Set requested title heading
+        if (formHeading) {
+            formHeading.textContent = `Edit "${news.title_en}" news`;
+        }
+
+        if (submitBtn) {
+            submitBtn.textContent = 'Update News';
+        }
+
+        if (cancelBtn) {
+            cancelBtn.style.display = 'inline-block';
+        }
+
+        // 2. Pre-fill form fields with existing DB values so users don't start from scratch
+        newsIdInput.value = news.news_id || news.id || '';
+
+        // Extract SDGs value safely
+        let sdgsVal = news.SDGs ?? news.sdgs ?? news.sdg_tags ?? news.sdg ?? '';
+        if (Array.isArray(sdgsVal)) {
+            sdgsVal = sdgsVal.join(', ');
+        }
+
+        setInputValue('title_en', news.title_en || news.title || '');
+        setInputValue('title_ar', news.title_ar || '');
+        setInputValue('link', news.link || news.source_url || '');
+        setInputValue('SDGs', sdgsVal);
+        setInputValue('news_description_en', news.news_description_en || news.content || news.summary || '');
+        setInputValue('news_description_ar', news.news_description_ar || '');
+
+        // Smooth scroll to top form
+        if (newsForm) {
+            newsForm.scrollIntoView({ behavior: 'smooth' });
+        }
+
+    } catch (error) {
+        console.error('Error entering edit mode:', error);
+        alert('Could not retrieve article details for editing.');
+    }
+}
+
+/**
+ * Resets form state back to Create mode
+ */
+function resetFormState() {
+    if (newsForm) newsForm.reset();
+    if (newsIdInput) newsIdInput.value = '';
+
+    if (formHeading) {
+        formHeading.textContent = 'Add New News';
+    }
+
+    if (submitBtn) {
+        submitBtn.textContent = 'Save News';
+    }
+
+    if (cancelBtn) {
+        cancelBtn.style.display = 'none';
+    }
+}
+
+// ============================================================================
+// CREATE & UPDATE HANDLER
+// ============================================================================
+
+/**
+ * Handles Form Submission (Detects whether to call POST or PUT)
+ */
+async function handleFormSubmit(event) {
+    event.preventDefault();
+
+    const id = newsIdInput ? newsIdInput.value : '';
+    const isEditing = Boolean(id);
+
+    // Extract payload from form inputs
+    const payload = {
+        title_en: getInputValue('title_en'),
+        title_ar: getInputValue('title_ar'),
+        link: getInputValue('link'),
+        SDGs: getInputValue('SDGs'),
+        news_description_en: getInputValue('news_description_en'),
+        news_description_ar: getInputValue('news_description_ar')
+    };
+
+    let url = `${API_BASE_URL}?resource=news`;
+    let method = 'POST';
+
+    if (isEditing) {
+        payload.id = id;
+        method = 'PUT';
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to save news article.');
+        }
+
+        // Reset form state and refresh table list
+        resetFormState();
+        await fetchNewsList();
+
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert(error.message || 'An error occurred while saving.');
+    }
+}
+
+// ============================================================================
+// DELETE OPERATION
+// ============================================================================
+
+/**
+ * Deletes a news item by ID
+ */
+async function deleteNews(id) {
+    if (!confirm(`Are you sure you want to delete news item #${id}?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}?resource=news&id=${id}`, {
+            method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to delete news article.');
+        }
+
+        // Refresh table list after deletion
+        await fetchNewsList();
+
+    } catch (error) {
+        console.error('Error deleting news:', error);
+        alert(error.message || 'Could not delete item.');
+    }
+}
 // ==========================================
 // NOTIFICATIONS & PREFERENCES LOGIC
 // ==========================================
@@ -558,6 +626,18 @@ function updateUserProfile(user) {
 // ==========================================
 // UTILITY HELPERS
 // ==========================================
+// Helper function to safely set input values by ID
+function setInputValue(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.value = value !== null && value !== undefined ? value : '';
+    }
+}
+// Helper function to safely get input values by ID
+function getInputValue(id) {
+    const element = document.getElementById(id);
+    return element ? element.value.trim() : '';
+}
 
 function setElementText(id, value) {
     const el = document.getElementById(id);

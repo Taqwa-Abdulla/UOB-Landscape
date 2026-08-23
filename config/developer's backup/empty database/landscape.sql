@@ -27,7 +27,8 @@ CREATE TABLE locations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    location_image VARCHAR(500) DEFAULT NULL
 );
 
 CREATE TABLE qrcode (

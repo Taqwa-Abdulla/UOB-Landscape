@@ -1,3 +1,8 @@
+/**
+ * Locations Management Script
+ */
+let locations = [];
+const apiUrl = '/api/admin/manage_locations.php';
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
     initNotifications();
@@ -7,252 +12,205 @@ async function initDashboard() {
     await fetchDashboardData();
     await loadNotifications();
 }
-let currentPage = 1;
-let searchQuery = '';
-let selectedUserFilter = '';
-let debounceTimer;
-let globalUsersMap = {};
-let isDropdownInitialized = false;
 
-const searchInput = document.getElementById('searchInput');
-const userFilterSelect = document.getElementById('userFilterSelect'); 
-const logTableBody = document.getElementById('logTableBody');
-const tableHeaderRow = document.getElementById('tableHeaderRow');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const pageInfo = document.getElementById('pageInfo');
-const exportDropdown = document.getElementById('exportDropdown');
-const exportBtn = document.getElementById('exportBtn');
-const exportExcelLink = document.getElementById('exportExcel');
-const exportPdfLink = document.getElementById('exportPdf');
+document.addEventListener('DOMContentLoaded', () => {
+    const addLocationForm = document.getElementById('add-location-form');
+    const locationsTableBody = document.querySelector('#locations-table tbody');
+    const searchInput = document.getElementById('search-input');
+    const sortSelect = document.getElementById('sort-select');
+    const orderSelect = document.getElementById('order-select');
+    const locationImageInput = document.getElementById('location-image');
 
-// Dynamically configure export links using the original API path
-function setupExportLinks() {
-    const originalApiUrl = '/api/users/activity_logs.php';
-    if (exportExcelLink) exportExcelLink.href = `${originalApiUrl}?export=excel`;
-    if (exportPdfLink) exportPdfLink.href = `${originalApiUrl}?export=pdf`;
-}
+    // Function to fetch locations from the PHP API
+    window.fetchLocations = async function(search = '', sort = 'location_id', order = 'asc') {
+        try {
+            let url = `${apiUrl}?resource=locations&sort=${sort}&order=${order}`;
+            if (search) {
+                url += `&search=${encodeURIComponent(search)}`;
+            }
 
-// Initialize export links on script load
-setupExportLinks();
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Failed to fetch locations from server.');
+            }
 
-// Toggle dropdown menu
-exportBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    exportDropdown.classList.toggle('active');
-});
-
-window.addEventListener('click', () => {
-    if (exportDropdown.classList.contains('active')) {
-        exportDropdown.classList.remove('active');
-    }
-});
-
-async function fetchLogs(page = 1, search = '', userFilter = '') {
-    try {
-        let url = `/api/users/activity_logs.php?fetch_logs=1&page=${page}&search=${encodeURIComponent(search)}`;
-        if (userFilter) {
-            url += `&user_filter=${encodeURIComponent(userFilter)}`;
+            locations = await response.json();
+            renderTable(locations);
+        } catch (error) {
+            console.error('Error fetching locations:', error);
+            if (locationsTableBody) {
+                locationsTableBody.innerHTML = `<tr class="ml-tr"><td class="ml-td" colspan="8" style="text-align: center; color: red;">Error loading locations from database.</td></tr>`;
+            }
         }
+    };
 
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (!data.success) {
-            throw new Error(data.error || 'Failed to fetch logs.');
-        }
-
-        if (data.users_map) {
-            globalUsersMap = data.users_map;
-        }
-
-        // Populate dropdown only once or if it has only the default option to prevent clearing selected state
-        if (data.dropdown_users && userFilterSelect && (!isDropdownInitialized || userFilterSelect.options.length <= 1)) {
-            populateUserDropdown(data.dropdown_users, userFilter);
-            isDropdownInitialized = true;
-        }
-
-        updateHeaders(data.role);
-        await renderTable(data.logs, data.role);
-        renderPagination(data.current_page, data.total_pages);
-        currentPage = data.current_page;
-    } catch (error) {
-        logTableBody.innerHTML = `<tr><td colspan="6" class="no-data" style="color: #ef4444;">Error: ${error.message}</td></tr>`;
-    }
-}
-
-function populateUserDropdown(users, currentSelection) {
-    let optionsHtml = `<option value="">All Users</option>`;
-    users.forEach(u => {
-        let selected = String(u.user_id) === String(currentSelection) ? 'selected' : '';
-        optionsHtml += `<option value="${u.user_id}" ${selected}>${escapeHtml(u.username)}</option>`;
-    });
-    userFilterSelect.innerHTML = optionsHtml;
-}
-
-async function resolveValue(key, val) {
-    if (val === null || val === undefined) return 'NULL';
-    
-    const userKeys = ['updated_by', 'created_by', 'user_id', 'owner_id', 'creator_id'];
-    if (userKeys.includes(key.toLowerCase()) && !isNaN(val)) {
-        const userId = Number(val);
-        if (userId === 0) return 'System';
+   function renderTable(data) {
+        if (!locationsTableBody) return;
+        locationsTableBody.innerHTML = '';
         
-        if (globalUsersMap[userId]) {
-            return globalUsersMap[userId];
+        if (!data || data.length === 0) {
+            locationsTableBody.innerHTML = `
+                <tr class="hover:bg-slate-50/60 transition-colors">
+                    <td class="px-6 py-5 font-medium text-slate-400 text-center" colspan="8">
+                        No registered locations found.
+                    </td>
+                </tr>
+            `;
+            return;
         }
-        
-        return `User #${userId}`;
-    }
-    
-    return String(val);
-}
 
-function updateHeaders(role) {
-    if (role === 'admin') {
-        tableHeaderRow.innerHTML = `
-            <th>ID</th>
-            <th>Action Type</th>
-            <th>Table & Changes</th>
-            <th>Row ID</th>
-            <th>Performed By</th>
-            <th>Timestamp</th>
-        `;
-    } else {
-        tableHeaderRow.innerHTML = `
-            <th>ID</th>
-            <th>Action Type</th>
-            <th>Table & Changes</th>
-            <th>Row ID</th>
-            <th>Timestamp</th>
-        `;
-    }
-}
-
-async function renderLogsTableRows(logs, role) {
-    const colSpan = role === 'admin' ? 6 : 5;
-    if (!logs || logs.length === 0) {
-        return `<tr><td colspan="${colSpan}" class="no-data">No audit logs found.</td></tr>`;
-    }
-
-    let rowsHtml = '';
-
-    for (let log of logs) {
-        let performedByText = log.creator_name ? escapeHtml(log.creator_name) : 'Unknown User';
-        let userDisplay = role === 'admin' 
-            ? `<td>${performedByText} <small style="color:var(--text-muted)">(${escapeHtml(log.creator_email || 'N/A')})</small></td>` 
-            : '';
-
-        let detailsHtml = `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">`;
-        
-        if (log.action_type === 'UPDATE' && log.old_values && log.new_values) {
-            let oldObj = typeof log.old_values === 'string' ? JSON.parse(log.old_values) : log.old_values;
-            let newObj = typeof log.new_values === 'string' ? JSON.parse(log.new_values) : log.new_values;
+        data.forEach(loc => {
+            const row = document.createElement('tr');
+            // Added subtle hover effect and smooth color transitions for the whole row
+            row.className = 'hover:bg-blue-50/40 transition-all duration-150';
             
-            let changesCount = 0;
-            for (let key in newObj) {
-                if (oldObj[key] !== newObj[key]) {
-                    changesCount++;
-                    
-                    if (key.toLowerCase().includes('password')) {
-                        detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#3b82f6; font-style:italic;">Password was changed</span></div>`;
-                    } else {
-                        let oldValStr = await resolveValue(key, oldObj[key]);
-                        let newValStr = await resolveValue(key, newObj[key]);
+            // Generate image thumbnail preview with a subtle hover zoom effect
+            const imageHtml = loc.location_image 
+                ? `<img src="${loc.location_image}" alt="Location Image" class="w-12 h-12 object-cover rounded-lg shadow-sm border border-slate-200 transform hover:scale-105 transition-transform duration-200 cursor-pointer">` 
+                : '<span class="text-xs text-slate-400 italic">No Image</span>';
+
+            row.innerHTML = `
+                <td class="px-6 py-4 font-medium text-slate-700 text-center">${loc.location_id}</td>
+                <td class="px-6 py-4 text-center">${imageHtml}</td>
+                <td class="px-6 py-4 text-slate-600">${loc.location_number || 'N/A'}</td>
+                <td class="px-6 py-4 text-slate-600 capitalize">${loc.category}</td>
+                <td class="px-6 py-4 text-slate-800 font-medium">${loc.name_en}</td>
+                <td class="px-6 py-4 text-slate-800 font-medium" dir="rtl">${loc.name_ar}</td>
+                <td class="px-6 py-4 text-slate-500 font-mono text-xs">${loc.latitude}, ${loc.longitude}</td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <!-- Edit Button with hover shadow, translation lift, and active click feedback -->
+                        <button type="button" class="px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 shadow-sm" onclick="editLocation(${loc.location_id})">Edit</button>
                         
-                        detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#ef4444">${escapeHtml(oldValStr)}</span> → <span style="color:#10b981">${escapeHtml(newValStr)}</span></div>`;
-                    }
-                }
-            }
-            if (changesCount === 0) {
-                detailsHtml += `<em>No direct field differences detected</em>`;
-            }
-        } else if (log.action_type === 'INSERT' && log.new_values) {
-            let newObj = typeof log.new_values === 'string' ? JSON.parse(log.new_values) : log.new_values;
-            
-            for (let key in newObj) {
-                if (key.toLowerCase().includes('password')) {
-                    detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#3b82f6; font-style:italic;">[Password configured]</span></div>`;
-                } else {
-                    let valStr = await resolveValue(key, newObj[key]);
-                    detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#10b981">${escapeHtml(valStr)}</span></div>`;
-                }
-            }
-        } else if (log.action_type === 'DELETE' && log.old_values) {
-            let oldObj = typeof log.old_values === 'string' ? JSON.parse(log.old_values) : log.old_values;
-            
-            for (let key in oldObj) {
-                if (key.toLowerCase().includes('password')) {
-                    detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#3b82f6; font-style:italic;">[Protected]</span></div>`;
-                } else {
-                    let valStr = await resolveValue(key, oldObj[key]);
-                    detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#ef4444">${escapeHtml(valStr)}</span></div>`;
-                }
-            }
-        }
-        detailsHtml += `</div>`;
-
-        rowsHtml += `
-            <tr>
-                <td>#${log.log_id}</td>
-                <td><span class="badge-action">${escapeHtml(log.action_type)}</span></td>
-                <td>
-                    <strong>${escapeHtml(log.table_name)}</strong>
-                    ${detailsHtml}
+                        <!-- Delete Button with hover shadow, translation lift, and active click feedback -->
+                        <button type="button" class="px-3 py-1.5 text-xs font-semibold text-white bg-rose-600 rounded-lg hover:bg-rose-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 shadow-sm" onclick="deleteLocation(${loc.location_id})">Delete</button>
+                    </div>
                 </td>
-                <td>${log.row_id}</td>
-                ${userDisplay}
-                <td>${escapeHtml(log.created_at)}</td>
-            </tr>
-        `;
+            `;
+            locationsTableBody.appendChild(row);
+        });
+    }
+    
+    // Handle Add/Update Location Form Submission using FormData
+    if (addLocationForm) {
+        addLocationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const idField = document.getElementById('location-id').value;
+            const isUpdate = Boolean(idField);
+            
+            // Use FormData to support binary file uploads seamlessly
+            const formData = new FormData();
+            
+            if (isUpdate) {
+                formData.append('id', idField);
+                formData.append('_method', 'PUT'); // Method spoofing for PHP backend router
+            }
+            
+            formData.append('location_number', document.getElementById('location-number').value);
+            formData.append('category', document.getElementById('location-category').value);
+            formData.append('name_en', document.getElementById('name-en').value);
+            formData.append('name_ar', document.getElementById('name-ar').value);
+            formData.append('latitude', document.getElementById('latitude').value);
+            formData.append('longitude', document.getElementById('longitude').value);
+            formData.append('created_by', document.getElementById('created-by').value || 1);
+            formData.append('updated_by', document.getElementById('updated-by').value || 1);
+
+            // Append image file if selected
+            if (locationImageInput && locationImageInput.files[0]) {
+                formData.append('location_image', locationImageInput.files[0]);
+            }
+
+            try {
+                // FIX: Explicitly include ?resource=locations in the fetch URL request
+                let url = `${apiUrl}?resource=locations`;
+                
+                const response = await fetch(url, {
+                    method: 'POST', // Sent via POST with method-spoofing so PHP parses $_FILES and $_POST properly
+                    body: formData
+                    // Note: Do NOT manually set 'Content-Type': 'application/json' when using FormData.
+                });
+
+                if (!response.ok) {
+                    const errRes = await response.json();
+                    throw new Error(errRes.error || 'Failed to save location.');
+                }
+
+                if (isUpdate) {
+                    document.getElementById('location-id').value = '';
+                    const submitBtn = document.getElementById('submit-location-btn');
+                    if (submitBtn) submitBtn.textContent = 'Add Location';
+                }
+
+                addLocationForm.reset();
+                fetchLocations();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
     }
 
-    return rowsHtml;
-}
-
-async function renderTable(logs, role) {
-    logTableBody.innerHTML = await renderLogsTableRows(logs, role);
-}
-
-function renderPagination(current, total) {
-    pageInfo.textContent = `Page ${current} of ${total || 1}`;
-    prevBtn.disabled = current <= 1;
-    nextBtn.disabled = current >= total || total === 0;
-}
-
-searchInput.addEventListener('input', (e) => {
-    clearTimeout(debounceTimer);
-    searchQuery = e.target.value;
-    debounceTimer = setTimeout(() => {
-        fetchLogs(1, searchQuery, selectedUserFilter);
-    }, 300);
-});
-
-if (userFilterSelect) {
-    userFilterSelect.addEventListener('change', (e) => {
-        selectedUserFilter = e.target.value;
-        fetchLogs(1, searchQuery, selectedUserFilter);
-    });
-}
-
-prevBtn.addEventListener('click', () => {
-    if (currentPage > 1) {
-        fetchLogs(currentPage - 1, searchQuery, selectedUserFilter);
+    // Handle Search Filter
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value;
+            const sort = sortSelect ? sortSelect.value : 'location_id';
+            const order = orderSelect ? orderSelect.value : 'asc';
+            fetchLocations(query, sort, order);
+        });
     }
+
+    // Handle Sorting changes
+    if (sortSelect && orderSelect) {
+        const triggerSort = () => {
+            const query = searchInput ? searchInput.value : '';
+            fetchLocations(query, sortSelect.value, orderSelect.value);
+        };
+        sortSelect.addEventListener('change', triggerSort);
+        orderSelect.addEventListener('change', triggerSort);
+    }
+
+    // Initial render
+    fetchLocations();
 });
 
-nextBtn.addEventListener('click', () => {
-    fetchLogs(currentPage + 1, searchQuery, selectedUserFilter);
-});
+// Global function to populate the form for editing
+window.editLocation = function(id) {
+    const location = locations.find(loc => loc.location_id == id);
+    if (!location) return;
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-    );
-}
+    document.getElementById('location-id').value = location.location_id;
+    document.getElementById('location-number').value = location.location_number || '';
+    document.getElementById('location-category').value = location.category;
+    document.getElementById('name-en').value = location.name_en;
+    document.getElementById('name-ar').value = location.name_ar;
+    document.getElementById('latitude').value = location.latitude;
+    document.getElementById('longitude').value = location.longitude;
 
-fetchLogs();
+    const submitBtn = document.getElementById('submit-location-btn');
+    if (submitBtn) submitBtn.textContent = 'Update Location';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// Global function to delete a location via API
+window.deleteLocation = async function(id) {
+    if (!confirm('Are you sure you want to delete this location?')) return;
+
+    try {
+        const response = await fetch(`${apiUrl}?resource=locations&id=${id}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            const errRes = await response.json();
+            throw new Error(errRes.error || 'Failed to delete location.');
+        }
+
+        fetchLocations();
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+};
 // ==========================================
 // NOTIFICATIONS & PREFERENCES LOGIC
 // ==========================================

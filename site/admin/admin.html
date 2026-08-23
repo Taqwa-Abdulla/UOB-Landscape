@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="../../js/chatbot/chatbot.js" defer></script>
     <script src="../../js/admin/admin.js" defer></script>
     <script src="../../js/users/login.js" defer></script>
@@ -67,17 +68,27 @@
 
                     <a href="management/manage_locations.html" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
                         <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4"/></svg>
-                        <span>Locations</span>
+                        <span>Manage Locations</span>
+                    </a>
+
+                    <a href="management/manage_news.html" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-newspaper" viewBox="0 0 16 16">
+  <path d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z"/>
+  <path d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z"/>
+</svg>
+                        <span>Manage News</span>
                     </a>
 
                     <a href="management/manage_reports.html" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
                         <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <span>Reports</span>
+                        <span>Manage Reports</span>
                     </a>
 
                     <a href="management/manage_activity.html" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
-                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <span>Activity (Audit Logs)</span>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-activity" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M6 2a.5.5 0 0 1 .47.33L10 12.036l1.53-4.208A.5.5 0 0 1 12 7.5h3.5a.5.5 0 0 1 0 1h-3.15l-1.88 5.17a.5.5 0 0 1-.94 0L6 3.964 4.47 8.171A.5.5 0 0 1 4 8.5H.5a.5.5 0 0 1 0-1h3.15l1.88-5.17A.5.5 0 0 1 6 2"/>
+</svg>                        <span>Manage Activity (Audit Logs)</span>
                     </a>
                 </nav>
             </div>
@@ -126,21 +137,21 @@
                             <div id="notif-settings-panel" class="hidden bg-slate-50 p-3 border-b border-gray-200 text-xs space-y-2">
                                 <div class="font-semibold text-gray-700">Notification Preferences</div>
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" id="pref-all" checked class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <input type="checkbox" id="pref-all" checked class="rounded text-blue-600 focus:ring-blue-500">
                                     <span>Receive All</span>
                                 </label>
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" id="pref-mute" class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    <input type="checkbox" id="pref-mute" class="rounded text-blue-600 focus:ring-blue-500">
                                     <span>Mute All</span>
                                 </label>
                                 <div class="pt-1 border-t border-gray-200 space-y-1">
                                     <span class="text-gray-500 block">Specific Types:</span>
                                     <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" class="specific-pref rounded text-indigo-600 focus:ring-indigo-500" value="system" checked>
+                                        <input type="checkbox" class="specific-pref rounded text-blue-600 focus:ring-blue-500" value="system" checked>
                                         <span>System Alerts</span>
                                     </label>
                                     <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" class="specific-pref rounded text-indigo-600 focus:ring-indigo-500" value="updates" checked>
+                                        <input type="checkbox" class="specific-pref rounded text-blue-600 focus:ring-blue-500" value="updates" checked>
                                         <span>Updates</span>
                                     </label>
                                 </div>
@@ -165,7 +176,7 @@
                     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
                         <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Projects</p>
                         <p id="stat-projects" class="text-3xl font-extrabold text-gray-900 mt-2">...</p>
-                        <span id="stat-projects-sub" class="text-xs font-medium text-emerald-600 mt-2">...</span>
+                        <span id="stat-projects-sub" class="text-xs font-medium text-blue-600 mt-2">...</span>
                     </div>
                     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
                         <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Locations</p>
@@ -179,7 +190,7 @@
                     </div>
                     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
                         <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Indoor Plants</p>
-                        <p id="stat-indoor-types" class="text-2xl font-extrabold text-indigo-600 mt-2">...</p>
+                        <p id="stat-indoor-types" class="text-2xl font-extrabold text-blue-800 mt-2">...</p>
                         <div class="mt-2 text-xs text-gray-500 flex justify-between border-t border-gray-100 pt-2">
                             <span>Total Stock:</span>
                             <span id="stat-indoor-stock" class="font-bold text-gray-800">...</span>
@@ -187,7 +198,7 @@
                     </div>
                     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
                         <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Outdoor Plants</p>
-                        <p id="stat-outdoor-types" class="text-2xl font-extrabold text-emerald-600 mt-2">...</p>
+                        <p id="stat-outdoor-types" class="text-2xl font-extrabold text-blue-800 mt-2">...</p>
                         <div class="mt-2 text-xs text-gray-500 flex justify-between border-t border-gray-100 pt-2">
                             <span>Total Stock:</span>
                             <span id="stat-outdoor-stock" class="font-bold text-gray-800">...</span>
@@ -196,7 +207,7 @@
                     <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-5 rounded-xl text-white shadow-sm flex flex-col justify-between">
                         <p class="text-xs font-semibold text-slate-300 uppercase tracking-wider">System Status</p>
                         <div class="flex items-center gap-2 mt-2">
-                            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="w-3 h-3 rounded-full bg-blue-400 animate-pulse"></span>
                             <span class="text-sm font-semibold">Database Online</span>
                         </div>
                         <span class="text-[10px] text-slate-400 mt-2">PostgreSQL Connected</span>
@@ -204,26 +215,26 @@
                 </div>
                  <!-- Change Password Form -->
                 <section class="space-y-4 mb-10" id="password-management">
-                    <h2 class="text-xl font-semibold text-gray-700">Change Your Password</h2>
                     <form class="bg-white rounded-xl border border-gray-200 shadow-sm p-6" id="password-form" action="#" method="POST">
                         <fieldset class="space-y-6">
-                            <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">Password Update</legend>
+                            <h2 class="text-xl font-semibold text-gray-700">Change Your Password</h2>
+                            <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full"><i class="bi bi-lock"></i>  Password Update</legend>
                             <div class="flex flex-col gap-1.5">
                                 <label class="text-sm font-medium text-gray-700" for="current-password">Current Password</label>
-                                <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" type="password" id="current-password" name="current_password" placeholder="Enter current password" required>
+                                <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" type="password" id="current-password" name="current_password" placeholder="Enter current password" required>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm font-medium text-gray-700" for="new-password">New Password</label>
-                                    <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" type="password" id="new-password" name="new_password" minlength="8" placeholder="At least 8 characters" required>
+                                    <label class="text-sm font-medium text-gray-700" for="new-password"><i class="bi bi-key"></i> New Password</label>
+                                    <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" type="password" id="new-password" name="new_password" minlength="8" placeholder="At least 8 characters" required>
                                 </div>
                                 <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm font-medium text-gray-700" for="confirm-password">Confirm New Password</label>
-                                    <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" type="password" id="confirm-password" name="confirm_password" placeholder="Confirm new password" required>
+                                    <label class="text-sm font-medium text-gray-700" for="confirm-password"><i class="bi bi-key"></i> Confirm New Password</label>
+                                    <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" type="password" id="confirm-password" name="confirm_password" placeholder="Confirm new password" required>
                                 </div>
                             </div>
                             <div class="pt-2 flex justify-end">
-                                <button type="submit" id="change" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition cursor-pointer">Update Password</button>
+                                <button type="submit" id="change" class="px-6 py-2.5 bg-blue-700 text-white rounded-lg text-sm font-medium hover:bg-blue-800 transition cursor-pointer">Update Password</button>
                             </div>
                         </fieldset>
                     </form>
@@ -232,18 +243,18 @@
 <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
     <div id="messages-section" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col">
         <div class="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
-            <h3 class="font-bold text-gray-800 text-sm">Send Message via Outlook</h3>
+            <h3 class="font-bold text-gray-800 text-sm"><i class="bi bi-envelope-at"></i> Send Message via Outlook</h3>
         </div>
         <form id="message-form" onsubmit="handleMessageSubmit(event)" class="flex flex-col gap-3">
             <div class="flex gap-2">
-                <select id="msg-recipient-email" required class="flex-1 text-xs border border-gray-300 rounded px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <select id="msg-recipient-email" required class="flex-1 text-xs border border-gray-300 rounded px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="">Loading organization members...</option>
                 </select>
-                <input type="text" id="msg-subject" placeholder="Subject..." required class="w-1/3 text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <input type="text" id="msg-subject" placeholder="Subject..." required class="w-1/3 text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500">
             </div>
-            <textarea id="msg-body" placeholder="Type your message here..." rows="3" required class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500"></textarea>
+            <textarea id="msg-body" placeholder="Type your message here..." rows="3" required class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
             <div class="flex justify-end">
-                <button type="submit" class="bg-indigo-600 text-white px-4 py-1.5 rounded text-xs font-semibold hover:bg-indigo-700 cursor-pointer">Open Outlook & Fill</button>
+                <button type="submit" class="bg-blue-700 text-white px-4 py-1.5 rounded text-xs font-semibold hover:bg-bule-800 cursor-pointer">Open Outlook & Fill</button>
             </div>
         </form>
     </div>
@@ -251,9 +262,9 @@
 <!-- Schedule & Deadlines Section -->
 <div id="schedule-section" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
     <div class="flex items-center justify-between pb-3 border-b border-gray-100 flex-wrap gap-2">
-        <h3 class="font-bold text-gray-800 text-sm">Schedule & Deadlines</h3>
+        <h3 class="font-bold text-gray-800 text-sm"><i class="bi bi-calendar"></i> Schedule & Deadlines</h3>
         <div class="flex items-center gap-3">
-            <button type="button" onclick="downloadSchedulePDF()" class="text-xs text-indigo-600 hover:underline font-semibold cursor-pointer">Download PDF Report</button>
+            <button type="button" onclick="downloadSchedulePDF()" class="text-xs text-blue-600 hover:underline font-semibold cursor-pointer">Download PDF Report</button>
             <button type="button" onclick="clearMySchedule()" class="text-xs text-red-500 hover:underline cursor-pointer">Clear My Schedule</button>
         </div>
     </div>
@@ -263,19 +274,19 @@
         
         <!-- Row 1: Title, Start Time, End Time, Type -->
         <div class="flex flex-wrap gap-3 items-center">
-            <input type="text" id="sched-title" placeholder="Event Title" required class="text-xs border border-gray-300 rounded px-3 py-2 flex-1 min-w-[180px] focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <input type="text" id="sched-title" placeholder="Event Title" required class="text-xs border border-gray-300 rounded px-3 py-2 flex-1 min-w-[180px] focus:outline-none focus:ring-1 focus:ring-blue-500">
             
             <div class="flex flex-col">
                 <label class="text-[10px] text-gray-500 font-medium">Start Time</label>
-                <input type="datetime-local" id="sched-start-date" required class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <input type="datetime-local" id="sched-start-date" required class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
             </div>
 
             <div class="flex flex-col">
                 <label class="text-[10px] text-gray-500 font-medium">End Time</label>
-                <input type="datetime-local" id="sched-end-date" required class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <input type="datetime-local" id="sched-end-date" required class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
             </div>
 
-            <select id="sched-priority" class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 self-end">
+            <select id="sched-priority" class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 self-end">
                 <option value="meeting">Meeting</option>
                 <option value="task">Task</option>
             </select>
@@ -285,7 +296,7 @@
         <div class="flex flex-wrap gap-3 items-center">
             <div class="flex flex-col flex-1 min-w-[220px]">
                 <label class="text-[10px] text-gray-500 font-medium">Assign To (User Email)</label>
-                <select id="sched-assigned-to" class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <select id="sched-assigned-to" class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="">-- Select Assignee Email (Optional) --</option>
                     <!-- Dynamically populated via JS -->
                 </select>
@@ -293,7 +304,7 @@
             
             <div class="flex flex-col flex-2 min-w-[280px]">
                 <label class="text-[10px] text-gray-500 font-medium">Description / Notes</label>
-                <textarea id="sched-desc" placeholder="Event description or notes (optional)..." rows="1" class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500"></textarea>
+                <textarea id="sched-desc" placeholder="Event description or notes (optional)..." rows="1" class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
             </div>
         </div>
 
@@ -301,17 +312,17 @@
         <div class="flex items-center justify-between flex-wrap gap-4 pt-1">
             <div class="flex items-center gap-6">
                 <label class="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
-                    <input type="checkbox" id="sched-is-personal" value="true" checked class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <input type="checkbox" id="sched-is-personal" value="true" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                     Mark as Personal Event
                 </label>
                 
                 <label class="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
-                    <input type="checkbox" id="sched-is-completed" value="true" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <input type="checkbox" id="sched-is-completed" value="true" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                     Mark as Completed
                 </label>
             </div>
 
-            <button type="submit" id="sched-submit-btn" class="bg-indigo-600 text-white px-4 py-2 rounded text-xs font-semibold hover:bg-indigo-700 cursor-pointer">Save Event</button>
+            <button type="submit" id="sched-submit-btn" class="bg-blue-700 text-white px-4 py-2 rounded text-xs font-semibold hover:bg-blue-800 cursor-pointer">Save Event</button>
         </div>
     </form>
 
@@ -326,13 +337,13 @@
                         <div>
                             <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
                                 <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     User Activity Log
                                 </h2>
                             </div>
                             <div id="activity-log-container" class="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200"></div>
                         </div>
-                        <a href="management/manage_activity.html" class="block text-center w-full mt-6 py-2 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors">
+                        <a href="management/manage_activity.html" class="block text-center w-full mt-6 py-2 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
                             View Full Audit Log
                         </a>
                     </div>
@@ -341,10 +352,10 @@
                         <div>
                             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                                 <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
                                     Recent Projects
                                 </h2>
-                                <a href="view/projects/before and after.html" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">View all projects</a>
+                                <a href="view/projects/before and after.html" class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors">View all projects</a>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left text-sm text-gray-600">

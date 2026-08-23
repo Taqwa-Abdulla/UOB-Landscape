@@ -3,27 +3,28 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in and has the correct role (using 'user_role')
 $role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
 
 if (!isset($_SESSION['user_id']) || ($role !== 'admin')) {
     header('Location: /login/login.html');
     exit;
 }
-// Secure output buffering to prevent any accidental whitespace/warnings corrupting CSV/PDF headers
+
 ob_start();
 error_reporting(E_ALL);
-ini_set('display_errors', '0'); // Suppress direct HTML error printing into data downloads
-require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
+ini_set('display_errors', '0'); 
+ini_set('memory_limit', '2048M'); 
+set_time_limit(900);              
+
+// Include mPDF via Composer autoloader
+require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../config/db.php';
-/*if (file_exists('fpdf.php')) {
-    require_once 'fpdf.php';
-}*/
 
 $database = new Database();
 $conn = $database->getConnection();
 $action = $_GET['action'] ?? 'fetch';
-$allowed_tables = ['users', 'locations', 'plants', 'projects', 'records', 'news', 'activitiy_log', 'annual_reports', 'contributors', 'qrcode', 'costs', 'stats_archive'];
+$allowed_tables = ['users', 'locations', 'plants', 'projects', 'records', 'news', 'activity_log', 'annual_reports', 'contributors', 'qrcode', 'costs', 'stats_archive'];
+$currentDateStr = date('d_m_Y');
 
 function sanitizeRows($rows) {
     foreach ($rows as &$row) {
@@ -52,23 +53,19 @@ if ($action === 'stats') {
         $totalPlantsQty = max(1, $plantMetrics['total_plants'] ?? 1);
         $totalOxygen = $totalPlantsQty * 12.5;
         
-        // Professional Oxygen KPI Metrics
         $oxygenTarget = 5000; 
         $stats['total_oxygen_units'] = $totalOxygen;
         $stats['oxygen_percentage'] = min(100, round(($totalOxygen / $oxygenTarget) * 100, 1));
         
-        // Realistic Water Waste Calculation
         $totalWaterConsumed = $totalPlantsQty * 5;
         $mitigatedSaved = ($plantMetrics['mitigated_count'] ?? 0) * 3;
         $stats['total_water_waste_units'] = max(0, $totalWaterConsumed - $mitigatedSaved);
         $stats['water_waste_percentage'] = round(($stats['total_water_waste_units'] / max(1, $totalWaterConsumed)) * 100, 1);
 
-        // Realistic Eco-Friendly Score
         $stmtDrought = $conn->query("SELECT COUNT(*) as count FROM plants WHERE drought_tolerance ILIKE 'High' OR drought_tolerance ILIKE 'Medium'");
         $droughtRes = $stmtDrought->fetch(PDO::FETCH_ASSOC)['count'];
         $stats['eco_friendly_score'] = min(100, round(($droughtRes / max(1, $stats['plants'])) * 100, 1));
 
-        // Financial Calculations using the costs table
         $stmtWaterCost = $conn->query("SELECT p.water_required, p.quantity, c.unit_cost 
                                        FROM plants p 
                                        LEFT JOIN costs c ON c.reference_type = 'water_tier' AND LOWER(c.reference_name) = LOWER(p.water_required)");
@@ -86,7 +83,6 @@ if ($action === 'stats') {
         $stats['total_project_cost'] = round($totalProjectCost, 2);
         $stats['overall_financial_cost'] = round($totalWaterCost + $totalProjectCost, 2);
 
-        // Chart breakdowns
         $stmt = $conn->query("SELECT class, COUNT(*) as count FROM plants GROUP BY class");
         $stats['plants_by_class'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -148,32 +144,32 @@ if ($action === 'download_csv') {
     if (!in_array($table, $allowed_tables)) exit('Invalid table');
 
     $stmt = $conn->query("SELECT * FROM \"$table\"");
-    $rows = sanitizeRows($stmt->fetchAll(PDO::FETCH_ASSOC));
-
+    
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="' . $table . '_report.csv"');
+    header('Content-Disposition: attachment; filename="' . $table . '_' . $currentDateStr . '.csv"');
     
     $output = fopen('php://output', 'w');
-    // Add UTF-8 BOM so Excel properly renders Arabic characters
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
-    if (!empty($rows)) {
-        fputcsv($output, array_keys($rows[0]), ',', '"', '');
-        foreach ($rows as $row) {
-            fputcsv($output, $row, ',', '"', '');
+    $isHeaderWritten = false;
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $cleanRow = sanitizeRows([$row])[0];
+        if (!$isHeaderWritten) {
+            fputcsv($output, array_keys($cleanRow), ',', '"', '');
+            $isHeaderWritten = true;
         }
+        fputcsv($output, $cleanRow, ',', '"', '');
     }
     fclose($output);
     exit;
 }
 
-if ($action === 'mega_download_csv') {
+if ($action === 'full_report_download_csv') {
     ob_clean();
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="complete_mega_system_report.csv"');
-    $output = fopen('php://output', 'w');
+    header('Content-Disposition: attachment; filename="full_report_' . $currentDateStr . '.csv"');
     
-    // Add UTF-8 BOM for Excel support
+    $output = fopen('php://output', 'w');
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
     fputcsv($output, ["=== SYSTEM & ENVIRONMENTAL METRICS SUMMARY ==="], ',', '"', '');
@@ -186,12 +182,15 @@ if ($action === 'mega_download_csv') {
     foreach ($allowed_tables as $tbl) {
         fputcsv($output, ["--- DATABASE TABLE: " . strtoupper($tbl) . " ---"], ',', '"', '');
         $stmt = $conn->query("SELECT * FROM \"$tbl\"");
-        $rows = sanitizeRows($stmt->fetchAll(PDO::FETCH_ASSOC));
-        if (!empty($rows)) {
-            fputcsv($output, array_keys($rows[0]), ',', '"', '');
-            foreach ($rows as $row) {
-                fputcsv($output, $row, ',', '"', '');
+        
+        $isHeaderWritten = false;
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $cleanRow = sanitizeRows([$row])[0];
+            if (!$isHeaderWritten) {
+                fputcsv($output, array_keys($cleanRow), ',', '"', '');
+                $isHeaderWritten = true;
             }
+            fputcsv($output, $cleanRow, ',', '"', '');
         }
         fputcsv($output, [], ',', '"', '');
     }
@@ -199,11 +198,10 @@ if ($action === 'mega_download_csv') {
     exit;
 }
 
-// Added handler for Stats CSV Download
 if ($action === 'download_stats_csv') {
     ob_clean();
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="system_stats_summary.csv"');
+    header('Content-Disposition: attachment; filename="stats_summary_' . $currentDateStr . '.csv"');
     
     $output = fopen('php://output', 'w');
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
@@ -227,70 +225,105 @@ if ($action === 'download_stats_csv') {
     exit;
 }
 
-if ($action === 'download_pdf' || $action === 'mega_download_pdf' || $action === 'download_stats_pdf') {
+if ($action === 'download_pdf' || $action === 'full_report_download_pdf' || $action === 'download_stats_pdf') {
     ob_clean();
-    if (!class_exists('FPDF')) {
-        die('FPDF library missing.');
-    }
 
-    $pdf = new FPDF('L', 'mm', 'A4');
-    $pdf->AddPage();
-    $pdf->SetFont('Arial', 'B', 14);
-    $pdf->Cell(0, 10, 'UOB Campus Environmental & Financial Report', 0, 1, 'C');
-    $pdf->SetFont('Arial', '', 9);
-    $pdf->Cell(0, 6, 'Generated On: ' . date('Y-m-d H:i:s'), 0, 1, 'C');
-    $pdf->Ln(5);
+    // Initialize mPDF in Landscape mode with DejaVuSans font to natively handle Unicode/Arabic text
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4-L',
+        'default_font' => 'dejavusans'
+    ]);
 
     if ($action === 'download_stats_pdf') {
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->SetTextColor(25, 135, 84);
-        $pdf->Cell(0, 8, 'System Statistics Summary Overview', 0, 1, 'L');
-        $pdf->SetTextColor(0, 0, 0);
-        
-        $pdf->SetFont('Arial', '', 10);
+        $reportTitle = 'UOB Landscape System Statistics Summary Overview';
+        $outputFilename = 'stats_summary_' . $currentDateStr . '.pdf';
+    } elseif ($action === 'full_report_download_pdf') {
+        $reportTitle = 'Full UOB Landscape & Financial Report';
+        $outputFilename = 'full_report_' . $currentDateStr . '.pdf';
+    } else {
+        $singleTbl = $_GET['table'] ?? 'plants';
+        $reportTitle = 'UOB Landscape Table Module Report: ' . strtoupper($singleTbl);
+        $outputFilename = $singleTbl . '_' . $currentDateStr . '.pdf';
+    }
+
+    // Set up standard HTML layout wrapper with styling
+    $html = '
+    <div style="background-color: #198754; color: #ffffff; padding: 10px; text-align: center; font-weight: bold; font-size: 14pt;">
+        ' . htmlspecialchars($reportTitle) . '
+    </div>
+    <div style="text-align: center; font-size: 8pt; color: #666; margin-bottom: 15px;">
+        Generated On: ' . date('Y-m-d H:i:s') . '
+    </div>';
+
+    if ($action === 'download_stats_pdf') {
+        $html .= '
+        <h3 style="color: #198754; border-bottom: 1px solid #198754; padding-bottom: 5px;">System Statistics Summary Overview</h3>
+        <table border="1" cellpadding="6" cellspacing="0" style="width: 60%; border-collapse: collapse; font-size: 10pt;">
+            <thead>
+                <tr style="background-color: #e6e6e6;">
+                    <th style="text-align: left;">Metric Description</th>
+                    <th style="text-align: center; width: 35%;">Total Count</th>
+                </tr>
+            </thead>
+            <tbody>';
         foreach (['users', 'plants', 'projects', 'locations', 'records', 'news'] as $tbl) {
             $stmt = $conn->query("SELECT COUNT(*) as total FROM \"$tbl\"");
             $total = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
-            $pdf->Cell(80, 7, ucfirst($tbl) . ' Count:', 1);
-            $pdf->Cell(50, 7, $total, 1, 1);
+            $html .= '<tr>
+                <td>' . ucfirst($tbl) . ' Count</td>
+                <td style="text-align: center;">' . $total . '</td>
+            </tr>';
         }
+        $html .= '</tbody></table>';
     } else {
-        $tablesToExport = ($action === 'mega_download_pdf') ? $allowed_tables : [($_GET['table'] ?? 'plants')];
+        $tablesToExport = ($action === 'full_report_download_pdf') ? $allowed_tables : [($_GET['table'] ?? 'plants')];
 
         foreach ($tablesToExport as $tbl) {
-            $pdf->SetFont('Arial', 'B', 11);
-            $pdf->SetTextColor(25, 135, 84);
-            $pdf->Cell(0, 8, 'Table Module: ' . strtoupper($tbl), 0, 1, 'L');
-            $pdf->SetTextColor(0, 0, 0);
+            $html .= '<h3 style="color: #198754; margin-top: 20px; border-bottom: 1px solid #198754; padding-bottom: 4px;">Table Module: ' . strtoupper($tbl) . '</h3>';
 
-            $stmt = $conn->query("SELECT * FROM \"$tbl\" LIMIT 100");
-            $rows = sanitizeRows($stmt->fetchAll(PDO::FETCH_ASSOC));
+            $stmt = $conn->query("SELECT * FROM \"$tbl\"");
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if (!empty($rows)) {
-                $pdf->SetFont('Arial', 'B', 7);
-                $columns = array_keys($rows[0]);
-                
-                foreach ($columns as $col) {
-                    $pdf->Cell(25, 6, substr($col, 0, 10), 1, 0, 'C', true);
-                }
-                $pdf->Ln();
-
-                $pdf->SetFont('Arial', '', 7);
-                foreach ($rows as $row) {
-                    foreach ($row as $val) {
-                        $pdf->Cell(25, 5, substr((string)$val, 0, 12), 1);
-                    }
-                    $pdf->Ln();
-                }
-            } else {
-                $pdf->SetFont('Arial', 'I', 8);
-                $pdf->Cell(0, 6, 'No records recorded in this view.', 0, 1);
+            if (empty($rows)) {
+                $html .= '<p style="font-style: italic; font-size: 9pt; color: #666;">No records recorded in this view.</p>';
+                continue;
             }
-            $pdf->Ln(5);
+
+            $sanitizedAll = sanitizeRows($rows);
+            $columns = array_keys($sanitizedAll[0]);
+
+            $html .= '<table border="1" cellpadding="4" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 7.5pt;">
+                <thead>
+                    <tr style="background-color: #2874a6; color: #ffffff; text-align: center;">';
+            
+            foreach ($columns as $col) {
+                $html .= '<th>' . htmlspecialchars($col) . '</th>';
+            }
+            
+            $html .= '</tr></thead><tbody>';
+
+            $isAlt = false;
+            foreach ($sanitizedAll as $cleanRow) {
+                $rowBg = $isAlt ? 'background-color: #f5f5f5;' : '';
+                $html .= '<tr style="' . $rowBg . '">';
+                foreach ($columns as $colName) {
+                    $val = $cleanRow[$colName] ?? '';
+                    $displayVal = is_null($val) ? '' : (string)$val;
+                    
+                    // mPDF natively handles Arabic text perfectly without placeholders!
+                    $html .= '<td>' . htmlspecialchars($displayVal) . '</td>';
+                }
+                $html .= '</tr>';
+                $isAlt = !$isAlt;
+            }
+
+            $html .= '</tbody></table>';
         }
     }
 
-    $pdf->Output('D', 'system_clean_report.pdf');
+    $mpdf->WriteHTML($html);
+    $mpdf->Output($outputFilename, 'D');
     exit;
 }
 ?>

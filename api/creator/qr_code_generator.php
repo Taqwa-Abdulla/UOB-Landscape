@@ -154,23 +154,15 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("A QR code for this plant at this location already exists!");
         }
 
-        $pdf_path = '';
-        if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/plants/pdf/';
-            if (!is_dir($uploadDir)) { 
-                mkdir($uploadDir, 0755, true); 
-            }
-            
-            $safeFileName = preg_replace("/[^a-zA-Z0-9.]/", "_", basename($_FILES['pdf_file']['name']));
-            $fileName = time() . '_' . $safeFileName;
-            
-            if (move_uploaded_file($_FILES['pdf_file']['tmp_name'], $uploadDir . $fileName)) {
-                $pdf_path = 'uploads/plants/pdf/' . $fileName;
-            } else {
-                throw new Exception("Failed to move uploaded file. Check folder write permissions.");
-            }
-        } else {
+        // Validate that a file was sent
+        if (!isset($_FILES['pdf_file']) || $_FILES['pdf_file']['error'] === UPLOAD_ERR_NO_FILE) {
             throw new Exception("PDF file is required.");
+        }
+
+        // Validate and process the PDF using your helper function
+        $pdf_path = validateAndProcessPDF($_FILES['pdf_file']);
+        if (!$pdf_path) {
+            throw new Exception("PDF validation or upload failed.");
         }
 
         $stmt = $db->prepare("INSERT INTO qrcode (plant_id, pdf_path, created_by) VALUES (?, ?, ?)");
@@ -188,6 +180,7 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
     try {
         $qr_id = $_POST['qr_id'] ?? null;
+        $plant_id = $_POST['plant_id'] ?? null; // 1. Get the new plant_id from request
         $updated_by = $_SESSION['user_id'] ?? null;
         
         if (!$updated_by) {
@@ -196,44 +189,104 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$qr_id) {
             throw new Exception("Missing QR ID for update.");
         }
+        if (!$plant_id) {
+            throw new Exception("Please select a plant.");
+        }
+
+        // 2. CHECK FOR DUPLICATE: Does another QR code record already use this plant?
+        // (Exclude the current QR record so it doesn't conflict with itself)
+        $stmtCheck = $db->prepare("SELECT qr_id FROM qrcode WHERE plant_id = ? AND qr_id != ?");
+        $stmtCheck->execute([$plant_id, $qr_id]);
+        if ($stmtCheck->rowCount() > 0) {
+            throw new Exception("A QR code for this plant already exists!");
+        }
 
         // Fetch current file path
         $stmtGet = $db->prepare("SELECT pdf_path FROM qrcode WHERE qr_id = ?");
         $stmtGet->execute([$qr_id]);
         $current = $stmtGet->fetch(PDO::FETCH_ASSOC);
-        $pdf_path = $current['pdf_path'] ?? '';
+        $old_pdf_path = $current['pdf_path'] ?? '';
 
-        // If a new PDF file is provided, upload it and delete the old one
-        if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/plants/pdf/';
-            if (!is_dir($uploadDir)) { 
-                mkdir($uploadDir, 0755, true); 
+        $pdf_path = $old_pdf_path; // Default to keeping the old path if no new file is uploaded
+
+        // If a new PDF file is provided, validate/upload it and delete the old one
+        if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] !== UPLOAD_ERR_NO_FILE) {
+            
+            // Validate and process the new PDF using your helper function
+            $new_pdf_path = validateAndProcessPDF($_FILES['pdf_file']);
+            if (!$new_pdf_path) {
+                throw new Exception("New PDF validation or upload failed.");
             }
-            
-            $safeFileName = preg_replace("/[^a-zA-Z0-9.]/", "_", basename($_FILES['pdf_file']['name']));
-            $fileName = time() . '_' . $safeFileName;
-            
-            if (move_uploaded_file($_FILES['pdf_file']['tmp_name'], $uploadDir . $fileName)) {
-                if ($pdf_path) {
-                    $oldFileFull = $_SERVER['DOCUMENT_ROOT'] . '/' . $pdf_path;
-                    if (file_exists($oldFileFull)) {
-                        unlink($oldFileFull);
-                    }
+
+            // Delete the old file if it exists
+            if ($old_pdf_path) {
+                $rootPath = dirname(__DIR__, 2);
+                $oldFileFull = $rootPath . '/' . ltrim($old_pdf_path, '/');
+                if (file_exists($oldFileFull)) {
+                    unlink($oldFileFull);
                 }
-                $pdf_path = 'uploads/plants/pdf/' . $fileName;
-            } else {
-                throw new Exception("Failed to move updated file.");
             }
+
+            $pdf_path = $new_pdf_path;
         }
 
-        $stmt = $db->prepare("UPDATE qrcode SET pdf_path = ?, updated_by = ?, updated_at = NOW() WHERE qr_id = ?");
-        $stmt->execute([$pdf_path, $updated_by, $qr_id]);
+        // 3. Update both plant_id, pdf_path, and metadata in the database
+        $stmt = $db->prepare("UPDATE qrcode SET plant_id = ?, pdf_path = ?, updated_by = ?, updated_at = NOW() WHERE qr_id = ?");
+        $stmt->execute([$plant_id, $pdf_path, $updated_by, $qr_id]);
 
         echo json_encode(['success' => true]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
     exit;
+}
+
+/**
+ * Helper Function: Validate and process secure PDF uploads
+ */
+function validateAndProcessPDF($file)
+{
+    if (!isset($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception("PDF upload failed with error code: " . $file['error']);
+    }
+
+    $maxFileSize = 10 * 1024 * 1024; // 10MB
+    if ($file['size'] > $maxFileSize) {
+        throw new Exception("PDF file size exceeds the maximum allowed limit of 10MB.");
+    }
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->file($file['tmp_name']);
+
+    $allowedMimeTypes = [
+        'application/pdf' => 'pdf'
+    ];
+
+    if (!array_key_exists($mimeType, $allowedMimeTypes)) {
+        throw new Exception("Invalid file type. Only PDF documents are allowed.");
+    }
+
+    $secureFileName = bin2hex(random_bytes(16)) . '.pdf';
+
+    $rootPath = dirname(__DIR__, 2);
+    $uploadDir = $rootPath . '/uploads/plants/pdf/';
+
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $destination = $uploadDir . $secureFileName;
+    $dbPath = 'uploads/plants/pdf/' . $secureFileName;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        throw new Exception("Failed to move uploaded PDF file.");
+    }
+
+    return $dbPath;
 }
 
 // 6. Delete Record

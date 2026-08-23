@@ -8,7 +8,7 @@ Landscape Website for University Of Bahrain (UOB)
 - JS: Chart.js v4.5.1 and MapLibre GL JS v4.1.2
 - QR Code Library (PHP): Endroid QR Code v6.1.3 - composer
 - Bootstrap Icons v1.11.3 
-- FPDF (PDF PHP library) v1.9.0 - composer
+- MPDF (PDF PHP library) v8.3.1 - composer
 # Website Features
 - FAQ Chatbot / Virtual Assistant (Aspen): An interactive, conversational chat window for FAQ with mitigation against Cross-Site Scripting (XSS) attacks.
 - Report generator: Generate Reports for single tables, stats and full report including tables and stats in both PDF and CSV formats.

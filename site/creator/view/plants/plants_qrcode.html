@@ -1,142 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant QR Code Manager</title>
-    <script src="../../../../public/css/style.css" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="../../../../js/chatbot/chatbot.js" defer></script>
-     <script src="../../../../js/plants/qrcode.js" defer></script>
-     <script src="../../../../js/users/login.js" defer></script>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f7f6; }
-        .container { max-width: 1500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow-x: auto; }
-        h1 { color: #1e5631; }
-        
-        .panel { background: #e9ecef; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-        form, .filters { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
-        .form-group { display: flex; flex-direction: column; gap: 5px; }
-        input[type="file"], select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; min-width: 180px; }
-        button { background-color: #1e5631; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #143d22; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; vertical-align: middle; }
-        th { background-color: #1e5631; color: white; white-space: nowrap; }
-        
-        .qr-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        img.qr-preview { border: 2px solid #1e5631; border-radius: 8px; padding: 4px; background: white; width: 90px; height: 90px; }
-        
-        .btn-download { background-color: #28a745; font-size: 0.8em; padding: 4px 8px; text-decoration: none; color: white; border-radius: 4px; display: inline-block; }
-        .btn-download:hover { background-color: #218838; }
-        .btn-update { background-color: #ffc107; color: #000; padding: 6px 10px; font-size: 0.85em; border: none; border-radius: 4px; cursor: pointer; }
-        .btn-update:hover { background-color: #e0a800; }
-        .btn-delete { background-color: #dc3545; padding: 6px 10px; font-size: 0.85em; }
-        .btn-delete:hover { background-color: #c82333; }
-        .badge { background: #1e5631; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; }
-        
-        #updateModal { display: none; background: rgba(0,0,0,0.5); position: fixed; top:0; left:0; width:100%; height:100%; justify-content:center; align-items:center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 400px; }
-        .btn-view { background-color: #17a2b8; color: white; font-size: 0.8em; padding: 6px 10px; text-decoration: none; border-radius: 4px; display: inline-block; }
-.btn-view:hover { background-color: #138496; }
-    </style>
+    <script src="../../../../js/plants/qrcode.js" defer></script>
+    <script src="../../../../js/users/login.js" defer></script>
 </head>
-<body>
-<div class="container">
-    <h1>Plant QR Code Manager</h1>
-    
-    <!-- Upload Form with Cascading Location Filter -->
-    <div class="panel">
-        <p style="font-size: 0.85em; color: #666; margin-top:0;">Your login session will automatically record you as the creator.</p>
-        <form id="uploadForm">
-            <div class="form-group">
-                <label for="filterFormLocation">1. Filter by Location:</label>
-                <select id="filterFormLocation" onchange="filterPlantsByLocation()">
-                    <option value="">-- All Locations --</option>
+<body class="bg-slate-50">
+    <!-- Root Container (Full Screen Flex) -->
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- 1. Sidebar -->
+        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen">
+            <!-- Sidebar Content -->
+            <div>
+                <!-- Brand Logo -->
+                <div class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
+                    <img class="rounded-xl w-12 h-15" src="/public/images/UOB logo.png" alt="UOB Logo">
+                    <div>Admin<span class="text-blue-600">Panel</span></div>
+                </div>
+
+                <!-- Dynamic User Profile -->
+                <div class="p-4 mx-3 mt-4 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center gap-3">
+                    <div id="user-initials" class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
+                        --
+                    </div>
+                    <div class="overflow-hidden">
+                        <p id="user-name" class="text-sm font-semibold text-white truncate">Loading...</p>
+                        <p id="profile-user-email" class="text-xs text-slate-400 truncate">...</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="mt-4 px-3 space-y-1">
+                    <a href="../creator.html" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-800 rounded-lg font-medium shadow-sm">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6" />
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <details class="group [&_summary::-webkit-details-marker]:hidden">
+                        <summary class="flex items-center justify-between px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <span>View</span>
+                            </div>
+                            <svg class="w-4 h-4 transition-transform duration-200 group-open:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+
+                        <div class="mt-1 pl-4 space-y-1">
+                            <a href="../view/home.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Home</a>
+                            <a href="../view/about.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">About</a>
+                            <a href="../view/locations.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Locations</a>
+                            <a href="../view/plants/indoor.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Indoor Plants</a>
+                            <a href="../view/plants/outdoor.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Outdoor Plants</a>
+                            <a href="../view/projects/before and after.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Landscape Improvements</a>
+                            <a href="../view/projects/statistics and reports.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Statistics And Reports</a>
+                        </div>
+                    </details>
+
+                    <a href="manage_plants.html" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span>Manage Plants</span>
+                    </a>
+
+                    <a href="../view/plants/plants_qrcode.html" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4" />
+                        </svg>
+                        <span>Manage plants QR-code</span>
+                    </a>
+
+                    <a href="manage_projects.html" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-newspaper" viewBox="0 0 16 16">
+                            <path d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z" />
+                            <path d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z" />
+                        </svg>
+                        <span>Manage Projects</span>
+                    </a>
+
+                    <a href="manage_activity.html" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Manage Activity (Audit Logs)</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Footer Action -->
+            <div class="p-4 border-t border-slate-800">
+                <p class="w-full flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium text-slate-400">
+                    &copy; 2026 University of Bahrain.
+                </p>
+            </div>
+        </aside>
+
+        <!-- 2. Main Content Area -->
+        <div class="flex-1 flex flex-col h-screen overflow-y-auto">
+            <!-- Top Header -->
+            <header class="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+
+                <div class="flex items-center gap-4">
+                    <!-- Notification Bell with Unread Badge & Popup Container -->
+                    <div class="relative">
+                        <button id="header-bell-btn" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition relative cursor-pointer focus:outline-none">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                </path>
+                            </svg>
+                            <!-- Badge showing count: turns blue when 0 -->
+                            <span id="header-unread-badge" class="absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+                        </button>
+
+                        <!-- Notification Popup Box -->
+                        <div id="notification-popup" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 flex flex-col overflow-hidden">
+                            <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-bold text-gray-800 text-sm">Notifications</h3>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button id="notif-settings-btn" title="Notification Settings" class="text-gray-500 hover:text-gray-800 cursor-pointer p-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </button>
+                                    <button onclick="clearAllNotifications()" class="text-xs text-red-500 hover:underline cursor-pointer font-medium">Clear Notifications</button>
+                                </div>
+                            </div>
+
+                            <!-- Notification Settings Sub-Panel -->
+                            <div id="notif-settings-panel" class="hidden bg-slate-50 p-3 border-b border-gray-200 text-xs space-y-2">
+                                <div class="font-semibold text-gray-700">Notification Preferences</div>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="pref-all" checked class="rounded text-blue-600 focus:ring-blue-500">
+                                    <span>Receive All</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="pref-mute" class="rounded text-blue-600 focus:ring-blue-500">
+                                    <span>Mute All</span>
+                                </label>
+                                <div class="pt-1 border-t border-gray-200 space-y-1">
+                                    <span class="text-gray-500 block">Specific Types:</span>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" class="specific-pref rounded text-blue-600 focus:ring-blue-500" value="system" checked>
+                                        <span>System Alerts</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" class="specific-pref rounded text-blue-600 focus:ring-blue-500" value="updates" checked>
+                                        <span>Updates</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="notificationList" class="max-h-72 overflow-y-auto divide-y divide-gray-100">
+                                <div class="p-4 text-sm text-gray-500 text-center">Loading notifications...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition cursor-pointer">
+                        Logout
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Body -->
+            <main class="container mx-auto px-6 py-8 space-y-12">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <!-- Header -->
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6"><i class="bi bi-qr-code"></i> Create QR-Code for a plant</h1>
+
+                    <!-- Upload Form Panel -->
+                    <div class="bg-white shadow-md rounded-lg p-6 mb-8 border border-gray-100">
+                        <p class="text-xs text-gray-500 mb-4">Your login session will automatically record you as the creator.</p>
+                        <form id="uploadForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                            <div class="flex flex-col">
+                                <label for="filterFormLocation" class="text-sm font-medium text-gray-700 mb-1">1. Filter by Location:</label>
+                                <select id="filterFormLocation" onchange="filterPlantsByLocation()" class="border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="">-- All Locations --</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="plant_id" class="text-sm font-medium text-gray-700 mb-1">2. Select Plant:</label>
+                                <select id="plant_id" name="plant_id" required class="border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="">-- Choose a Location First --</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="pdf_file" class="text-sm font-medium text-gray-700 mb-1">Upload PDF:</label>
+                                <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                            </div>
+                            <div>
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md text-sm transition-colors cursor-pointer">
+                                    Upload & Generate QR
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                     
+                    <!-- Table Filters Bar -->
+                    <div class="bg-white shadow-sm rounded-lg p-4 mb-6 border border-gray-100 flex flex-wrap gap-4 items-center justify-between">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-6"><i class="bi bi-qr-code-scan"></i> Plants QR-Codes</h1>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="text-sm font-semibold text-gray-700">Filter Table By:</span>
+                            <select id="filterClass" onchange="applyFilters()" class="border border-gray-300 rounded-md p-1.5 text-sm">
+                                <option value="">All Classes</option>
+                                <option value="indoor">Indoor</option>
+                                <option value="outdoor">Outdoor</option>
+                            </select>
+                            <select id="filterLocation" onchange="applyFilters()" class="border border-gray-300 rounded-md p-1.5 text-sm">
+                                <option value="">All Locations</option>
+                            </select>
+                            <select id="filterCreator" onchange="applyFilters()" class="border border-gray-300 rounded-md p-1.5 text-sm">
+                                <option value="">All Creators</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="sortOrder" onchange="applyFilters()" class="border border-gray-300 rounded-md p-1.5 text-sm">
+                                <option value="asc">Sort: Ascending</option>
+                                <option value="desc">Sort: Descending</option>
+                            </select>
+                        </div>
+                                            <!-- Data Table Container -->
+                        <div class="overflow-x-auto">
+                            <table id="dataTable" class="w-full text-left border-collapse">
+                                <thead class="bg-gray-50 text-gray-700 uppercase text-xs tracking-wider border-b border-gray-200">
+                                    <tr>
+                                        <th class="p-3">ID</th>
+                                        <th class="p-3">Scientific Name</th>
+                                        <th class="p-3">Common (EN/AR)</th>
+                                        <th class="p-3">Class</th>
+                                        <th class="p-3">Location (EN/AR)</th>
+                                        <th class="p-3">Category</th>
+                                        <th class="p-3">Created By</th>
+                                        <th class="p-3">Updated By</th>
+                                        <th class="p-3">PDF Link</th>
+                                        <th class="p-3">QR Code</th>
+                                        <th class="p-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 text-sm text-gray-600">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+            </main>
+        </div>
+    </div>
+<!-- Update Modal Form -->
+<div id="updateModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <h3 class="text-lg font-bold text-gray-800 mb-1">Update QR Code Record</h3>
+        <p class="text-xs text-gray-500 mb-4">Modify the location, plant, or document file. Leave untouched to keep existing values.</p>
+        <form id="updateForm">
+            <input type="hidden" id="update_qr_id" name="qr_id">
+            
+            <!-- 1. Select Location First -->
+            <div class="mb-4">
+                <label for="updateFilterLocation" class="block text-sm font-medium text-gray-700 mb-1">1. Select Location:</label>
+                <select id="updateFilterLocation" onchange="filterUpdatePlantsByLocation()" class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <option value="">-- Choose a Location --</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="plant_id">2. Select Plant:</label>
-                <select id="plant_id" name="plant_id" required>
+
+            <!-- 2. Select Plant Within Location -->
+            <div class="mb-4">
+                <label for="update_plant_id" class="block text-sm font-medium text-gray-700 mb-1">2. Select Plant:</label>
+                <select id="update_plant_id" name="plant_id" required class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     <option value="">-- Choose a Location First --</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="pdf_file">Upload PDF:</label>
-                <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required>
-            </div>
-            <div class="form-group">
-                <button type="submit">Upload & Generate QR</button>
-            </div>
-        </form>
-    </div>
 
-    <!-- Table Filters Bar -->
-    <div class="panel filters">
-        <strong>Filter Table By:</strong>
-        <div class="form-group">
-            <select id="filterClass" onchange="applyFilters()">
-                <option value="">All Classes</option>
-                <option value="indoor">Indoor</option>
-                <option value="outdoor">Outdoor</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <select id="filterLocation" onchange="applyFilters()">
-                <option value="">All Locations</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <select id="filterCreator" onchange="applyFilters()">
-                <option value="">All Creators</option>
-            </select>
-        </div>
-    </div>
-    <select id="sortOrder" onchange="applyFilters()">
-    <option value="asc">Sort: Ascending</option>
-    <option value="desc">Sort: Descending</option>
-</select>
-
-    <!-- Table Columns -->
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Scientific Name</th>
-                <th>Common (EN/AR)</th>
-                <th>Class</th>
-                <th>Location (EN/AR)</th>
-                <th>Category</th>
-                <th>Created By</th>
-                <th>Updated By</th>
-                <th>PDF Link</th>
-                <th>QR Code</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Populated via JS -->
-        </tbody>
-    </table>
-</div>
-
-<!-- Update Modal Form -->
-<div id="updateModal">
-    <div class="modal-content">
-        <h3>Update QR PDF File</h3>
-        <p style="font-size: 0.85em; color: #666;">Your account credentials will be automatically logged as the updater.</p>
-        <form id="updateForm">
-            <input type="hidden" id="update_qr_id" name="qr_id">
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="update_pdf_file">New PDF File:</label>
-                <input type="file" id="update_pdf_file" name="pdf_file" accept=".pdf" required>
+            <!-- 3. Optional PDF Field + Current Status -->
+            <div class="mb-4">
+                <label for="update_pdf_file" class="block text-sm font-medium text-gray-700 mb-1">3. Replace PDF File (Optional):</label>
+                <input type="file" id="update_pdf_file" name="pdf_file" accept=".pdf" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                <p id="currentPdfLabel" class="text-[11px] text-gray-400 mt-1">Current file: None</p>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button type="submit">Upload & Update</button>
-                <button type="button" style="background-color: #6c757d;" onclick="closeModal()">Cancel</button>
+
+            <div class="flex gap-2 justify-end">
+                <button type="submit" style="background-color: #ffc107; color: #000;" class="px-3 py-1.5 rounded text-xs font-medium hover:bg-amber-400 transition-colors cursor-pointer">Update Record</button>
+                <button type="button" style="background-color: #6c757d; color: #fff;" class="px-3 py-1.5 rounded text-xs font-medium hover:bg-gray-600 transition-colors cursor-pointer" onclick="closeModal()">Cancel</button>
             </div>
         </form>
     </div>
 </div>
+    <!-- Notification Reader Modal Popup -->
+    <div id="notif-detail-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 relative">
+            <div class="flex justify-between items-center border-b pb-3">
+                <span id="modal-notif-date" class="text-xs text-gray-400 font-medium"></span>
+                <button onclick="closeNotifModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
+            </div>
+            <div>
+                <h3 id="modal-notif-title" class="font-bold text-gray-900 text-sm mb-1"></h3>
+                <p id="modal-notif-body" class="text-sm text-gray-600 whitespace-pre-wrap"></p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

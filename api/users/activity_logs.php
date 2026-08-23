@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in and has the correct role (using 'user_role')
 $role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
 
 if (!isset($_SESSION['user_id']) || ($role !== 'admin' && $role !== 'creator')) {
@@ -13,7 +12,8 @@ if (!isset($_SESSION['user_id']) || ($role !== 'admin' && $role !== 'creator')) 
 }
 
 require_once __DIR__ . '/../../config/db.php';
-require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
+// Include mPDF via Composer autoloader
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 $current_user_id = $_SESSION['user_id'];
 
@@ -40,12 +40,8 @@ try {
 }
 
 function cleanExportValue($val) {
-    if ($val === null || $val === '') {
-        return '';
-    }
-    if (is_array($val) || is_object($val)) {
-        $val = json_encode($val, JSON_UNESCAPED_UNICODE);
-    }
+    if ($val === null || $val === '') return '';
+    if (is_array($val) || is_object($val)) $val = json_encode($val, JSON_UNESCAPED_UNICODE);
     $val = (string)$val;
     $val = preg_replace('/<br\s*[\/]?>/i', ' ', $val);
     $val = strip_tags($val);
@@ -55,6 +51,7 @@ function cleanExportValue($val) {
     return trim($val);
 }
 
+// Helper for both CSV and mPDF: mPDF handles real Arabic text natively!
 function resolveLogChanges($action_type, $old_val, $new_val) {
     $summary = [];
     if ($action_type === 'UPDATE' && $old_val && $new_val) {
@@ -63,7 +60,7 @@ function resolveLogChanges($action_type, $old_val, $new_val) {
         if (is_array($oldObj) && is_array($newObj)) {
             foreach ($newObj as $k => $v) {
                 if (isset($oldObj[$k]) && $oldObj[$k] !== $v) {
-                    $summary[] = "$k: " . cleanExportValue($oldObj[$k]) . " -> " . cleanExportValue($v);
+                    $summary[] = "<strong>$k:</strong> " . cleanExportValue($oldObj[$k]) . " &rarr; " . cleanExportValue($v);
                 }
             }
         }
@@ -71,29 +68,35 @@ function resolveLogChanges($action_type, $old_val, $new_val) {
         $newObj = is_string($new_val) ? json_decode($new_val, true) : $new_val;
         if (is_array($newObj)) {
             foreach ($newObj as $k => $v) {
-                $summary[] = "$k: " . cleanExportValue($v);
+                $summary[] = "<strong>$k:</strong> " . cleanExportValue($v);
             }
         }
     } elseif ($action_type === 'DELETE' && $old_val) {
         $oldObj = is_string($old_val) ? json_decode($old_val, true) : $old_val;
         if (is_array($oldObj)) {
             foreach ($oldObj as $k => $v) {
-                $summary[] = "$k: " . cleanExportValue($v);
+                $summary[] = "<strong>$k:</strong> " . cleanExportValue($v);
             }
         }
     }
-    return empty($summary) ? 'N/A' : implode(' | ', $summary);
+    return empty($summary) ? 'N/A' : implode('<br>', $summary);
+}
+
+// Plain text version for CSV export
+function resolveLogChangesCsv($action_type, $old_val, $new_val) {
+    $htmlResult = resolveLogChanges($action_type, $old_val, $new_val);
+    $plain = str_replace(['<strong>', '</strong>'], '', $htmlResult);
+    $plain = str_replace('&rarr;', '->', $plain);
+    return str_replace('<br>', ' | ', $plain);
 }
 
 // ==========================================
-// 1. EXPORT ENDPOINT
+// 1. EXPORT ENDPOINT (CSV & PDF via mPDF)
 // ==========================================
 if (isset($_GET['export'])) {
-    // Suppress warnings/notices from leaking into file downloads
     error_reporting(0);
     ini_set('display_errors', '0');
     
-    // Clear any previous output buffers completely
     while (ob_get_level()) {
         ob_end_clean();
     }
@@ -124,11 +127,10 @@ if (isset($_GET['export'])) {
             $output = fopen('php://output', 'w');
             fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
             
-            // Explicit escape parameter added to avoid PHP deprecation warnings
             fputcsv($output, ['Log ID', 'Action Type', 'Table Name', 'Row ID', 'Changes Summary', 'Performed By', 'Timestamp'], ',', '"', '\\');
             
             foreach ($logs as $log) {
-                $changes = resolveLogChanges($log['action_type'], $log['old_values'], $log['new_values']);
+                $changes = resolveLogChangesCsv($log['action_type'], $log['old_values'], $log['new_values']);
                 fputcsv($output, [
                     cleanExportValue($log['log_id']),
                     cleanExportValue($log['action_type']),
@@ -143,44 +145,49 @@ if (isset($_GET['export'])) {
             exit;
         } 
         elseif ($export_type === 'pdf') {
-            if (!class_exists('FPDF')) {
-                die('FPDF library missing.');
-            }
+            // Initialize mPDF with Landscape A4 and automatic Arabic/Unicode font handling
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4-L',
+                'default_font' => 'dejavusans' // DejaVu Sans natively supports full Arabic characters
+            ]);
 
-            $pdf = new FPDF('L', 'mm', 'A4');
-            $pdf->AddPage();
-            $pdf->SetFont('Arial', 'B', 14);
-            $pdf->Cell(0, 10, 'System Activity Logs Audit Report', 0, 1, 'C');
-            $pdf->SetFont('Arial', '', 9);
-            $pdf->Cell(0, 6, 'Generated On: ' . date('Y-m-d H:i:s'), 0, 1, 'C');
-            $pdf->Ln(5);
+            $html = '
+            <h2 style="text-align: center; font-family: dejavusans; color: #333;">System Activity Logs Audit Report</h2>
+            <p style="text-align: center; font-size: 10px; color: #666;">Generated On: ' . date('Y-m-d H:i:s') . '</p>
+            <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 9px; font-family: dejavusans;">
+                <thead>
+                    <tr style="background-color: #e6e6e6; text-align: center;">
+                        <th style="width: 8%;">ID</th>
+                        <th style="width: 12%;">Action</th>
+                        <th style="width: 15%;">Table</th>
+                        <th style="width: 45%;">Changes Summary</th>
+                        <th style="width: 10%;">User</th>
+                        <th style="width: 10%;">Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>';
 
-            $pdf->SetFont('Arial', 'B', 8);
-            $pdf->SetFillColor(230, 230, 230);
-            $pdf->Cell(15, 7, 'ID', 1, 0, 'C', true);
-            $pdf->Cell(22, 7, 'Action', 1, 0, 'C', true);
-            $pdf->Cell(30, 7, 'Table', 1, 0, 'C', true);
-            $pdf->Cell(110, 7, 'Changes Summary', 1, 0, 'C', true);
-            $pdf->Cell(35, 7, 'User', 1, 0, 'C', true);
-            $pdf->Cell(35, 7, 'Timestamp', 1, 1, 'C', true);
-
-            $pdf->SetFont('Arial', '', 7);
             if (!empty($logs)) {
                 foreach ($logs as $log) {
                     $changes = resolveLogChanges($log['action_type'], $log['old_values'], $log['new_values']);
-                    
-                    $pdf->Cell(15, 6, '#' . cleanExportValue($log['log_id']), 1);
-                    $pdf->Cell(22, 6, cleanExportValue($log['action_type']), 1);
-                    $pdf->Cell(30, 6, cleanExportValue($log['table_name']), 1);
-                    $pdf->Cell(110, 6, substr($changes, 0, 85), 1);
-                    $pdf->Cell(35, 6, substr(cleanExportValue($log['creator_name'] ?? 'System'), 0, 20), 1);
-                    $pdf->Cell(35, 6, cleanExportValue($log['created_at']), 1, 1);
+                    $html .= '<tr>
+                        <td style="text-align: center;">#' . cleanExportValue($log['log_id']) . '</td>
+                        <td style="text-align: center;">' . cleanExportValue($log['action_type']) . '</td>
+                        <td>' . cleanExportValue($log['table_name']) . '</td>
+                        <td>' . $changes . '</td>
+                        <td>' . cleanExportValue($log['creator_name'] ?? 'System') . '</td>
+                        <td style="text-align: center;">' . cleanExportValue($log['created_at']) . '</td>
+                    </tr>';
                 }
             } else {
-                $pdf->Cell(247, 6, 'No activity logs recorded.', 1, 1, 'C');
+                $html .= '<tr><td colspan="6" style="text-align: center;">No activity logs recorded.</td></tr>';
             }
 
-            $pdf->Output('D', 'activity_logs_' . date('Y-m-d') . '.pdf');
+            $html .= '</tbody></table>';
+
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('activity_logs_' . date('Y-m-d') . '.pdf', 'D');
             exit;
         }
     } catch (Exception $e) {

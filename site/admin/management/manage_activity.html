@@ -4,284 +4,330 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audit Logs Dashboard</title>
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --radius: 8px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 2rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: var(--radius);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .header-title h1 {
-            font-size: 1.5rem;
-            color: var(--text-main);
-        }
-
-        .header-title p {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        .export-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .export-btn {
-            background: var(--primary);
-            color: #ffffff;
-            border: none;
-            padding: 0.625rem 1.25rem;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 600;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .export-btn:hover {
-            background: var(--primary-hover);
-        }
-
-        .export-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: var(--card-bg);
-            min-width: 160px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            z-index: 10;
-            overflow: hidden;
-            margin-top: 0.25rem;
-        }
-
-        .export-content a {
-            color: var(--text-main);
-            padding: 0.75rem 1rem;
-            text-decoration: none;
-            display: block;
-            font-size: 0.875rem;
-            transition: background 0.2s;
-        }
-
-        .export-content a:hover {
-            background-color: #f1f5f9;
-        }
-
-        .export-dropdown.active .export-content {
-            display: block;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            overflow: hidden;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .search-box input {
-            padding: 0.625rem 1rem;
-            width: 300px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            outline: none;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-        }
-
-        .search-box input:focus {
-            border-color: var(--primary);
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            padding: 0.875rem 1rem;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: top;
-        }
-
-        th {
-            background-color: #f1f5f9;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-        }
-
-        tbody tr:hover {
-            background-color: #f8fafc;
-        }
-
-        .badge-action {
-            background: #e2e8f0;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            margin-top: 1.5rem;
-            gap: 0.5rem;
-        }
-
-        .btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 0.5rem 0.875rem;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-main);
-            transition: background 0.2s;
-        }
-
-        .btn:hover:not(:disabled) {
-            background: #f1f5f9;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .page-info {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin: 0 0.5rem;
-        }
-
-        .loading, .no-data {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../../js/users/activity_logs.js" defer></script>
+    <script src="../../../js/chatbot/chatbot.js" defer></script>
+    <script src="../../../js/users/login.js" defer></script>
 </head>
-<body>
+<body class="bg-slate-50">
+    <!-- Root Container (Full Screen Flex) -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- 1. Sidebar -->
+        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen">
+            <div>
+                <!-- Brand Logo -->
+                <div
+                    class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
+                    <img class="rounded-xl w-12 h-15" src="/public/images/UOB logo.png" alt="UOB Logo">
+                    <div>Admin<span class="text-blue-600">Panel</span></div>
+                </div>
 
-<div class="container">
-    <header>
-        <div class="header-title">
-            <h1>Activity Audit Logs</h1>
-            <p>Track and monitor system actions and data modifications.</p>
+                <!-- Dynamic User Profile -->
+                <div class="p-4 mx-3 mt-4 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center gap-3">
+                    <div id="user-initials"
+                        class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
+                        --
+                    </div>
+                    <div class="overflow-hidden">
+                        <p id="user-name" class="text-sm font-semibold text-white truncate">Loading...</p>
+                        <p id="profile-user-email" class="text-xs text-slate-400 truncate">...</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="mt-4 px-3 space-y-1">
+                    <a href="../admin.html"
+                        class="flex items-center gap-3 px-4 py-3 text-white bg-blue-800 rounded-lg font-medium shadow-sm">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6" />
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <details class="group [&_summary::-webkit-details-marker]:hidden">
+                        <summary
+                            class="flex items-center justify-between px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <span>View</span>
+                            </div>
+                            <svg class="w-4 h-4 transition-transform duration-200 group-open:-rotate-180 text-slate-400"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+
+                        <div class="mt-1 pl-4 space-y-1">
+                            <a href="../view/home.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Home</a>
+                            <a href="../view/about.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">About</a>
+                            <a href="../view/locations.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Locations</a>
+                            <a href="../view/plants/indoor.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Indoor
+                                Plants</a>
+                            <a href="../view/plants/outdoor.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Outdoor
+                                Plants</a>
+                            <a href="../view/projects/before and after.html" target="_blank" rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Landscape
+                                Improvemnts</a>
+                            <a href="../view/projects/statistics and reports.html" target="_blank"
+                                rel="noopener noreferrer"
+                                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">Statistics
+                                And Reports</a>
+                        </div>
+                    </details>
+
+
+                    <a href="manage_users.html" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span>Users</span>
+                    </a>
+
+                    <a href="manage_locations.html" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4" />
+                        </svg>
+                        <span>Manage Locations</span>
+                    </a>
+
+                    <a href="#" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-newspaper" viewBox="0 0 16 16">
+                            <path
+                                d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z" />
+                            <path
+                                d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z" />
+                        </svg>
+                        <span>Manage News</span>
+                    </a>
+
+                    <a href="manage_reports.html" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Manage Reports</span>
+                    </a>
+
+                    <a href="manage_activity.html" target="_blank"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-activity" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M6 2a.5.5 0 0 1 .47.33L10 12.036l1.53-4.208A.5.5 0 0 1 12 7.5h3.5a.5.5 0 0 1 0 1h-3.15l-1.88 5.17a.5.5 0 0 1-.94 0L6 3.964 4.47 8.171A.5.5 0 0 1 4 8.5H.5a.5.5 0 0 1 0-1h3.15l1.88-5.17A.5.5 0 0 1 6 2" />
+                        </svg> <span>Manage Activity (Audit Logs)</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Footer Action -->
+            <div class="p-4 border-t border-slate-800">
+                <p class="w-full flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium text-slate-400">
+                    &copy; 2026 University of Bahrain.
+                </p>
+            </div>
+        </aside>
+        <!-- 2. Main Content Area -->
+        <div class="flex-1 flex flex-col h-screen overflow-y-auto">
+
+            <!-- Top Header -->
+            <header
+                class="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+
+                <div class="flex items-center gap-4">
+                    <!-- Notification Bell with Unread Badge & Popup Container -->
+                    <div class="relative">
+                        <button id="header-bell-btn"
+                            class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition relative cursor-pointer focus:outline-none">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                </path>
+                            </svg>
+                            <!-- Badge showing count: turns blue when 0 -->
+                            <span id="header-unread-badge"
+                                class="absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+                        </button>
+
+                        <!-- Notification Popup Box -->
+                        <div id="notification-popup"
+                            class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 flex flex-col overflow-hidden">
+                            <div
+                                class="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-bold text-gray-800 text-sm">Notifications</h3>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button id="notif-settings-btn" title="Notification Settings"
+                                        class="text-gray-500 hover:text-gray-800 cursor-pointer p-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </button>
+                                    <button onclick="clearAllNotifications()"
+                                        class="text-xs text-red-500 hover:underline cursor-pointer font-medium">Clear
+                                        Notifications</button>
+                                </div>
+                            </div>
+
+                            <!-- Notification Settings Sub-Panel -->
+                            <div id="notif-settings-panel"
+                                class="hidden bg-slate-50 p-3 border-b border-gray-200 text-xs space-y-2">
+                                <div class="font-semibold text-gray-700">Notification Preferences</div>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="pref-all" checked
+                                        class="rounded text-blue-600 focus:ring-blue-500">
+                                    <span>Receive All</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="pref-mute"
+                                        class="rounded text-blue-600 focus:ring-blue-500">
+                                    <span>Mute All</span>
+                                </label>
+                                <div class="pt-1 border-t border-gray-200 space-y-1">
+                                    <span class="text-gray-500 block">Specific Types:</span>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox"
+                                            class="specific-pref rounded text-blue-600 focus:ring-blue-500"
+                                            value="system" checked>
+                                        <span>System Alerts</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox"
+                                            class="specific-pref rounded text-blue-600 focus:ring-blue-500"
+                                            value="updates" checked>
+                                        <span>Updates</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="notificationList" class="max-h-72 overflow-y-auto divide-y divide-gray-100">
+                                <div class="p-4 text-sm text-gray-500 text-center">Loading notifications...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="logout-btn"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition cursor-pointer">
+                        Logout
+                    </button>
+                </div>
+            </header>
+            <!-- Dashboard Body -->
+            <main class="px-6 py-6 space-y-6 w-full flex-1 max-w-none">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <header class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Activity Audit Logs</h1>
+            <p class="mt-1 text-sm text-gray-600"><i class="bi bi-clock-history"></i> Track and monitor system actions and data modifications.</p>
         </div>
-      <div class="export-dropdown" id="exportDropdown">
-    <button class="export-btn" id="exportBtn">Export Logs ▼</button>
-    <div class="export-content">
-        <a href="#" id="exportExcel">Export as Excel</a>
-        <a href="#" id="exportPdf" target="_blank">Export as PDF</a>
-    </div>
-</div>
-</div>
-</div>
+        
+        <!-- Export Dropdown -->
+        <div class="relative inline-block text-left group">
+            <button id="exportBtn" type="button" class="inline-flex justify-center items-center w-full px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                <i class="bi bi-download"></i> Export Logs 
+                <svg class="-mr-1 ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            
+            <!-- Dropdown Content (Revealed on hover/focus or toggle) -->
+            <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none hidden group-hover:block transition-all z-10" id="exportDropdown">
+                <div class="py-1">
+                    <a href="#" id="exportExcel" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"><i class="bi bi-file-earmark-arrow-down"></i> Export as Excel</a>
+                    <a href="#" id="exportPdf" target="_blank" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"><i class="bi bi-file-earmark-arrow-down"></i> Export as PDF</a>
+                </div>
+            </div>
         </div>
     </header>
 
-    <div class="card">
-        <div class="controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search action, table, or user...">
+    <!-- Card Container -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl overflow-hidden">
+        
+        <!-- Controls Bar -->
+        <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/50">
+            <div class="w-full sm:w-96">
+                <input type="text" id="searchInput" placeholder="Search action, table, or user..." class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
             </div>
-            <select id="userFilterSelect" class="form-control">
-    <option value="">All Users</option>
-</select>
+            <div class="w-full sm:w-auto">
+                <select id="userFilterSelect" class="w-full sm:w-48 px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm bg-white focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                    <option value="">All Users</option>
+                </select>
+            </div>
         </div>
 
-        <div class="table-responsive">
-            <table>
-                <thead>
+        <!-- Responsive Table Container -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr id="tableHeaderRow">
-                        <th>ID</th>
-                        <th>Action Type</th>
-                        <th>Table & Changes</th>
-                        <th>Row ID</th>
-                        <th>Timestamp</th>
+                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action Type</th>
+                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Table & Changes</th>
+                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Row ID</th>
+                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Timestamp</th>
                     </tr>
                 </thead>
-                <tbody id="logTableBody">
+                <tbody id="logTableBody" class="divide-y divide-gray-200 bg-white">
                     <tr>
-                        <td colspan="5" class="loading">Loading logs...</td>
+                        <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500 italic loading">Loading logs...</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <div class="pagination" id="paginationContainer">
-            <button class="btn" id="prevBtn" disabled>Previous</button>
-            <span class="page-info" id="pageInfo">Page 1 of 1</span>
-            <button class="btn" id="nextBtn" disabled>Next</button>
+        <!-- Pagination Section -->
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between" id="paginationContainer">
+            <button id="prevBtn" disabled class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">Previous</button>
+            <span id="pageInfo" class="text-sm text-gray-700 font-medium">Page 1 of 1</span>
+            <button id="nextBtn" disabled class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">Next</button>
         </div>
     </div>
 </div>
-
-<script src="../../../js/users/activity_logs.js" defer></script>
+</main>
+<!-- Notification Reader Modal Popup matching your drawing -->
+            <div id="notif-detail-modal"
+                class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 relative">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <span id="modal-notif-date" class="text-xs text-gray-400 font-medium"></span>
+                        <button onclick="closeNotifModal()"
+                            class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
+                    </div>
+                    <div>
+                        <h3 id="modal-notif-title" class="font-bold text-gray-900 text-sm mb-1"></h3>
+                        <p id="modal-notif-body" class="text-sm text-gray-600 whitespace-pre-wrap"></p>
+                    </div>
+                </div>
+            </div>
 </body>
 </html>
