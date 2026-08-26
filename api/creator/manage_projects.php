@@ -43,7 +43,8 @@ $resource = null;
 $id = null;
 
 foreach ($segments as $index => $segment) {
-    if (in_array($segment, ['projects', 'records', 'costs', 'locations'])) {
+    // Added 'annule-reports' to the allowed router segments
+    if (in_array($segment, ['projects', 'records', 'costs', 'locations', 'annule-reports'])) {
         $resource = $segment;
         if (isset($segments[$index + 1]) && is_numeric($segments[$index + 1])) {
             $id = $segments[$index + 1];
@@ -75,6 +76,9 @@ switch ($resource) {
         break;
     case 'locations':
         handleLocations($method, $conn);
+        break;
+    case 'annule-reports':
+        handleAnnuleReports($method, $id, $conn, $inputData, $_FILES);
         break;
     default:
         http_response_code(404);
@@ -144,7 +148,6 @@ function handleProjects($method, $id, $conn, $data, $files)
         case 'POST':
         case 'PUT':
             $locationId = null;
-            // Fallback to $_POST if $data is empty due to multipart POST request
             $requestData = !empty($data) ? $data : $_POST;
 
             if (!empty($requestData['location_name'])) {
@@ -156,13 +159,11 @@ function handleProjects($method, $id, $conn, $data, $files)
                 }
             }
 
-            // Process Files or fallback to provided text/path
             $imageBeforePath = validateAndProcessImage($files['image_before_path'] ?? null, 'before') ?? ($requestData['image_before_path'] ?? null);
             $imageProposalPath = validateAndProcessImage($files['image_proposal_path'] ?? null, 'proposal') ?? ($requestData['image_proposal_path'] ?? null);
             $imageAfterPath = validateAndProcessImage($files['image_after_path'] ?? null, 'after') ?? ($requestData['image_after_path'] ?? null);
             $pdfPath = validateAndProcessPDF($files['pdf_path'] ?? null) ?? ($requestData['pdf_path'] ?? null);
 
-            // Sanitize video proposal link
             $videoLink = !empty($requestData['video_proposal_link']) ? filter_var(trim($requestData['video_proposal_link']), FILTER_SANITIZE_URL) : null;
             if ($videoLink && !filter_var($videoLink, FILTER_VALIDATE_URL)) {
                 $videoLink = null;
@@ -224,7 +225,7 @@ function handleProjects($method, $id, $conn, $data, $files)
 }
 
 // ==========================================
-// RECORDS HANDLER (All Columns + Sorting)
+// RECORDS HANDLER (All Columns + Sorting + PDF Support)
 // ==========================================
 function handleRecords($method, $id, $conn, $data)
 {
@@ -278,9 +279,30 @@ function handleRecords($method, $id, $conn, $data)
                 }
             }
 
+            // Handle optional PDF file upload
+            $pdfPath = null;
+            if (isset($_FILES['pdf_path']) && $_FILES['pdf_path']['error'] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['pdf_path']['tmp_name'];
+                $fileName = $_FILES['pdf_path']['name'];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                if ($fileExtension === 'pdf') {
+                    $uploadFileDir = '../../uploads/'; // Adjust based on your folder structure
+                    if (!is_dir($uploadFileDir)) {
+                        mkdir($uploadFileDir, 0755, true);
+                    }
+                    $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+                    $dest_path = $uploadFileDir . $newFileName;
+
+                    if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                        $pdfPath = '/uploads/' . $newFileName;
+                    }
+                }
+            }
+
             if ($method === 'POST' && !$id) {
-                $sql = "INSERT INTO records (location_id, created_by, year, action_en, action_ar, area, green_area, number_of_trees, previous_condition_en, current_condition_en, previous_condition_ar, current_condition_ar, status, start_date, expected_end_date, estimated_cost, notes_en, notes_ar) 
-                        VALUES (:location_id, :created_by, :year, :action_en, :action_ar, :area, :green_area, :number_of_trees, :prev_en, :curr_en, :prev_ar, :curr_ar, :status, :start_date, :end_date, :estimated_cost, :notes_en, :notes_ar)";
+                $sql = "INSERT INTO records (location_id, created_by, year, action_en, action_ar, area, green_area, number_of_trees, previous_condition_en, current_condition_en, previous_condition_ar, current_condition_ar, status, start_date, expected_end_date, estimated_cost, notes_en, notes_ar, pdf_path) 
+                        VALUES (:location_id, :created_by, :year, :action_en, :action_ar, :area, :green_area, :number_of_trees, :prev_en, :curr_en, :prev_ar, :curr_ar, :status, :start_date, :end_date, :estimated_cost, :notes_en, :notes_ar, :pdf_path)";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([
                     ':location_id' => $locationId,
@@ -300,7 +322,8 @@ function handleRecords($method, $id, $conn, $data)
                     ':end_date' => !empty($data['expected_end_date']) ? $data['expected_end_date'] : null,
                     ':estimated_cost' => $data['estimated_cost'] ?? null,
                     ':notes_en' => $data['notes_en'] ?? null,
-                    ':notes_ar' => $data['notes_ar'] ?? null
+                    ':notes_ar' => $data['notes_ar'] ?? null,
+                    ':pdf_path' => $pdfPath
                 ]);
                 http_response_code(201);
                 echo json_encode(["message" => "Record created successfully."]);
@@ -309,7 +332,16 @@ function handleRecords($method, $id, $conn, $data)
                     echo json_encode(["error" => "ID required"]);
                     return;
                 }
-                $sql = "UPDATE records SET location_id = :location_id, updated_by = :updated_by, updated_at = CURRENT_TIMESTAMP, year = :year, action_en = :action_en, action_ar = :action_ar, area = :area, green_area = :green_area, number_of_trees = :number_of_trees, previous_condition_en = :prev_en, current_condition_en = :curr_en, previous_condition_ar = :prev_ar, current_condition_ar = :curr_ar, status = :status, start_date = :start_date, expected_end_date = :end_date, estimated_cost = :estimated_cost, notes_en = :notes_en, notes_ar = :notes_ar WHERE record_id = :id";
+
+                // If updating, check if a new PDF was uploaded. If not, keep the existing one from the DB.
+                if ($pdfPath === null) {
+                    $existingStmt = $conn->prepare("SELECT pdf_path FROM records WHERE record_id = ?");
+                    $existingStmt->execute([$id]);
+                    $existingRecord = $existingStmt->fetch(PDO::FETCH_ASSOC);
+                    $pdfPath = $existingRecord['pdf_path'] ?? null;
+                }
+
+                $sql = "UPDATE records SET location_id = :location_id, updated_by = :updated_by, updated_at = CURRENT_TIMESTAMP, year = :year, action_en = :action_en, action_ar = :action_ar, area = :area, green_area = :green_area, number_of_trees = :number_of_trees, previous_condition_en = :prev_en, current_condition_en = :curr_en, previous_condition_ar = :prev_ar, current_condition_ar = :curr_ar, status = :status, start_date = :start_date, expected_end_date = :end_date, estimated_cost = :estimated_cost, notes_en = :notes_en, notes_ar = :notes_ar, pdf_path = :pdf_path WHERE record_id = :id";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([
                     ':id' => $id,
@@ -330,7 +362,8 @@ function handleRecords($method, $id, $conn, $data)
                     ':end_date' => !empty($data['expected_end_date']) ? $data['expected_end_date'] : null,
                     ':estimated_cost' => $data['estimated_cost'] ?? null,
                     ':notes_en' => $data['notes_en'] ?? null,
-                    ':notes_ar' => $data['notes_ar'] ?? null
+                    ':notes_ar' => $data['notes_ar'] ?? null,
+                    ':pdf_path' => $pdfPath
                 ]);
                 echo json_encode(["message" => "Record updated successfully."]);
             }
@@ -425,6 +458,124 @@ function handleCosts($method, $id, $conn, $data)
     }
 }
 
+// ==========================================
+// ANNULE REPORTS HANDLER
+// ==========================================
+function handleAnnuleReports($method, $id, $conn, $data, $files)
+{
+    switch ($method) {
+        case 'GET':
+            if ($id) {
+                $stmt = $conn->prepare("SELECT * FROM annual_reports WHERE report_id = ?");
+                $stmt->execute([$id]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                echo json_encode($result ? $result : ["message" => "Report not found."]);
+            } else {
+                $search = $_GET['q'] ?? '';
+                $year = $_GET['year'] ?? '';
+                $sort = $_GET['sort'] ?? 'created_at';
+                $order = strtoupper($_GET['order'] ?? 'DESC') === 'ASC' ? 'ASC' : 'DESC';
+
+                $allowedSorts = ['report_id', 'title_en', 'title_ar', 'report_year', 'created_at'];
+                if (!in_array($sort, $allowedSorts)) {
+                    $sort = 'created_at';
+                }
+
+                $sql = "SELECT * FROM annual_reports WHERE 1=1";
+                $params = [];
+
+                if (!empty($search)) {
+                    $sql .= " AND (title_en ILIKE ? OR title_ar ILIKE ?)";
+                    $params[] = "%$search%";
+                    $params[] = "%$search%";
+                }
+                if (!empty($year)) {
+                    $sql .= " AND report_year = ?";
+                    $params[] = (int)$year;
+                }
+
+                $sql .= " ORDER BY $sort $order";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute($params);
+                echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+            }
+            break;
+
+        case 'POST':
+        case 'PUT':
+            $requestData = !empty($data) ? $data : $_POST;
+            $pdfPath = validateAndProcessPDF($files['pdf_path'] ?? null) ?? ($requestData['pdf_path'] ?? null);
+
+            $titleEn = htmlspecialchars(strip_tags($requestData['title_en'] ?? ''));
+            $titleAr = htmlspecialchars(strip_tags($requestData['title_ar'] ?? ''));
+            $reportYear = $requestData['report_year'] ?? date('Y');
+
+            if ($method === 'POST' && !$id) {
+                if (!$pdfPath) {
+                    sendResponse(["error" => "PDF file is required for new reports."], 400);
+                }
+
+                $sql = "INSERT INTO annual_reports (title_en, title_ar, report_year, pdf_path) VALUES (:title_en, :title_ar, :report_year, :pdf_path)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([
+                    ':title_en' => $titleEn,
+                    ':title_ar' => $titleAr,
+                    ':report_year' => (int)$reportYear,
+                    ':pdf_path' => $pdfPath
+                ]);
+                sendResponse(["message" => "Annule report created successfully."], 201);
+            } else {
+                if (!$id) {
+                    sendResponse(["error" => "ID required"], 400);
+                }
+
+                if ($pdfPath) {
+                    $sql = "UPDATE annual_reports SET title_en = :title_en, title_ar = :title_ar, report_year = :report_year, pdf_path = :pdf_path WHERE report_id = :id";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute([
+                        ':id' => $id,
+                        ':title_en' => $titleEn,
+                        ':title_ar' => $titleAr,
+                        ':report_year' => (int)$reportYear,
+                        ':pdf_path' => $pdfPath
+                    ]);
+                } else {
+                    $sql = "UPDATE annual_reports SET title_en = :title_en, title_ar = :title_ar, report_year = :report_year WHERE report_id = :id";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute([
+                        ':id' => $id,
+                        ':title_en' => $titleEn,
+                        ':title_ar' => $titleAr,
+                        ':report_year' => (int)$reportYear
+                    ]);
+                }
+                sendResponse(["message" => "Annule report updated successfully."]);
+            }
+            break;
+
+        case 'DELETE':
+            if (!$id) {
+                sendResponse(["error" => "ID required"], 400);
+            }
+            
+            // Optionally delete the physical file
+            $stmt = $conn->prepare("SELECT pdf_path FROM annual_reports WHERE report_id = ?");
+            $stmt->execute([$id]);
+            $report = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($report && !empty($report['pdf_path'])) {
+                $fullPath = dirname(__DIR__, 2) . $report['pdf_path'];
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
+            }
+
+            $stmt = $conn->prepare("DELETE FROM annual_reports WHERE report_id = ?");
+            $stmt->execute([$id]);
+            sendResponse(["message" => "Annule report deleted successfully."]);
+            break;
+    }
+}
+
 /**
  * Helper Function: Validate and process secure image uploads with subfolder routing
  */
@@ -507,14 +658,14 @@ function validateAndProcessPDF($file)
     $secureFileName = bin2hex(random_bytes(16)) . '.pdf';
 
     $rootPath = dirname(__DIR__, 2);
-    $uploadDir = $rootPath . '/uploads/projects/pdf/';
+    $uploadDir = $rootPath . '/uploads/reports/pdf/';
 
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
 
     $destination = $uploadDir . $secureFileName;
-    $dbPath = '/uploads/projects/pdf/' . $secureFileName;
+    $dbPath = '/uploads/reports/pdf/' . $secureFileName;
 
     if (!move_uploaded_file($file['tmp_name'], $destination)) {
         sendResponse(["error" => "Failed to move uploaded PDF file."], 500);

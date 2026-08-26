@@ -177,7 +177,7 @@ function updateRecentProjects(projects) {
                 <td class="px-6 py-4">${escapeHtml(project.location || 'Unknown Location')}</td>
                 <td class="px-6 py-4">${getStatusBadge(project.status)}</td>
                 <td class="px-6 py-4 text-right">
-                    <a href="/api/improvments/manage_projects.php?id=${escapeHtml(project.id || '')}" class="text-blue-600 hover:text-blue-900 font-medium text-xs">Edit</a>
+                    <a href="/site/creator/management/manage_projects.html?id=${escapeHtml(project.id || '')}" class="text-blue-600 hover:text-blue-900 font-medium text-xs">Edit</a>
                 </td>
             </tr>
         `;

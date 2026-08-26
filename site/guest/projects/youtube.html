@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Projects Videos</title>
+    <link rel="stylesheet" href="../../../public/css/landscape.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="/js/improvements/youtube.js" defer></script>
+    <script src="../../../js/chatbot/chatbot.js" defer></script>
+    <script src="../../../js/language/arabic.js" defer></script>
+</head>
+<body class="bg-slate-50 font-sans antialiased">
+    <div class="logo-space">
+        <img src="../../../public/images/UOB logo.png" alt="UOB Logo">
+    </div>
+    <nav class="navbar">
+        <div class="nav-left"></div>
+        <div class="nav-center">
+            <a href="../home.html">Home</a>
+            <a href="../about.html">About</a>
+            <a href="../locations/locations.html">Locations</a>
+
+            <div class="dropdown">
+                <a href="#">Plants</a>
+                <div class="dropdown-content">
+                    <a href="../plants/indoor.html">Indoor</a>
+                    <a href="../plants/outdoor.html">Outdoor</a>
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <a href="#">Projects</a>
+                <div class="dropdown-content">
+                    <a href="../projects/before and after.html">Landscape Improvements</a>
+                    <a href="../projects/statistics and reports.html">Statistics And Reports</a>
+                    <a href="#">Projects videos</a>
+                </div>
+            </div>
+        </div>
+       <button id="RTL" class="px-4 py-2 text-sm font-semibold text-gray-800 bg-white border border-gray-300 rounded-lg shadow-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+    Arabic
+</button>
+        <div class="nav-right">
+            <a href="../../../login/login.html"><button class="login-btn">Login</button></a>
+        </div>
+    </nav>
+    <main class="stats-main max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- Page Header -->
+        <div class="mb-8 border-b border-gray-200 pb-4">
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900"><i class="bi bi-camera-video"></i> Project & Channel Media</h1>
+            <p class="mt-2 text-lg text-gray-600">Explore the project's proposal video and recent updates from our YouTube channel.</p>
+        </div>
+
+        <!-- Unified White Box Container -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col gap-8">
+
+            <!-- Main Project Proposal Video Section (TV Screen Style) -->
+            <section class="flex flex-col justify-between">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="bi bi-youtube text-red-600 text-2xl"></i>
+                    Project Proposal Video
+                </h2>
+
+                <!-- Constrained Wrapper to match correct full YouTube size proportions -->
+                <div class="w-full max-w-3xl mx-auto">
+                    <!-- TV Bezel Container -->
+                    <div class="bg-slate-900 rounded-xl overflow-hidden shadow-2xl border-4 border-slate-800 p-2">
+                        
+                       <!-- MAIN SCREEN CONTAINER -->
+<div class="w-full bg-black rounded-lg overflow-hidden shadow-inner relative" 
+     id="project-player" 
+     style="aspect-ratio: 16 / 9; min-height: 250px;">
+    <div class="flex items-center justify-center h-full text-gray-400 text-sm">
+        Loading project video...
+    </div>
+</div>
+
+                        <!-- TV Control Bar & Title Info -->
+                        <div class="flex items-center justify-between px-4 py-3 bg-slate-900 mt-2">
+                            <div class="overflow-hidden pr-2">
+                                <h4 id="project-title" class="text-white font-semibold text-sm md:text-base truncate">Loading Title...</h4>
+                                <span id="project-year" class="text-xs text-slate-400"></span>
+                            </div>
+                            
+                            <!-- Navigation Buttons -->
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <button onclick="switchProject('prev')" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1 cursor-pointer">
+                                    <i class="bi bi-chevron-left"></i> Prev
+                                </button>
+                                <button onclick="switchProject('next')" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1 cursor-pointer">
+                                    Next <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Latest Channel Videos Section (Horizontal Scrollable Feed) -->
+            <section class="flex flex-col border-t border-gray-100 pt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800"><i class="bi bi-camera-reels"></i> Latest Channel Videos</h2>
+                </div>
+                <span class="text-xs text-gray-500">Click any video to preview in the main player</span>
+                <!-- Horizontal Scrollable Container -->
+                <div id="channel-grid" class="flex items-center gap-4 overflow-x-auto pb-3 pt-1 scrollbar-thin scrollbar-thumb-gray-300">
+                    <div class="text-gray-400 text-sm py-4 text-center w-full">Loading channel feed...</div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+</body>
+</html>

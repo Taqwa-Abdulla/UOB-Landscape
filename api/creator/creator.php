@@ -105,16 +105,15 @@ try {
     // Outdoor Plants (Updated to match table structure: class = 'outdoor')
     $outdoorTypes = $pdo->query("SELECT COUNT(*) FROM plants WHERE LOWER(class) = 'outdoor'")->fetchColumn();
     $outdoorStock = $pdo->query("SELECT COALESCE(SUM(quantity), 0) FROM plants WHERE LOWER(class) = 'outdoor'")->fetchColumn();
-
-    // Recent Activities (not for login creator only but for all creators)
-    $activitySql = "
+//Recent activity
+   $activitySql = "
     SELECT a.action_type, a.table_name, a.row_id, a.created_at, u.username
     FROM activity_log a
     JOIN users u ON a.created_by = u.user_id
-    WHERE u.role = 'creator' 
+    WHERE LOWER(u.role) = 'creator' 
       AND a.table_name != 'users'
     ORDER BY a.created_at DESC
-    LIMIT 4
+    LIMIT 4;
 ";
 
 $stmt = $pdo->query($activitySql);

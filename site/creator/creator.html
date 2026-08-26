@@ -1,141 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>Creator Dashboard</title>
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-        <script src="../../js/chatbot/chatbot.js" defer></script>
-        <script src="../../js/creator/creator.js" defer></script>
-        <script src="../../js/users/login.js" defer></script>
-    </head>
-    <body>
-        <!-- Root Container (Full Screen Flex) -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Creator Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="../../js/chatbot/chatbot.js" defer></script>
+  <script src="../../js/creator/creator.js" defer></script>
+  <script src="../../js/users/login.js" defer></script>
+</head>
+
+<body>
+  <!-- Root Container (Full Screen Flex) -->
   <div class="flex h-screen overflow-hidden">
 
     <!-- 1. Sidebar -->
-<aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen">
-  <div>
-    <!-- 1. Brand Logo -->
-    <div class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
-    <img class="rounded-xl w-12 h-15" src="../../public/images/UOB logo.png" alt="UOB Logo">
-    <div>Creator<span class="text-blue-600">Panel</span></div>
-</div>
-
-
-    <!-- 2. User Profile (Top Position) -->
-    <div class="p-4 mx-3 mt-4 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center gap-3">
-      <div id="user-initials" class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
-        JD
-      </div>
-      <div class="overflow-hidden">
-        <p id="user-name" class="text-sm font-semibold text-white truncate">Jane Doe</p>
-        <p id="user-email" class="text-xs text-slate-400 truncate">creator@company.com</p>
-      </div>
-    </div>
-
-    <!-- 3. Navigation Menu -->
-    <nav class="mt-4 px-3 space-y-1">
-      
-      <!-- Dashboard -->
-      <a href="#" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-800 rounded-lg font-medium shadow-sm">
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6"/></svg>
-        <span>Dashboard</span>
-      </a>
-
-      <!-- View Dropdown Menu -->
-      <details class="group [&_summary::-webkit-details-marker]:hidden">
-        <summary class="flex items-center justify-between px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium cursor-pointer">
-          <div class="flex items-center gap-3">
-            <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-            <span>View</span>
-          </div>
-          <svg class="w-4 h-4 transition-transform duration-200 group-open:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-        </summary>
-
-        <div class="mt-1 pl-4 space-y-1">
-          <!-- Home -->
-          <a href="view/home.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6"/></svg>
-            <span>Home</span>
-          </a>
-
-          <!-- About -->
-          <a href="view/about.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span>About</span>
-          </a>
-
-          <!-- Locations -->
-          <a href="view/locations.html" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <span>Locations</span>
-          </a>
-
-          <!-- Nested: Plants -->
-          <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
-            <summary class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
-              <div class="flex items-center gap-3">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                <span>Plants</span>
-              </div>
-              <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </summary>
-            <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
-              <a href="view/plants/indoor.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Indoor</a>
-              <a href="view/plants/outdoor.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Outdoor</a>
-            </div>
-          </details>
-
-          <!-- Nested: Projects -->
-          <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
-            <summary class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
-              <div class="flex items-center gap-3">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
-                <span>Projects</span>
-              </div>
-              <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </summary>
-            <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
-              <a href="view/projects/before and after.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Landscape Improvements</a>
-              <a href="view/projects/statistics and reports.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Statistics and Reports</a>
-            </div>
-          </details>
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen">
+      <div>
+        <!-- 1. Brand Logo -->
+        <div class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
+          <img class="rounded-xl w-12 h-15" src="../../public/images/UOB logo.png" alt="UOB Logo">
+          <div>Creator<span class="text-blue-600">Panel</span></div>
         </div>
-      </details>
 
-      <!-- Manage Plants -->
-      <a href="management/manage_plants.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
-        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-        <span>Manage Plants</span>
-      </a>
-       <!-- Manage Plants -->
-      <a href="management/manage_projects.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
-        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-        <span>Manage Projects</span>
-      </a>
-       <!-- Manage Plants -->
-      <a href="management/manage_activity.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
-        <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-        <span>Activity (Audit Logs)</span>
-      </a>
-    </nav>
-  </div>
 
-  <!-- Footer Action -->
-  <div class="p-4 border-t border-slate-800">
-    <p class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-400  rounded-lg transition-colors">
-      &copy; 2026 University of Bahrain. All rights reserved.
-    </p>
-  </div>
-</aside>
-<!-- 2. Main Content Area -->
+        <!-- 2. User Profile (Top Position) -->
+        <div class="p-4 mx-3 mt-4 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center gap-3">
+          <div id="user-initials"
+            class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
+            JD
+          </div>
+          <div class="overflow-hidden">
+            <p id="user-name" class="text-sm font-semibold text-white truncate">Jane Doe</p>
+            <p id="user-email" class="text-xs text-slate-400 truncate">creator@company.com</p>
+          </div>
+        </div>
+
+        <!-- 3. Navigation Menu -->
+        <nav class="mt-4 px-3 space-y-1">
+
+          <!-- Dashboard -->
+          <a href="#" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-800 rounded-lg font-medium shadow-sm">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6" />
+            </svg>
+            <span>Dashboard</span>
+          </a>
+
+          <!-- View Dropdown Menu -->
+          <details class="group [&_summary::-webkit-details-marker]:hidden">
+            <summary
+              class="flex items-center justify-between px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium cursor-pointer">
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span>View</span>
+              </div>
+              <svg class="w-4 h-4 transition-transform duration-200 group-open:-rotate-180 text-slate-400" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+
+            <div class="mt-1 pl-4 space-y-1">
+              <!-- Home -->
+              <a href="view/home.html" target="_blank" rel="noopener noreferrer"
+                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6" />
+                </svg>
+                <span>Home</span>
+              </a>
+
+              <!-- About -->
+              <a href="view/about.html" target="_blank" rel="noopener noreferrer"
+                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>About</span>
+              </a>
+
+              <!-- Locations -->
+              <a href="view/locations.html" target="_blank" rel="noopener noreferrer"
+                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Locations</span>
+              </a>
+
+              <!-- Nested: Plants -->
+              <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
+                <summary
+                  class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                      class="bi bi-flower3" viewBox="0 0 16 16">
+                      <path
+                        d="M11.424 8c.437-.052.811-.136 1.04-.268a2 2 0 0 0-2-3.464c-.229.132-.489.414-.752.767C9.886 4.63 10 4.264 10 4a2 2 0 1 0-4 0c0 .264.114.63.288 1.035-.263-.353-.523-.635-.752-.767a2 2 0 0 0-2 3.464c.229.132.603.216 1.04.268-.437.052-.811.136-1.04.268a2 2 0 1 0 2 3.464c.229-.132.489-.414.752-.767C6.114 11.37 6 11.736 6 12a2 2 0 1 0 4 0c0-.264-.114-.63-.288-1.035.263.353.523.635.752.767a2 2 0 1 0 2-3.464c-.229-.132-.603-.216-1.04-.268M9 4a2 2 0 0 1-.045.205q-.059.2-.183.484a13 13 0 0 1-.637 1.223L8 6.142l-.135-.23a13 13 0 0 1-.637-1.223 4 4 0 0 1-.183-.484A2 2 0 0 1 7 4a1 1 0 1 1 2 0M3.67 5.5a1 1 0 0 1 1.366-.366 2 2 0 0 1 .156.142q.142.15.326.4c.245.333.502.747.742 1.163l.13.232-.265.002a13 13 0 0 1-1.379-.06 4 4 0 0 1-.51-.083 2 2 0 0 1-.2-.064A1 1 0 0 1 3.67 5.5m1.366 5.366a1 1 0 0 1-1-1.732l.047-.02q.055-.02.153-.044.202-.048.51-.083a13 13 0 0 1 1.379-.06q.135 0 .266.002l-.131.232c-.24.416-.497.83-.742 1.163a4 4 0 0 1-.327.4 2 2 0 0 1-.155.142M9 12a1 1 0 0 1-2 0 2 2 0 0 1 .045-.206q.058-.198.183-.483c.166-.378.396-.808.637-1.223L8 9.858l.135.23c.241.415.47.845.637 1.223q.124.285.183.484A1.3 1.3 0 0 1 9 12m3.33-6.5a1 1 0 0 1-.366 1.366 2 2 0 0 1-.2.064q-.202.048-.51.083c-.412.045-.898.061-1.379.06q-.135 0-.266-.002l.131-.232c.24-.416.497-.83.742-1.163a4 4 0 0 1 .327-.4q.07-.074.114-.11l.041-.032a1 1 0 0 1 1.366.366m-1.366 5.366a2 2 0 0 1-.155-.141 4 4 0 0 1-.327-.4A13 13 0 0 1 9.74 9.16l-.13-.232.265-.002c.48-.001.967.015 1.379.06q.308.035.51.083.098.024.153.044l.048.02a1 1 0 1 1-1 1.732zM8 9a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
+                    </svg>
+                    <span>Plants</span>
+                  </div>
+                   <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                </summary>
+                <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
+                  <a href="view/plants/indoor.html" target="_blank" rel="noopener noreferrer"
+                    class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Indoor</a>
+                  <a href="view/plants/outdoor.html" target="_blank" rel="noopener noreferrer"
+                    class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Outdoor</a>
+                </div>
+              </details>
+
+              <!-- Nested: Projects -->
+              <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
+                <summary
+                  class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                      class="bi bi-bar-chart" viewBox="0 0 16 16">
+                      <path
+                        d="M4 11H2v3h2zm5-4H7v7h2zm5-5v12h-2V2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z" />
+                    </svg> <span>Projects</span>
+                  </div>
+                  <svg
+                    class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div class="mt-1 pl-4 space-y-1 border-l-2 border-slate-800 ml-5">
+                  <a href="view/projects/before and after.html" target="_blank" rel="noopener noreferrer"
+                    class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Landscape
+                    Improvements</a>
+                  <a href="view/projects/statistics and reports.html" target="_blank" rel="noopener noreferrer"
+                    class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Statistics and
+                    Reports</a>
+                  <a href="view/projects/youtube.html" target="_blank" rel="noopener noreferrer"
+                    class="block px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors">Projects
+                    Videos</a>
+                </div>
+              </details>
+            </div>
+          </details>
+          <!-- Manage Plants -->
+          <a href="management/manage_plants.html" target="_blank"
+            class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-flower1"
+              viewBox="0 0 16 16">
+              <path
+                d="M6.174 1.184a2 2 0 0 1 3.652 0A2 2 0 0 1 12.99 3.01a2 2 0 0 1 1.826 3.164 2 2 0 0 1 0 3.652 2 2 0 0 1-1.826 3.164
+           2 2 0 0 1-3.164 1.826 2 2 0 0 1-3.652 0A2 2 0 0 1 3.01 12.99a2 2 0 0 1-1.826-3.164 2 2 0 0 1 0-3.652A2 2 0 0 1 3.01 3.01a2
+           2 0 0 1 3.164-1.826M8 1a1 1 0 0 0-.998 1.03l.01.091q.017.116.054.296c.049.241.122.542.213.887.182.688.428 1.513.676 2.314L8
+           5.762l.045-.144c.248-.8.494-1.626.676-2.314.091-.345.164-.646.213-.887a5 5 0 0 0 .064-.386L9 2a1 1 0 0 0-1-1M2 9l.03-.002.091-.01a5 
+           5 0 0 0 .296-.054c.241-.049.542-.122.887-.213a61 61 0 0 0 2.314-.676L5.762 8l-.144-.045a61 61 0 0 0-2.314-.676 17 17 0 0 0-.887-.213 5 
+           5 0 0 0-.386-.064L2 7a1 1 0 1 0 0 2m7 5-.002-.03a5 5 0 0 0-.064-.386 16 16 0 0 0-.213-.888 61 61 0 0 0-.676-2.314L8 10.238l-.045.144c-.248.8-.494 1.626-.676 2.314-.091.345-.164.646-.213.887a5 5 0 0 0-.064.386L7 14a1 1 0 1 0 2 0m-5.696-2.134.025-.017a5 5 0 0 0 .303-.248c.184-.164.408-.377.661-.629A61 61 0 0 0 5.96 9.23l.103-.111-.147.033a61 61 0 0 0-2.343.572c-.344.093-.64.18-.874.258a5 5 0 0 0-.367.138l-.027.014a1 1 0 1 0 1 1.732zM4.5 14.062a1 1 0 0 0 1.366-.366l.014-.027q.014-.03.036-.084a5 5 0 0 0 .102-.283c.078-.233.165-.53.258-.874a61 61 0 0 0 .572-2.343l.033-.147-.11.102a61 61 0 0 0-1.743 1.667 17 17 0 0 0-.629.66 5 5 0 0 0-.248.304l-.017.025a1 1 0 0 0 .366 1.366m9.196-8.196a1 1 0 0 0-1-1.732l-.025.017a5 5 0 0 0-.303.248 17 17 0 0 0-.661.629A61 61 0 0 0 10.04 6.77l-.102.111.147-.033a61 61 0 0 0 2.342-.572c.345-.093.642-.18.875-.258a5 5 0 0 0 .367-.138zM11.5 1.938a1 1 0 0 0-1.366.366l-.014.027q-.014.03-.036.084a5 5 0 0 0-.102.283c-.078.233-.165.53-.258.875a61 61 0 0 0-.572 2.342l-.033.147.11-.102a61 61 0 0 0 1.743-1.667c.252-.253.465-.477.629-.66a5 5 0 0 0 .248-.304l.017-.025a1 1 0 0 0-.366-1.366M14 9a1 1 0 0 0 0-2l-.03.002a5 5 0 0 0-.386.064c-.242.049-.543.122-.888.213-.688.182-1.513.428-2.314.676L10.238 8l.144.045c.8.248 1.626.494 2.314.676.345.091.646.164.887.213a5 5 0 0 0 .386.064zM1.938 4.5a1 1 0 0 0 .393 1.38l.084.035q.108.045.283.103c.233.078.53.165.874.258a61 61 0 0 0 2.343.572l.147.033-.103-.111a61 61 0 0 0-1.666-1.742 17 17 0 0 0-.66-.629 5 5 0 0 0-.304-.248l-.025-.017a1 1 0 0 0-1.366.366m2.196-1.196.017.025a5 5 0 0 0 .248.303c.164.184.377.408.629.661A61 61 0 0 0 6.77 5.96l.111.102-.033-.147a61 61 0 0 0-.572-2.342c-.093-.345-.18-.642-.258-.875a5 5 0 0 0-.138-.367l-.014-.027a1 1 0 1 0-1.732 1m9.928 8.196a1 1 0 0 0-.366-1.366l-.027-.014a5 5 0 0 0-.367-.138c-.233-.078-.53-.165-.875-.258a61 61 0 0 0-2.342-.572l-.147-.033.102.111a61 61 0 0 0 1.667 1.742c.253.252.477.465.66.629a5 5 0 0 0 .304.248l.025.017a1 1 0 0 0 1.366-.366m-3.928 2.196a1 1 0 0 0 1.732-1l-.017-.025a5 5 0 0 0-.248-.303 17 17 0 0 0-.629-.661A61 61 0 0 0 9.23 10.04l-.111-.102.033.147a61 61 0 0 0 .572 2.342c.093.345.18.642.258.875a5 5 0 0 0 .138.367zM8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
+            </svg> <span>Manage Plants</span>
+          </a>
+          <a href="management/manage_plants_qrcode.html" target="_blank"
+            class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+              class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+              <path
+                d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z" />
+              <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z" />
+              <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z" />
+              <path
+                d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z" />
+              <path d="M12 9h2V8h-2z" />
+            </svg> <span>Manage Plants QR-Code</span>
+          </a>
+          <a href="management/manage_projects.html" target="_blank"
+            class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+              class="bi bi-bar-chart-line" viewBox="0 0 16 16">
+              <path
+                d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1zm1 12h2V2h-2zm-3 0V7H7v7zm-5 0v-3H2v3z" />
+            </svg> <span>Manage Projects</span>
+          </a>
+          <a href="management/manage_activity.html" target="_blank"
+            class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-activity"
+              viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                d="M6 2a.5.5 0 0 1 .47.33L10 12.036l1.53-4.208A.5.5 0 0 1 12 7.5h3.5a.5.5 0 0 1 0 1h-3.15l-1.88 5.17a.5.5 0 0 1-.94 0L6 3.964 4.47 8.171A.5.5 0 0 1 4 8.5H.5a.5.5 0 0 1 0-1h3.15l1.88-5.17A.5.5 0 0 1 6 2" />
+            </svg> <span>Activity (Audit Logs)</span>
+          </a>
+        </nav>
+      </div>
+      <!-- Footer Action -->
+      <div class="p-4 border-t border-slate-800">
+        <p
+          class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-400  rounded-lg transition-colors">
+          &copy; 2026 University of Bahrain. All rights reserved.
+        </p>
+      </div>
+    </aside>
+    <!-- 2. Main Content Area -->
     <div class="flex-1 flex flex-col overflow-y-auto bg-gray-50 min-h-screen">
-
-        <!-- Top Header -->
-            <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-                <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
-                <!-- Notification Bell with Unread Badge & Popup Container -->
+      <!-- Top Header -->
+      <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+        <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+        <div class="flex items-center gap-4">
+                    <!-- Notification Bell with Unread Badge & Popup Container -->
                     <div class="relative">
                         <button id="header-bell-btn" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition relative cursor-pointer focus:outline-none">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,49 +272,66 @@
                             </div>
                         </div>
                     </div>
-                <div class="flex items-center gap-4">
-                    <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition cursor-pointer">
-                        Logout
-                    </button>
-                </div>
-            </header>
+          <button id="logout-btn"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition cursor-pointer">
+            Logout
+          </button>
+        </div>
+      </header>
 
       <!-- Main Content Body -->
       <main class="p-8 space-y-8">
 
         <!-- Quick Actions Bar -->
-        <div class="flex flex-col sm:flex-row items-center justify-between bg-blue-600 rounded-xl p-6 shadow-md text-white">
+        <div
+          class="flex flex-col sm:flex-row items-center justify-between bg-blue-600 rounded-xl p-6 shadow-md text-white">
           <div>
             <h2 class="text-lg font-bold">Ready to create?</h2>
-            <p class="text-blue-100 text-sm mt-1">Manage your plants, locations, and projects from your workspace.</p>
+            <p class="text-blue-100 text-sm mt-1">Manage your plants and projects from your workspace.</p>
           </div>
           <div class="flex gap-3 mt-4 sm:mt-0">
-            <a href="management/manage_projects.html" id="btn-new-project" class="px-4 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold shadow hover:bg-blue-50 transition flex items-center gap-2 cursor-pointer">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <a href="management/manage_projects.html" id="btn-new-project"
+              class="px-4 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold shadow hover:bg-blue-50 transition flex items-center gap-2 cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
               New Project
             </a>
-            <a href="management/manage_plants.html" id="btn-add-plant" class="px-4 py-2 bg-blue-500 text-white border border-blue-400 rounded-lg text-sm font-bold hover:bg-blue-400 transition flex items-center gap-2 cursor-pointer">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <a href="management/manage_plants.html" id="btn-add-plant"
+              class="px-4 py-2 bg-blue-500 text-white border border-blue-400 rounded-lg text-sm font-bold hover:bg-blue-400 transition flex items-center gap-2 cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
               Add Plant
             </a>
           </div>
         </div>
-
         <!-- 1. Top Stat Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
           <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
             <div class="flex items-center justify-between">
               <p class="text-sm font-medium text-gray-500">Total Projects</p>
-              <span class="p-2 bg-blue-50 text-blue-600 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg></span>
+              <span class="p-2 bg-blue-50 text-blue-600 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                  height="16" fill="currentColor" class="bi bi-file-bar-graph" viewBox="0 0 16 16">
+                  <path
+                    d="M4.5 12a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5zm3 0a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5zm3 0a.5.5 0 0 1-.5-.5v-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-.5.5z" />
+                  <path
+                    d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1" />
+                </svg></span>
             </div>
             <p id="stat-projects" class="text-3xl font-extrabold text-gray-900 mt-4">0</p>
           </div>
-          
+
           <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
             <div class="flex items-center justify-between">
               <p class="text-sm font-medium text-gray-500">Locations Managed</p>
-              <span class="p-2 bg-blue-50 text-blue-600 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
+              <span class="p-2 bg-blue-50 text-blue-600 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                  height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                  <path
+                    d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" />
+                  <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                </svg></span>
             </div>
             <p id="stat-locations" class="text-3xl font-extrabold text-gray-900 mt-4">0</p>
           </div>
@@ -238,186 +339,246 @@
           <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
             <div class="flex items-center justify-between">
               <p class="text-sm font-medium text-gray-500">Indoor Plants</p>
-              <span class="p-2 bg-amber-50 text-amber-600 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg></span>
+              <span class="p-2 bg-amber-50 text-amber-600 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                  height="16" fill="currentColor" class="bi bi-leaf" viewBox="0 0 16 16">
+                  <path
+                    d="M1.4 1.7c.216.289.65.84 1.725 1.274 1.093.44 2.884.774 5.834.528l.37-.023c1.823-.06 3.117.598 3.956 1.579C14.16 6.082 14.5 7.41 14.5 8.5c0 .58-.032 1.285-.229 1.997q.198.248.382.54c.756 1.2 1.19 2.563 1.348 3.966a1 1 0 0 1-1.98.198c-.13-.97-.397-1.913-.868-2.77C12.173 13.386 10.565 14 8 14c-1.854 0-3.32-.544-4.45-1.435-1.125-.887-1.89-2.095-2.391-3.383C.16 6.62.16 3.646.509 1.902L.73.806zm-.05 1.39c-.146 1.609-.008 3.809.74 5.728.457 1.17 1.13 2.213 2.079 2.961.942.744 2.185 1.22 3.83 1.221 2.588 0 3.91-.66 4.609-1.445-1.789-2.46-4.121-1.213-6.342-2.68-.74-.488-1.735-1.323-1.844-2.308-.023-.214.237-.274.38-.112 1.4 1.6 3.573 1.757 5.59 2.045 1.227.215 2.21.526 3.033 1.158.058-.39.075-.782.075-1.158 0-.91-.288-1.988-.975-2.792-.626-.732-1.622-1.281-3.167-1.229l-.316.02c-3.05.253-5.01-.08-6.291-.598a5.3 5.3 0 0 1-1.4-.811" />
+                </svg></span>
             </div>
             <p id="stat-indoor-species" class="text-3xl font-extrabold text-gray-900 mt-4">0</p>
-            <p class="text-xs text-gray-500 mt-1">Total Quantity: <span id="stat-indoor-qty" class="font-semibold text-gray-700">0</span></p>
+            <p class="text-xs text-gray-500 mt-1">Total Quantity: <span id="stat-indoor-qty"
+                class="font-semibold text-gray-700">0</span></p>
           </div>
 
           <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
             <div class="flex items-center justify-between">
               <p class="text-sm font-medium text-gray-500">Outdoor Plants</p>
-              <span class="p-2 bg-rose-50 text-rose-600 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
+              <span class="p-2 bg-rose-50 text-rose-600 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                  height="16" fill="currentColor" class="bi bi-tree" viewBox="0 0 16 16">
+                  <path
+                    d="M8.416.223a.5.5 0 0 0-.832 0l-3 4.5A.5.5 0 0 0 5 5.5h.098L3.076 8.735A.5.5 0 0 0 3.5 9.5h.191l-1.638 3.276a.5.5 0 0 0 .447.724H7V16h2v-2.5h4.5a.5.5 0 0 0 .447-.724L12.31 9.5h.191a.5.5 0 0 0 .424-.765L10.902 5.5H11a.5.5 0 0 0 .416-.777zM6.437 4.758A.5.5 0 0 0 6 4.5h-.066L8 1.401 10.066 4.5H10a.5.5 0 0 0-.424.765L11.598 8.5H11.5a.5.5 0 0 0-.447.724L12.69 12.5H3.309l1.638-3.276A.5.5 0 0 0 4.5 8.5h-.098l2.022-3.235a.5.5 0 0 0 .013-.507" />
+                </svg></span>
             </div>
             <p id="stat-outdoor-species" class="text-3xl font-extrabold text-gray-900 mt-4">0</p>
-            <p class="text-xs text-gray-500 mt-1">Total Quantity: <span id="stat-outdoor-qty" class="font-semibold text-gray-700">0</span></p>
+            <p class="text-xs text-gray-500 mt-1">Total Quantity: <span id="stat-outdoor-qty"
+                class="font-semibold text-gray-700">0</span></p>
           </div>
 
         </div>
-        
+
         <!-- Section 1: Change Password Form -->
         <section class="space-y-4 mb-10" id="password-management">
-            <h2 class="text-xl font-semibold text-gray-700">Change Your Password</h2>
-            
-            <form class="bg-white rounded-xl border border-gray-200 shadow-sm p-6" id="password-form" action="#" method="POST">
-                <fieldset class="space-y-6">
-                    <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full">Password Update</legend>
-                    
-                    <!-- Current Password Field -->
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-sm font-medium text-gray-700" for="current-password">Current Password</label>
-                        <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" type="password" id="current-password" name="current_password" placeholder="Enter current password" required>
-                    </div>
+          <h2 class="text-xl font-semibold text-gray-700"> <i class="bi bi-lock"></i> Change Your Password</h2>
 
-                    <!-- New Password Row -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 new-p">
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-sm font-medium text-gray-700" for="new-password">New Password</label>
-                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" type="password" id="new-password" name="new_password" minlength="8" placeholder="At least 8 characters" required>
-                        </div>
-                        
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-sm font-medium text-gray-700" for="confirm-password">Confirm New Password</label>
-                            <input class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" type="password" id="confirm-password" name="confirm_password" placeholder="Confirm new password" required>
-                        </div>
-                    </div>
+          <form class="bg-white rounded-xl border border-gray-200 shadow-sm p-6" id="password-form" action="#"
+            method="POST">
+            <fieldset class="space-y-6">
+              <legend class="text-lg font-bold text-gray-800 border-b border-gray-200 pb-3 w-full"> <i
+                  class="bi bi-key"></i> Password Update
+              </legend>
 
-                    <!-- Submit Action -->
-                    <div class="pt-2 flex justify-end">
-                        <button type="submit" id="change" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition cursor-pointer">Update Password</button>
-                    </div>
-                </fieldset>
-            </form>
+              <!-- Current Password Field -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-sm font-medium text-gray-700" for="current-password">Current Password</label>
+                <input
+                  class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  type="password" id="current-password" name="current_password" placeholder="Enter current password"
+                  required>
+              </div>
+
+              <!-- New Password Row -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 new-p">
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-sm font-medium text-gray-700" for="new-password">New Password</label>
+                  <input
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    type="password" id="new-password" name="new_password" minlength="8"
+                    placeholder="At least 8 characters" required>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-sm font-medium text-gray-700" for="confirm-password">Confirm New Password</label>
+                  <input
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    type="password" id="confirm-password" name="confirm_password" placeholder="Confirm new password"
+                    required>
+                </div>
+              </div>
+
+              <!-- Submit Action -->
+              <div class="pt-2 flex justify-end">
+                <button type="submit" id="change"
+                  class="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition cursor-pointer">Update
+                  Password</button>
+              </div>
+            </fieldset>
+          </form>
         </section>
         <!-- Messages Section Grid -->
-<div class="grid grid-cols-1 md:grid-cols-1 gap-6">
-    <div id="messages-section" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col">
-        <div class="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
-            <h3 class="font-bold text-gray-800 text-sm">Send Message via Outlook</h3>
-        </div>
-        <form id="message-form" onsubmit="handleMessageSubmit(event)" class="flex flex-col gap-3">
-            <div class="flex gap-2">
-                <select id="msg-recipient-email" required class="flex-1 text-xs border border-gray-300 rounded px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    <option value="">Loading organization members...</option>
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+          <div id="messages-section" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
+              <h3 class="font-bold text-gray-800 text-sm"><i class="bi bi-envelope-at"></i> Send Message via Outlook
+              </h3>
+            </div>
+            <form id="message-form" onsubmit="handleMessageSubmit(event)" class="flex flex-col gap-3">
+              <div class="flex gap-2">
+                <select id="msg-recipient-email" required
+                  class="flex-1 text-xs border border-gray-300 rounded px-2 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  <option value="">Loading organization members...</option>
                 </select>
-                <input type="text" id="msg-subject" placeholder="Subject..." required class="w-1/3 text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500">
-            </div>
-            <textarea id="msg-body" placeholder="Type your message here..." rows="3" required class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
-            <div class="flex justify-end">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-1.5 rounded text-xs font-semibold hover:bg-blue-700 cursor-pointer">Open Outlook & Fill</button>
-            </div>
-        </form>
-    </div>
-</div>
-<!-- Schedule & Deadlines Section -->
-<div id="schedule-section" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-    <div class="flex items-center justify-between pb-3 border-b border-gray-100 flex-wrap gap-2">
-        <h3 class="font-bold text-gray-800 text-sm">Schedule & Deadlines</h3>
-        <div class="flex items-center gap-3">
-            <button type="button" onclick="downloadSchedulePDF()" class="text-xs text-blue-600 hover:underline font-semibold cursor-pointer">Download PDF Report</button>
-            <button type="button" onclick="clearMySchedule()" class="text-xs text-red-500 hover:underline cursor-pointer">Clear My Schedule</button>
+                <input type="text" id="msg-subject" placeholder="Subject..." required
+                  class="w-1/3 text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              </div>
+              <textarea id="msg-body" placeholder="Type your message here..." rows="3" required
+                class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+              <div class="flex justify-end">
+                <button type="submit"
+                  class="bg-blue-600 text-white px-4 py-1.5 rounded text-xs font-semibold hover:bg-blue-700 cursor-pointer">Open
+                  Outlook & Fill</button>
+              </div>
+            </form>
+          </div>
         </div>
-    </div>
-    
-    <form id="schedule-form" onsubmit="handleScheduleSubmit(event)" class="mt-4 flex flex-col gap-3">
-        <input type="hidden" id="sched-id">
-        
-        <!-- Row 1: Title, Start Time, End Time, Type -->
-        <div class="flex flex-wrap gap-3 items-center">
-            <input type="text" id="sched-title" placeholder="Event Title" required class="text-xs border border-gray-300 rounded px-3 py-2 flex-1 min-w-[180px] focus:outline-none focus:ring-1 focus:ring-blue-500">
-            
-            <div class="flex flex-col">
+        <!-- Schedule & Deadlines Section -->
+        <div id="schedule-section" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+          <div class="flex items-center justify-between pb-3 border-b border-gray-100 flex-wrap gap-2">
+            <h3 class="font-bold text-gray-800 text-sm"><i class="bi bi-calendar4"></i> Schedule & Deadlines</h3>
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="downloadSchedulePDF()"
+                class="text-xs text-blue-600 hover:underline font-semibold cursor-pointer">Download PDF Report</button>
+              <button type="button" onclick="clearMySchedule()"
+                class="text-xs text-red-500 hover:underline cursor-pointer">Clear My Schedule</button>
+            </div>
+          </div>
+
+          <form id="schedule-form" onsubmit="handleScheduleSubmit(event)" class="mt-4 flex flex-col gap-3">
+            <input type="hidden" id="sched-id">
+
+            <!-- Row 1: Title, Start Time, End Time, Type -->
+            <div class="flex flex-wrap gap-3 items-center">
+              <input type="text" id="sched-title" placeholder="Event Title" required
+                class="text-xs border border-gray-300 rounded px-3 py-2 flex-1 min-w-[180px] focus:outline-none focus:ring-1 focus:ring-blue-500">
+
+              <div class="flex flex-col">
                 <label class="text-[10px] text-gray-500 font-medium">Start Time</label>
-                <input type="datetime-local" id="sched-start-date" required class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
-            </div>
+                <input type="datetime-local" id="sched-start-date" required
+                  class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              </div>
 
-            <div class="flex flex-col">
+              <div class="flex flex-col">
                 <label class="text-[10px] text-gray-500 font-medium">End Time</label>
-                <input type="datetime-local" id="sched-end-date" required class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
-            </div>
+                <input type="datetime-local" id="sched-end-date" required
+                  class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              </div>
 
-            <select id="sched-priority" class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 self-end">
+              <select id="sched-priority"
+                class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 self-end">
                 <option value="meeting">Meeting</option>
                 <option value="task">Task</option>
-            </select>
-        </div>
+              </select>
+            </div>
 
-        <!-- Row 2: Assign To (Dynamic Email Dropdown) & Description -->
-        <div class="flex flex-wrap gap-3 items-center">
-            <div class="flex flex-col flex-1 min-w-[220px]">
+            <!-- Row 2: Assign To (Dynamic Email Dropdown) & Description -->
+            <div class="flex flex-wrap gap-3 items-center">
+              <div class="flex flex-col flex-1 min-w-[220px]">
                 <label class="text-[10px] text-gray-500 font-medium">Assign To (User Email)</label>
-                <select id="sched-assigned-to" class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    <option value="">-- Select Assignee Email (Optional) --</option>
-                    <!-- Dynamically populated via JS -->
+                <select id="sched-assigned-to"
+                  class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  <option value="">-- Select Assignee Email (Optional) --</option>
+                  <!-- Dynamically populated via JS -->
                 </select>
-            </div>
-            
-            <div class="flex flex-col flex-2 min-w-[280px]">
+              </div>
+
+              <div class="flex flex-col flex-2 min-w-[280px]">
                 <label class="text-[10px] text-gray-500 font-medium">Description / Notes</label>
-                <textarea id="sched-desc" placeholder="Event description or notes (optional)..." rows="1" class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
-            </div>
-        </div>
-
-        <!-- Row 3: Privacy & Completion Checkboxes + Save Button -->
-        <div class="flex items-center justify-between flex-wrap gap-4 pt-1">
-            <div class="flex items-center gap-6">
-                <label class="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
-                    <input type="checkbox" id="sched-is-personal" value="true" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                    Mark as Personal Event
-                </label>
-                
-                <label class="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
-                    <input type="checkbox" id="sched-is-completed" value="true" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                    Mark as Completed
-                </label>
+                <textarea id="sched-desc" placeholder="Event description or notes (optional)..." rows="1"
+                  class="text-xs border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+              </div>
             </div>
 
-            <button type="submit" id="sched-submit-btn" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-semibold hover:bg-blue-700 cursor-pointer">Save Event</button>
-        </div>
-    </form>
+            <!-- Row 3: Privacy & Completion Checkboxes + Save Button -->
+            <div class="flex items-center justify-between flex-wrap gap-4 pt-1">
+              <div class="flex items-center gap-6">
+                <label class="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
+                  <input type="checkbox" id="sched-is-personal" value="true" checked
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                  Mark as Personal Event
+                </label>
 
-    <div id="scheduleList" class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-        <div class="p-4 text-sm text-gray-500 text-center col-span-2">Loading schedule...</div>
-    </div>
-</div>
+                <label class="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
+                  <input type="checkbox" id="sched-is-completed" value="true"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                  Mark as Completed
+                </label>
+              </div>
+
+              <button type="submit" id="sched-submit-btn"
+                class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-semibold hover:bg-blue-700 cursor-pointer">Save
+                Event</button>
+            </div>
+          </form>
+
+          <div id="scheduleList" class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+            <div class="p-4 text-sm text-gray-500 text-center col-span-2">Loading schedule...</div>
+          </div>
+        </div>
         <!-- 2. Dual Column Section: User Activity & Recent Projects -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           <!-- Left Column: User Activity Log -->
           <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
                 <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                  <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                   Recent Contributions
                 </h2>
+                <!-- ADD THIS CONTAINER -->
+                <div id="activity-log-container">
+                  <!-- JavaScript will inject the activities or the "No recent activity" message here -->
+                </div>
               </div>
 
               <!-- Timeline Items -->
-              <div class="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+              <div
+                class="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
                 <div class="relative group">
-                  <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-white group-hover:scale-110 transition-transform"></span>
-                  <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">System</span></p>
+                  <span
+                    class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-white group-hover:scale-110 transition-transform"></span>
+                  <p class="text-sm font-medium text-gray-800"><span class="font-semibold text-gray-900">System</span>
+                  </p>
                   <p class="text-xs text-gray-500 mt-0.5">No recent activity found.</p>
                 </div>
               </div>
             </div>
 
-            <a href="management/manage_activity.html" target="_blank" id="btn-view-activity" class="w-full mt-6 py-2.5 text-xs font-bold text-center text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-100 cursor-pointer block">
+            <a href="management/manage_activity.html" target="_blank" id="btn-view-activity"
+              class="w-full mt-6 py-2.5 text-xs font-bold text-center text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-100 cursor-pointer block">
               View Full Activity Log
             </a>
           </div>
 
           <!-- Right Column: Recent Projects -->
-          <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
+          <div
+            class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
             <div>
               <!-- Table Header -->
               <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center bg-white">
                 <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                  <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6M3 7l9-6 9 6"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-reception-4" viewBox="0 0 16 16">
+                    <path
+                      d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5z" />
+                  </svg>
                   Your Active Projects
                 </h2>
-                <a href="management/manage_projects.html" id="btn-view-projects" class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer">View all</a>
+                <a href="management/manage_projects.html" id="btn-view-projects"
+                  class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer">View
+                  all</a>
               </div>
 
               <!-- Projects Table -->
@@ -435,7 +596,9 @@
                     <tr class="hover:bg-gray-50 transition-colors">
                       <td class="px-6 py-4 font-semibold text-gray-900">Legacy Area 5</td>
                       <td class="px-6 py-4">College of Arts</td>
-                      <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">unknown</span></td>
+                      <td class="px-6 py-4"><span
+                          class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">unknown</span>
+                      </td>
                       <td class="px-6 py-4 text-right"></td>
                     </tr>
                   </tbody>
@@ -445,22 +608,24 @@
           </div>
         </div>
 
-            </main>
-        </div>
+      </main>
     </div>
+  </div>
 
-<!-- Notification Reader Modal Popup matching your drawing -->
-<div id="notif-detail-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <!-- Notification Reader Modal Popup matching your drawing -->
+  <div id="notif-detail-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 relative">
-        <div class="flex justify-between items-center border-b pb-3">
-            <span id="modal-notif-date" class="text-xs text-gray-400 font-medium"></span>
-            <button onclick="closeNotifModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
-        </div>
-        <div>
-            <h3 id="modal-notif-title" class="font-bold text-gray-900 text-sm mb-1"></h3>
-            <p id="modal-notif-body" class="text-sm text-gray-600 whitespace-pre-wrap"></p>
-        </div>
+      <div class="flex justify-between items-center border-b pb-3">
+        <span id="modal-notif-date" class="text-xs text-gray-400 font-medium"></span>
+        <button onclick="closeNotifModal()"
+          class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
+      </div>
+      <div>
+        <h3 id="modal-notif-title" class="font-bold text-gray-900 text-sm mb-1"></h3>
+        <p id="modal-notif-body" class="text-sm text-gray-600 whitespace-pre-wrap"></p>
+      </div>
     </div>
-</div>
-    </body>
+  </div>
+</body>
+
 </html>

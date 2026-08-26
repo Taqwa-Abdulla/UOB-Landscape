@@ -7,9 +7,6 @@ async function initDashboard() {
     await fetchDashboardData();
     await loadNotifications();
 }
-document.getElementById('filter-records-year')?.addEventListener('input', () => {
-    loadRecords();
-});
 // Base API endpoint URL pointing to your backend router file
 const API_BASE_URL = '/api/creator/manage_projects.php'; 
 
@@ -17,12 +14,22 @@ document.addEventListener("DOMContentLoaded", () => {
     loadProjects();
     loadRecords();
     loadCosts();
+    loadAnnuleReports();
+});
+
+// Event listeners for filters and searches
+document.getElementById('filter-records-year')?.addEventListener('input', () => {
+    loadRecords();
+});
+
+document.getElementById('filter-reports-year')?.addEventListener('input', () => {
+    loadAnnuleReports();
 });
 
 async function loadProjects() {
     try {
-        const search = document.getElementById('search-projects').value;
-        const status = document.getElementById('filter-projects-status').value;
+        const search = document.getElementById('search-projects')?.value || '';
+        const status = document.getElementById('filter-projects-status')?.value || '';
         const sortBy = document.getElementById('sort-projects-by')?.value || 'created_at';
         const sortOrder = document.getElementById('sort-projects-order')?.value || 'DESC';
         
@@ -35,6 +42,7 @@ async function loadProjects() {
         const response = await fetch(`${API_BASE_URL}/projects?${params.toString()}`);
         const data = await response.json();
         const tbody = document.getElementById('projects-table-body');
+        if (!tbody) return;
         tbody.innerHTML = '';
         
         data.forEach(item => {
@@ -57,7 +65,6 @@ async function loadProjects() {
 async function loadRecords() {
     try {
         const search = document.getElementById('search-records')?.value || '';
-        // Fix: check both possible IDs for the year filter/search input
         const year = document.getElementById('filter-records-year')?.value 
                   || document.getElementById('search-records-year')?.value || '';
         const sortBy = document.getElementById('sort-records-by')?.value || 'created_at';
@@ -70,10 +77,7 @@ async function loadRecords() {
         params.append('order', sortOrder);
 
         const response = await fetch(`${API_BASE_URL}/records?${params.toString()}`);
-        
-        if (!response.ok) {
-            throw new Error(`Server returned status ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Server returned status ${response.status}`);
 
         const text = await response.text();
         if (!text) return;
@@ -84,20 +88,23 @@ async function loadRecords() {
         tbody.innerHTML = '';
         
         data.forEach(item => {
-            tbody.innerHTML += `
-                <tr class="hover:bg-gray-50/50 transition-colors">
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm">${item.record_id}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-600">${item.year}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm font-semibold text-gray-900">${item.action_en}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-600">${item.location_name || 'N/A'}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-600">${item.estimated_cost || 0}</td>
-                    <td class="px-5 py-4 border-b border-gray-200 text-sm text-right space-x-2">
-                        <button onclick='openModal("record", "edit", ${JSON.stringify(item)})' class="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-medium rounded-lg transition-colors">Edit</button>
-                        <button onclick="deleteItem('records', ${item.record_id})" class="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium rounded-lg transition-colors">Delete</button>
-                    </td>
-                </tr>
-            `;
-        });
+    tbody.innerHTML += `
+        <tr class="hover:bg-gray-50/50 transition-colors">
+            <td class="px-5 py-4 border-b border-gray-200 text-sm">${item.record_id}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-600">${item.year}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm font-semibold text-gray-900">${item.action_en}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-600">${item.location_name || 'N/A'}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-600">${item.estimated_cost || 0}</td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm">
+                ${item.pdf_path ? `<a href="${item.pdf_path}" target="_blank" class="text-blue-600 hover:underline">View PDF</a>` : 'N/A'}
+            </td>
+            <td class="px-5 py-4 border-b border-gray-200 text-sm text-right space-x-2">
+                <button onclick='openModal("record", "edit", ${JSON.stringify(item)})' class="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-medium rounded-lg transition-colors">Edit</button>
+                <button onclick="deleteItem('records', ${item.record_id})" class="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium rounded-lg transition-colors">Delete</button>
+            </td>
+        </tr>
+    `;
+});
     } catch (error) { 
         console.error("Error loading records:", error); 
     }
@@ -110,10 +117,7 @@ async function loadCosts() {
         if (search) params.append('q', search);
 
         const response = await fetch(`${API_BASE_URL}/costs?${params.toString()}`);
-        
-        if (!response.ok) {
-            throw new Error(`Server returned status ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Server returned status ${response.status}`);
 
         const text = await response.text();
         if (!text) return;
@@ -142,6 +146,51 @@ async function loadCosts() {
     }
 }
 
+async function loadAnnuleReports() {
+    try {
+        const search = document.getElementById('search-reports')?.value || '';
+        const year = document.getElementById('filter-reports-year')?.value || '';
+        const sortBy = document.getElementById('sort-reports-by')?.value || 'created_at';
+        const sortOrder = document.getElementById('sort-reports-order')?.value || 'DESC';
+
+        const params = new URLSearchParams();
+        if (search) params.append('q', search);
+        if (year) params.append('year', year);
+        params.append('sort', sortBy);
+        params.append('order', sortOrder);
+
+        const response = await fetch(`${API_BASE_URL}/annule-reports?${params.toString()}`);
+        if (!response.ok) throw new Error(`Server returned status ${response.status}`);
+
+        const text = await response.text();
+        if (!text) return;
+
+        const data = JSON.parse(text);
+        const tbody = document.getElementById('reports-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        data.forEach(item => {
+            tbody.innerHTML += `
+                <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">${item.report_id}</td>
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-600">${item.report_year}</td>
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm font-semibold text-gray-900">${item.title_en}</td>
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm">
+                        ${item.pdf_path ? `<a href="${item.pdf_path}" target="_blank" class="text-blue-600 hover:underline">View PDF</a>` : 'N/A'}
+                    </td>
+                    <td class="px-5 py-4 border-b border-gray-200 text-sm text-right space-x-2">
+                        <button onclick='openModal("annule-report", "edit", ${JSON.stringify(item)})' class="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-medium rounded-lg transition-colors">Edit</button>
+                        <button onclick="deleteItem('annule-reports', ${item.report_id})" class="inline-flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium rounded-lg transition-colors">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        console.error("Error loading annule reports:", error);
+    }
+}
+
 async function deleteItem(resource, id) {
     if (!confirm("Are you sure you want to delete this item?")) return;
     try {
@@ -151,6 +200,7 @@ async function deleteItem(resource, id) {
         if (resource === 'projects') loadProjects();
         if (resource === 'records') loadRecords();
         if (resource === 'costs') loadCosts();
+        if (resource === 'annule-reports') loadAnnuleReports();
     } catch (error) { console.error("Error deleting item:", error); }
 }
 
@@ -160,8 +210,8 @@ async function openModal(resource, mode, data = {}) {
     const container = document.getElementById('form-fields-container');
     
     document.getElementById('form-resource').value = resource;
-    document.getElementById('form-id').value = mode === 'edit' ? (data.project_id || data.record_id || data.cost_id) : '';
-    title.innerText = `${mode === 'edit' ? 'Edit' : 'Add'} ${resource.charAt(0).toUpperCase() + resource.slice(1)}`;
+    document.getElementById('form-id').value = mode === 'edit' ? (data.project_id || data.record_id || data.cost_id || data.report_id) : '';
+    title.innerText = `${mode === 'edit' ? 'Edit' : 'Add'} ${resource.replace('-', ' ').charAt(0).toUpperCase() + resource.replace('-', ' ').slice(1)}`;
     container.innerHTML = '';
 
     let locations = [];
@@ -191,30 +241,38 @@ async function openModal(resource, mode, data = {}) {
             { name: 'pdf_path', label: 'PDF Path', type: 'file', val: data.pdf_path || '' }
         ];
     } else if (resource === 'record') {
-        fields = [
-            { name: 'year', label: 'Year', type: 'number', val: data.year || new Date().getFullYear() },
-            { name: 'status', label: 'Record Status', type: 'text', val: data.status || '' },
-            { name: 'action_en', label: 'Action (EN)', type: 'text', val: data.action_en || '' },
-            { name: 'action_ar', label: 'Action (AR)', type: 'text', val: data.action_ar || '' },
-            { name: 'area', label: 'Area', type: 'number', val: data.area || '' },
-            { name: 'green_area', label: 'Green Area', type: 'number', val: data.green_area || '' },
-            { name: 'number_of_trees', label: 'Number of Trees', type: 'number', val: data.number_of_trees || 0 },
-            { name: 'estimated_cost', label: 'Estimated Cost', type: 'number', val: data.estimated_cost || '' },
-            { name: 'start_date', label: 'Start Date', type: 'date', val: data.start_date || '' },
-            { name: 'expected_end_date', label: 'Expected End Date', type: 'date', val: data.expected_end_date || '' },
-            { name: 'location_name', label: 'Location Name', type: 'loc_chained', val: data.location_name || '', catVal: data.location_category || '' },
-            { name: 'previous_condition_en', label: 'Previous Condition (EN)', type: 'textarea', val: data.previous_condition_en || '', fullWidth: true },
-            { name: 'current_condition_en', label: 'Current Condition (EN)', type: 'textarea', val: data.current_condition_en || '', fullWidth: true },
-            { name: 'previous_condition_ar', label: 'Previous Condition (AR)', type: 'textarea', val: data.previous_condition_ar || '', fullWidth: true },
-            { name: 'current_condition_ar', label: 'Current Condition (AR)', type: 'textarea', val: data.current_condition_ar || '', fullWidth: true },
-            { name: 'notes_en', label: 'Notes (EN)', type: 'textarea', val: data.notes_en || '', fullWidth: true },
-            { name: 'notes_ar', label: 'Notes (AR)', type: 'textarea', val: data.notes_ar || '', fullWidth: true }
-        ];
+    fields = [
+        { name: 'year', label: 'Year', type: 'number', val: data.year || new Date().getFullYear() },
+        { name: 'status', label: 'Record Status', type: 'text', val: data.status || '' },
+        { name: 'action_en', label: 'Action (EN)', type: 'text', val: data.action_en || '' },
+        { name: 'action_ar', label: 'Action (AR)', type: 'text', val: data.action_ar || '' },
+        { name: 'area', label: 'Area', type: 'number', val: data.area || '' },
+        { name: 'green_area', label: 'Green Area', type: 'number', val: data.green_area || '' },
+        { name: 'number_of_trees', label: 'Number of Trees', type: 'number', val: data.number_of_trees || 0 },
+        { name: 'estimated_cost', label: 'Estimated Cost', type: 'number', val: data.estimated_cost || '' },
+        { name: 'start_date', label: 'Start Date', type: 'date', val: data.start_date || '' },
+        { name: 'expected_end_date', label: 'Expected End Date', type: 'date', val: data.expected_end_date || '' },
+        { name: 'location_name', label: 'Location Name', type: 'loc_chained', val: data.location_name || '', catVal: data.location_category || '' },
+        { name: 'pdf_path', label: 'PDF File (Optional)', type: 'file', val: data.pdf_path || '' }, // <-- Optional PDF field
+        { name: 'previous_condition_en', label: 'Previous Condition (EN)', type: 'textarea', val: data.previous_condition_en || '', fullWidth: true },
+        { name: 'current_condition_en', label: 'Current Condition (EN)', type: 'textarea', val: data.current_condition_en || '', fullWidth: true },
+        { name: 'previous_condition_ar', label: 'Previous Condition (AR)', type: 'textarea', val: data.previous_condition_ar || '', fullWidth: true },
+        { name: 'current_condition_ar', label: 'Current Condition (AR)', type: 'textarea', val: data.current_condition_ar || '', fullWidth: true },
+        { name: 'notes_en', label: 'Notes (EN)', type: 'textarea', val: data.notes_en || '', fullWidth: true },
+        { name: 'notes_ar', label: 'Notes (AR)', type: 'textarea', val: data.notes_ar || '', fullWidth: true }
+    ];
     } else if (resource === 'cost') {
         fields = [
             { name: 'reference_type', label: 'Reference Type', type: 'text', val: data.reference_type || '' },
             { name: 'reference_name', label: 'Reference Name', type: 'text', val: data.reference_name || '' },
             { name: 'unit_cost', label: 'Unit Cost', type: 'number', val: data.unit_cost || 0.00 }
+        ];
+    } else if (resource === 'annule-report') {
+        fields = [
+            { name: 'title_en', label: 'Title (EN)', type: 'text', val: data.title_en || '' },
+            { name: 'title_ar', label: 'Title (AR)', type: 'text', val: data.title_ar || '' },
+            { name: 'report_year', label: 'Report Year', type: 'number', val: data.report_year || new Date().getFullYear() },
+            { name: 'pdf_path', label: 'PDF File', type: 'file', val: data.pdf_path || '' }
         ];
     }
 
@@ -283,18 +341,21 @@ function closeModal() {
 
 async function handleFormSubmit(event) {
     event.preventDefault();
-    const resourceMap = { project: 'projects', record: 'records', cost: 'costs' };
+    const resourceMap = { 
+        project: 'projects', 
+        record: 'records', 
+        cost: 'costs',
+        'annule-report': 'annule-reports'
+    };
     const resourceInput = document.getElementById('form-resource').value;
     const resource = resourceMap[resourceInput];
     const id = document.getElementById('form-id').value;
     
     const formData = new FormData(event.target);
 
-    // ALWAYS use POST for uploads/updates so PHP populates $_FILES and $_POST properly
     const method = 'POST';
     const url = id ? `${API_BASE_URL}/${resource}/${id}` : `${API_BASE_URL}/${resource}`;
 
-    // If updating, inject the _method parameter so the PHP router knows it's a PUT request
     if (id) {
         formData.append('_method', 'PUT');
     }
@@ -314,6 +375,7 @@ async function handleFormSubmit(event) {
         if (resource === 'projects') loadProjects();
         if (resource === 'records') loadRecords();
         if (resource === 'costs') loadCosts();
+        if (resource === 'annule-reports') loadAnnuleReports();
     } catch (error) { 
         console.error("Error saving item:", error); 
         alert(error.message);

@@ -8,7 +8,7 @@
           
           <div class="chat-header">
             <span>Landscape UOB Assistant (Aspen)</span>
-            <button class="clear-chat-btn" onclick="resetChat()" title="Clear Chat">🔄</button>
+            <button class="clear-chat-btn" onclick="resetChat()" title="Clear Chat"><i class="bi bi-arrow-clockwise"></i></button>
           </div>
           
           <div class="chat-messages" id="chatMessages">
@@ -23,6 +23,7 @@
             <button class="option-btn" onclick="handleOption('locations')">Locations</button>
             <button class="option-btn" onclick="handleOption('statistics')">Statistics</button>
             <button class="option-btn" onclick="handleOption('improvements')">Improvements</button>
+            <button class="option-btn" onclick="handleOption('improvments media')">Improvments Media</button>
             <button class="option-btn" onclick="handleOption('others')">Others</button>
           </div>
 
@@ -161,15 +162,17 @@ window.addEventListener('load', function() {
         });
     });
 });
+(function loadBotStyles() {
+    if (document.querySelector('link[href*="bot.css"]')) return;
 
-// Automatic Dynamic Stylesheet Linker using absolute root path
-document.addEventListener("DOMContentLoaded", function () {
-    const finalCssPath = '/public/css/bot.css'; 
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = '/public/css/aspen.css'; 
 
-    if (!document.querySelector(`link[href="${finalCssPath}"]`)) {
-        const botStyle = document.createElement('link');
-        botStyle.rel = 'stylesheet';
-        botStyle.href = finalCssPath;
-        document.head.appendChild(botStyle);
-    }
-});
+    link.onerror = function() {
+        console.error("Failed to load bot CSS on this page: " + window.location.pathname);
+    };
+
+    document.head.appendChild(link);
+})();

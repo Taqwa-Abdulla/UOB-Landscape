@@ -1,5 +1,5 @@
 -- ==========================================
--- 1. TABLES (Safe Creation)
+-- 1. TABLES
 -- ==========================================
 
 CREATE TABLE users (
@@ -27,7 +27,8 @@ CREATE TABLE locations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    location_image VARCHAR(500) DEFAULT NULL
 );
 
 CREATE TABLE qrcode (
@@ -114,7 +115,8 @@ CREATE TABLE records (
     expected_end_date DATE DEFAULT NULL,
     estimated_cost NUMERIC(15,3) DEFAULT NULL,
     notes_en TEXT DEFAULT NULL,
-    notes_ar TEXT DEFAULT NULL
+    notes_ar TEXT DEFAULT NULL,
+    pdf_path VARCHAR(500) DEFAULT NULL
 );
 
 CREATE TABLE news (
@@ -179,8 +181,56 @@ CREATE TABLE IF NOT EXISTS stats_archive (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE user_notification_settings (
+    user_id INT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+    receive_all BOOLEAN DEFAULT TRUE,
+    mute_all BOOLEAN DEFAULT FALSE,
+    notify_system BOOLEAN DEFAULT TRUE,
+    notify_updates BOOLEAN DEFAULT TRUE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- In-app Notification Bell Feed
+CREATE TABLE notifications (
+    notification_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    type VARCHAR(50) CHECK (type IN ('message', 'status_change', 'deadline', 'system')),
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Messages Table (with optional Outlook tracking reference)
+CREATE TABLE messages (
+    message_id SERIAL PRIMARY KEY,
+    sender_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    recipient_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    subject VARCHAR(255) NOT NULL,
+    body TEXT NOT NULL,
+    outlook_message_id VARCHAR(255) DEFAULT NULL, -- For future Microsoft Graph API sync
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Calendar & Deadlines (Collaborative between Admin and Creator)
+CREATE TABLE calendar_events (
+    event_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT NULL,
+    event_type VARCHAR(50) CHECK (event_type IN ('meeting', 'task')),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP DEFAULT NULL,
+    status VARCHAR(20) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'due_soon', 'completed', 'expired')),
+    created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_personal BOOLEAN DEFAULT TRUE,
+    assigned_to INT REFERENCES users(user_id) ON DELETE CASCADE,
+    is_completed BOOLEAN DEFAULT FALSE;
+);
+
 -- ==========================================
--- 2. FUNCTIONS (Safe Replacement)
+-- 2. FUNCTIONS
 -- ==========================================
 
 -- QR Nullify Function
@@ -215,6 +265,14 @@ BEGIN
     EXCEPTION WHEN OTHERS THEN
         current_user_val := NULL;
     END;
+
+    -- FALLBACK: If session variable is missing, try to grab the first available creator (or leave a safe fallback ID)
+    IF current_user_val IS NULL THEN
+        SELECT user_id INTO current_user_val 
+        FROM users 
+        WHERE LOWER(role) = 'creator' 
+        LIMIT 1;
+    END IF;
 
     table_name_val := TG_TABLE_NAME;
 
@@ -267,7 +325,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ==========================================
--- 3. TRIGGERS (Safe Re-creation)
+-- 3. TRIGGERS
 -- ==========================================
 
 DROP TRIGGER IF EXISTS trg_nullify_qr_image_on_delete ON qrcode;
@@ -305,62 +363,6 @@ CREATE TRIGGER audit_costs_changes AFTER INSERT OR UPDATE OR DELETE ON costs FOR
 
 DROP TRIGGER IF EXISTS audit_annual_reports_changes ON annual_reports;
 CREATE TRIGGER audit_annual_reports_changes AFTER INSERT OR UPDATE OR DELETE ON annual_reports FOR EACH ROW EXECUTE FUNCTION log_table_changes_func();
-
--- ==========================================
--- 1. NOTIFICATIONS & PREFERENCES TABLES
--- ==========================================
-
-CREATE TABLE user_notification_settings (
-    user_id INT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
-    receive_all BOOLEAN DEFAULT TRUE,
-    mute_all BOOLEAN DEFAULT FALSE,
-    notify_system BOOLEAN DEFAULT TRUE,
-    notify_updates BOOLEAN DEFAULT TRUE,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- In-app Notification Bell Feed
-CREATE TABLE notifications (
-    notification_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    type VARCHAR(50) CHECK (type IN ('message', 'status_change', 'deadline', 'system')),
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- ==========================================
--- 2. MESSAGING & CALENDAR (DEADLINES / MEETINGS)
--- ==========================================
-
--- Messages Table (with optional Outlook tracking reference)
-CREATE TABLE messages (
-    message_id SERIAL PRIMARY KEY,
-    sender_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-    recipient_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-    subject VARCHAR(255) NOT NULL,
-    body TEXT NOT NULL,
-    outlook_message_id VARCHAR(255) DEFAULT NULL, -- For future Microsoft Graph API sync
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Calendar & Deadlines (Collaborative between Admin and Creator)
-CREATE TABLE calendar_events (
-    event_id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT DEFAULT NULL,
-    event_type VARCHAR(50) CHECK (event_type IN ('meeting', 'task')),
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP DEFAULT NULL,
-    status VARCHAR(20) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'due_soon', 'completed', 'expired')),
-    created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_personal BOOLEAN DEFAULT TRUE,
-    assigned_to INT REFERENCES users(user_id) ON DELETE CASCADE,
-    is_completed BOOLEAN DEFAULT FALSE;
-);
 
 /*Dummy Data*/
 INSERT INTO users (username, email, college, major, password_hash, role, is_contributor, updated_by) VALUES

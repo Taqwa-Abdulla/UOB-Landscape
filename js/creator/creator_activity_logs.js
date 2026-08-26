@@ -4,9 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initDashboard() {
-    await fetchDashboardData();
     await loadNotifications();
+     await fetchDashboardData();
+    await fetchLogs();
 }
+
 let currentPage = 1;
 let searchQuery = '';
 let selectedUserFilter = '';
@@ -26,17 +28,14 @@ const exportBtn = document.getElementById('exportBtn');
 const exportExcelLink = document.getElementById('exportExcel');
 const exportPdfLink = document.getElementById('exportPdf');
 
-// Dynamically configure export links using the original API path
 function setupExportLinks() {
-    const originalApiUrl = '/api/users/activity_logs.php';
+    const originalApiUrl = '/api/creator/creator_activity_logs.php';
     if (exportExcelLink) exportExcelLink.href = `${originalApiUrl}?export=excel`;
     if (exportPdfLink) exportPdfLink.href = `${originalApiUrl}?export=pdf`;
 }
 
-// Initialize export links on script load
 setupExportLinks();
 
-// Toggle dropdown menu
 exportBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     exportDropdown.classList.toggle('active');
@@ -50,7 +49,7 @@ window.addEventListener('click', () => {
 
 async function fetchLogs(page = 1, search = '', userFilter = '') {
     try {
-        let url = `/api/users/activity_logs.php?fetch_logs=1&page=${page}&search=${encodeURIComponent(search)}`;
+        let url = `/api/creator/creator_activity_logs.php?fetch_logs=1&page=${page}&search=${encodeURIComponent(search)}`;
         if (userFilter) {
             url += `&user_filter=${encodeURIComponent(userFilter)}`;
         }
@@ -66,7 +65,6 @@ async function fetchLogs(page = 1, search = '', userFilter = '') {
             globalUsersMap = data.users_map;
         }
 
-        // Populate dropdown only once or if it has only the default option to prevent clearing selected state
         if (data.dropdown_users && userFilterSelect && (!isDropdownInitialized || userFilterSelect.options.length <= 1)) {
             populateUserDropdown(data.dropdown_users, userFilter);
             isDropdownInitialized = true;
@@ -77,7 +75,7 @@ async function fetchLogs(page = 1, search = '', userFilter = '') {
         renderPagination(data.current_page, data.total_pages);
         currentPage = data.current_page;
     } catch (error) {
-        logTableBody.innerHTML = `<tr><td colspan="6" class="no-data" style="color: #ef4444;">Error: ${error.message}</td></tr>`;
+        logTableBody.innerHTML = `<tr><td colspan="5" class="no-data" style="color: #ef4444;">Error: ${error.message}</td></tr>`;
     }
 }
 
@@ -109,28 +107,17 @@ async function resolveValue(key, val) {
 }
 
 function updateHeaders(role) {
-    if (role === 'admin') {
-        tableHeaderRow.innerHTML = `
-            <th>ID</th>
-            <th>Action Type</th>
-            <th>Table & Changes</th>
-            <th>Row ID</th>
-            <th>Performed By</th>
-            <th>Timestamp</th>
-        `;
-    } else {
-        tableHeaderRow.innerHTML = `
-            <th>ID</th>
-            <th>Action Type</th>
-            <th>Table & Changes</th>
-            <th>Row ID</th>
-            <th>Timestamp</th>
-        `;
-    }
+    tableHeaderRow.innerHTML = `
+        <th>ID</th>
+        <th>Action Type</th>
+        <th>Table & Changes</th>
+        <th>Row ID</th>
+        <th>Timestamp</th>
+    `;
 }
 
 async function renderLogsTableRows(logs, role) {
-    const colSpan = role === 'admin' ? 6 : 5;
+    const colSpan = 5;
     if (!logs || logs.length === 0) {
         return `<tr><td colspan="${colSpan}" class="no-data">No audit logs found.</td></tr>`;
     }
@@ -138,11 +125,6 @@ async function renderLogsTableRows(logs, role) {
     let rowsHtml = '';
 
     for (let log of logs) {
-        let performedByText = log.creator_name ? escapeHtml(log.creator_name) : 'Unknown User';
-        let userDisplay = role === 'admin' 
-            ? `<td>${performedByText} <small style="color:var(--text-muted)">(${escapeHtml(log.creator_email || 'N/A')})</small></td>` 
-            : '';
-
         let detailsHtml = `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">`;
         
         if (log.action_type === 'UPDATE' && log.old_values && log.new_values) {
@@ -201,7 +183,6 @@ async function renderLogsTableRows(logs, role) {
                     ${detailsHtml}
                 </td>
                 <td>${log.row_id}</td>
-                ${userDisplay}
                 <td>${escapeHtml(log.created_at)}</td>
             </tr>
         `;
@@ -245,14 +226,6 @@ nextBtn.addEventListener('click', () => {
     fetchLogs(currentPage + 1, searchQuery, selectedUserFilter);
 });
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-    );
-}
-
-fetchLogs();
 // ==========================================
 // NOTIFICATIONS & PREFERENCES LOGIC
 // ==========================================
@@ -518,7 +491,7 @@ async function clearAllNotifications() {
  */
 async function fetchDashboardData() {
     try {
-        const response = await fetch('/api/admin/admin.php');
+        const response = await fetch('/api/creator/creator.php');
 
         if (response.status === 401 || response.status === 403) {
             window.location.href = "/site/guest/home.html";
@@ -551,9 +524,9 @@ function updateUserProfile(user) {
     const emailEl = document.getElementById('profile-user-email');
     const initialsEl = document.getElementById('user-initials');
 
-    if (nameEl) nameEl.textContent = user.name || 'Admin User';
-    if (emailEl) emailEl.textContent = user.email || 'admin@company.com';
-    if (initialsEl) initialsEl.textContent = user.initials || 'AD';
+    if (nameEl) nameEl.textContent = user.name || 'Creator User';
+    if (emailEl) emailEl.textContent = user.email || 'creator@company.com';
+    if (initialsEl) initialsEl.textContent = user.initials || 'CR';
 }
 // ==========================================
 // UTILITY HELPERS

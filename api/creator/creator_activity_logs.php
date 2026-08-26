@@ -1,18 +1,21 @@
 <?php
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
-
-if (!isset($_SESSION['user_id']) || ($role !== 'admin' && $role !== 'creator')) {
+if (!isset($_SESSION['user_id'])) {
     header('Location: /login/login.html');
     exit;
 }
 
+$raw_role = $_SESSION['user_role'] ?? $_SESSION['role'] ?? '';
+if (strtolower(trim($raw_role)) !== 'creator') {
+    header('HTTP/1.1 403 Forbidden');
+    echo json_encode(['success' => false, 'error' => 'Unauthorized access.']);
+    exit;
+}
+
 require_once __DIR__ . '/../../config/db.php';
-// Include mPDF via Composer autoloader
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 $current_user_id = $_SESSION['user_id'];
@@ -26,15 +29,11 @@ try {
     $stmtUser->execute([$current_user_id]);
     $userData = $stmtUser->fetch();
 
-    if (!$userData) {
+    if (!$userData || $userData['role'] !== 'creator') {
         session_destroy();
         header('Location: /login/login.html');
         exit;
     }
-
-    $current_username = $userData['username'];
-    $current_role = $userData['role'];
-
 } catch (Exception $e) {
     $db_error = "Database connection failed: " . $e->getMessage();
 }
@@ -51,7 +50,6 @@ function cleanExportValue($val) {
     return trim($val);
 }
 
-// Helper for both CSV and mPDF: mPDF handles real Arabic text natively!
 function resolveLogChanges($action_type, $old_val, $new_val) {
     $summary = [];
     if ($action_type === 'UPDATE' && $old_val && $new_val) {
@@ -82,7 +80,6 @@ function resolveLogChanges($action_type, $old_val, $new_val) {
     return empty($summary) ? 'N/A' : implode('<br>', $summary);
 }
 
-// Plain text version for CSV export
 function resolveLogChangesCsv($action_type, $old_val, $new_val) {
     $htmlResult = resolveLogChanges($action_type, $old_val, $new_val);
     $plain = str_replace(['<strong>', '</strong>'], '', $htmlResult);
@@ -90,43 +87,29 @@ function resolveLogChangesCsv($action_type, $old_val, $new_val) {
     return str_replace('<br>', ' | ', $plain);
 }
 
-// ==========================================
-// 1. EXPORT ENDPOINT (CSV & PDF via mPDF)
-// ==========================================
+// 1. EXPORT ENDPOINT (Creator)
 if (isset($_GET['export'])) {
     error_reporting(0);
     ini_set('display_errors', '0');
-    
-    while (ob_get_level()) {
-        ob_end_clean();
-    }
+    while (ob_get_level()) { ob_end_clean(); }
     ob_start();
 
     $export_type = $_GET['export'];
-    
-    if (isset($db_error)) {
-        die($db_error);
-    }
+    if (isset($db_error)) die($db_error);
 
     try {
         $sql = "SELECT a.log_id, a.action_type, a.row_id, a.table_name, a.old_values, a.new_values, a.created_at, u.username AS creator_name 
-                FROM activity_log a LEFT JOIN users u ON a.created_by = u.user_id";
-        
-        if ($current_role === 'creator') {
-            $sql .= " WHERE a.table_name IN ('plants', 'projects', 'qrcode', 'cost', 'records')";
-        }
-        $sql .= " ORDER BY a.created_at DESC";
-        
+                FROM activity_log a LEFT JOIN users u ON a.created_by = u.user_id 
+                WHERE a.table_name IN ('plants', 'projects', 'qrcode', 'cost', 'records', 'annual_reports') 
+                ORDER BY a.created_at DESC";
         $stmt = $db->query($sql);
         $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if ($export_type === 'excel' || $export_type === 'csv') {
             header('Content-Type: text/csv; charset=utf-8');
-            header('Content-Disposition: attachment; filename=activity_logs_' . date('Y-m-d') . '.csv');
-            
+            header('Content-Disposition: attachment; filename=creator_activity_logs_' . date('Y-m-d') . '.csv');
             $output = fopen('php://output', 'w');
-            fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
-            
+            fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
             fputcsv($output, ['Log ID', 'Action Type', 'Table Name', 'Row ID', 'Changes Summary', 'Performed By', 'Timestamp'], ',', '"', '\\');
             
             foreach ($logs as $log) {
@@ -143,17 +126,9 @@ if (isset($_GET['export'])) {
             }
             fclose($output);
             exit;
-        } 
-        elseif ($export_type === 'pdf') {
-            // Initialize mPDF with Landscape A4 and automatic Arabic/Unicode font handling
-            $mpdf = new \Mpdf\Mpdf([
-                'mode' => 'utf-8',
-                'format' => 'A4-L',
-                'default_font' => 'dejavusans' // DejaVu Sans natively supports full Arabic characters
-            ]);
-
-            $html = '
-            <h2 style="text-align: center; font-family: dejavusans; color: #333;">System Activity Logs Audit Report</h2>
+        } elseif ($export_type === 'pdf') {
+            $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4-L', 'default_font' => 'dejavusans']);
+            $html = '<h2 style="text-align: center; font-family: dejavusans; color: #333;">Creator Activity Logs Audit Report</h2>
             <p style="text-align: center; font-size: 10px; color: #666;">Generated On: ' . date('Y-m-d H:i:s') . '</p>
             <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 9px; font-family: dejavusans;">
                 <thead>
@@ -168,26 +143,20 @@ if (isset($_GET['export'])) {
                 </thead>
                 <tbody>';
 
-            if (!empty($logs)) {
-                foreach ($logs as $log) {
-                    $changes = resolveLogChanges($log['action_type'], $log['old_values'], $log['new_values']);
-                    $html .= '<tr>
-                        <td style="text-align: center;">#' . cleanExportValue($log['log_id']) . '</td>
-                        <td style="text-align: center;">' . cleanExportValue($log['action_type']) . '</td>
-                        <td>' . cleanExportValue($log['table_name']) . '</td>
-                        <td>' . $changes . '</td>
-                        <td>' . cleanExportValue($log['creator_name'] ?? 'System') . '</td>
-                        <td style="text-align: center;">' . cleanExportValue($log['created_at']) . '</td>
-                    </tr>';
-                }
-            } else {
-                $html .= '<tr><td colspan="6" style="text-align: center;">No activity logs recorded.</td></tr>';
+            foreach ($logs as $log) {
+                $changes = resolveLogChanges($log['action_type'], $log['old_values'], $log['new_values']);
+                $html .= '<tr>
+                    <td style="text-align: center;">#' . cleanExportValue($log['log_id']) . '</td>
+                    <td style="text-align: center;">' . cleanExportValue($log['action_type']) . '</td>
+                    <td>' . cleanExportValue($log['table_name']) . '</td>
+                    <td>' . $changes . '</td>
+                    <td>' . cleanExportValue($log['creator_name'] ?? 'System') . '</td>
+                    <td style="text-align: center;">' . cleanExportValue($log['created_at']) . '</td>
+                </tr>';
             }
-
             $html .= '</tbody></table>';
-
             $mpdf->WriteHTML($html);
-            $mpdf->Output('activity_logs_' . date('Y-m-d') . '.pdf', 'D');
+            $mpdf->Output('creator_activity_logs_' . date('Y-m-d') . '.pdf', 'D');
             exit;
         }
     } catch (Exception $e) {
@@ -195,12 +164,9 @@ if (isset($_GET['export'])) {
     }
 }
 
-// ==========================================
-// 2. AJAX / DATA FETCHING ENDPOINT
-// ==========================================
+// 2. AJAX ENDPOINT (Creator)
 if (isset($_GET['fetch_logs']) && $_GET['fetch_logs'] == '1') {
     header('Content-Type: application/json');
-    
     if (isset($db_error)) {
         echo json_encode(['success' => false, 'error' => $db_error]);
         exit;
@@ -213,28 +179,16 @@ if (isset($_GET['fetch_logs']) && $_GET['fetch_logs'] == '1') {
     $offset = ($page - 1) * $limit;
 
     try {
-        $sql = "SELECT 
-                    a.log_id, 
-                    a.action_type, 
-                    a.row_id, 
-                    a.table_name, 
-                    a.old_values,
-                    a.new_values,
-                    a.created_at, 
-                    u.username AS creator_name,
-                    u.email AS creator_email,
-                    u.role AS creator_role,
-                    u.user_id AS creator_id
-                FROM activity_log a
-                LEFT JOIN users u ON a.created_by = u.user_id";
-        
+        $sql = "SELECT a.log_id, a.action_type, a.row_id, a.table_name, a.old_values, a.new_values, a.created_at, 
+                       u.username AS creator_name, u.email AS creator_email, u.role AS creator_role, u.user_id AS creator_id 
+                FROM activity_log a LEFT JOIN users u ON a.created_by = u.user_id";
         $countSql = "SELECT COUNT(*) FROM activity_log a LEFT JOIN users u ON a.created_by = u.user_id";
+        
         $params = [];
         $whereClauses = [];
 
-        if ($current_role === 'creator') {
-            $whereClauses[] = "a.table_name IN ('plants', 'projects', 'qrcode', 'cost', 'records')";
-        }
+        // Strict boundary restriction for creators
+        $whereClauses[] = "a.table_name IN ('plants', 'projects', 'qrcode', 'cost', 'records','annual_reports')";
 
         if (!empty($search)) {
             $whereClauses[] = "(a.action_type ILIKE ? OR a.table_name ILIKE ?)";
@@ -266,7 +220,6 @@ if (isset($_GET['fetch_logs']) && $_GET['fetch_logs'] == '1') {
         }
         $stmt->bindValue($bindIndex++, $limit, PDO::PARAM_INT);
         $stmt->bindValue($bindIndex++, $offset, PDO::PARAM_INT);
-        
         $stmt->execute();
         $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -276,15 +229,11 @@ if (isset($_GET['fetch_logs']) && $_GET['fetch_logs'] == '1') {
             $usersMap[$uRow['user_id']] = $uRow['username'];
         }
 
-        if ($current_role === 'admin') {
-            $stmtDropdownUsers = $db->query("SELECT user_id, username FROM users ORDER BY username ASC");
-        } else {
-            $stmtDropdownUsers = $db->query("SELECT DISTINCT u.user_id, username 
-                FROM users u 
-                JOIN activity_log a ON u.user_id = a.created_by 
-                WHERE a.table_name IN ('plants', 'projects', 'qrcode', 'cost', 'records')
-                ORDER BY username ASC");
-        }
+        $stmtDropdownUsers = $db->query("SELECT DISTINCT u.user_id, username 
+            FROM users u 
+            JOIN activity_log a ON u.user_id = a.created_by 
+            WHERE a.table_name IN ('plants', 'projects', 'qrcode', 'cost', 'records', 'annual_reports') 
+            ORDER BY username ASC");
         $dropdownUsers = $stmtDropdownUsers->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode([
@@ -295,10 +244,25 @@ if (isset($_GET['fetch_logs']) && $_GET['fetch_logs'] == '1') {
             'total_rows' => $totalRows,
             'total_pages' => ceil($totalRows / $limit),
             'current_page' => $page,
-            'role' => $current_role
+            'role' => 'creator'
         ]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
     exit;
 }
+// ==========================================
+// AUTO-CLEANUP: Purge logs older than 6 months
+// ==========================================
+try {
+    // Only runs this cleanup roughly 5% of the time the API is hit 
+    // (so it doesn't query the database on every single pagination click)
+    if (mt_rand(1, 100) <= 5 && isset($db)) {
+        $cleanupStmt = $db->prepare("DELETE FROM activity_log WHERE created_at < NOW() - INTERVAL '6 months'");
+        $cleanupStmt->execute();
+    }
+} catch (Exception $e) {
+    // Fails silently so user experience is never interrupted
+    error_log("Background log cleanup failed: " . $e->getMessage());
+}
+?>

@@ -1,4 +1,4 @@
-/* Scoped styles specifically targeting the chatbot widget elements */
+@import "tailwindcss";
 #global-chat-widget {
   font-family: 'Segoe UI', Roboto, sans-serif;
 }
@@ -54,6 +54,10 @@
   height: 42px;
   background-color: #d4af37; /* UOB Gold */
   border-radius: 2px;
+  transform-origin: bottom;
+  transform: translateX(-50%) scaleY(1); 
+  /* Default: Continuous gentle wind sway */
+  animation: windSwayStem 3s ease-in-out infinite;
 }
 
 .leaf {
@@ -62,13 +66,16 @@
   height: 10px;
   background-color: #0b3c5d; /* UOB Blue */
   border-radius: 12px 0 12px 0;
-  transform: scale(0);
+  transform: scale(1); 
+  opacity: 1;
 }
 
 .leaf-left {
   bottom: 20px;
   left: 6px;
   transform-origin: right bottom;
+  /* Default: Wind sway for left leaf */
+  animation: windSwayLeft 3s ease-in-out infinite;
 }
 
 .leaf-right {
@@ -76,13 +83,13 @@
   right: 6px;
   transform-origin: left bottom;
   border-radius: 0 12px 0 12px;
+  /* Default: Wind sway for right leaf */
+  animation: windSwayRight 3s ease-in-out infinite;
 }
 
-/* --- TRIGGER ANIMATION ON HOVER --- */
+/* --- HOVER BEHAVIOR: STOP WIND & GROW --- */
 .bot-container:hover .stem {
   animation: growStem 2.5s ease-in-out infinite;
-  transform: translateX(-50%) scaleY(0);
-  transform-origin: bottom;
 }
 
 .bot-container:hover .leaf {
@@ -201,7 +208,6 @@
   max-width: 85%;
 }
 
-/* Quick Select Option Selection Buttons Container */
 .chat-options {
   display: flex;
   flex-wrap: wrap;
@@ -211,7 +217,6 @@
   border-top: 1px solid #e1e9f0;
 }
 
-/* Styled option buttons */
 .option-btn {
   background-color: #ffffff; 
   color: #0b3c5d; 
@@ -228,11 +233,10 @@
   color: #ffffff; 
 }
 
-/* User and Bot message bubbles adjustment */
 .user-msg {
   align-self: flex-end;
-  background-color: #d4af37; /* UOB Gold */
-  color: #0b3c5d; /* Dark Blue Text */
+  background-color: #d4af37; 
+  color: #0b3c5d; 
   font-weight: 500;
   padding: 8px 12px;
   border-radius: 12px 12px 0 12px;
@@ -273,6 +277,16 @@
 }
 
 /* --- ANIMATION KEYFRAMES --- */
+@keyframes windSwayLeft {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-5deg); }
+}
+
+@keyframes windSwayRight {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(5deg); }
+}
+
 @keyframes growStem {
   0% { transform: translateX(-50%) scaleY(0); }
   50%, 100% { transform: translateX(-50%) scaleY(1); }
@@ -288,16 +302,16 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* --- ⌒ ⌒ HAPPY ARC SMILING EYES ON HOVER --- */
+/* --- HAPPY ARC SMILING EYES ON HOVER --- */
 .bot-screen:hover .pupil {
     width: 12px;
     height: 12px;            
     background-color: transparent; 
-    border: 3.5px solid #d4af37;  /* Use thick UOB Gold for the smile line */
+    border: 3.5px solid #d4af37;  
     border-bottom: transparent;   
     border-left: transparent;    
     border-right: transparent;    
-    border-radius: 50%;           
+    border-radius: 50%;          
     box-shadow: none;
     transform: translate(0px, 2px) !important; 
     transition: all 0.15s ease-in-out;
