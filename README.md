@@ -1,5 +1,7 @@
 # UOB-Landscape
 The Landscape Website for University Of Bahrain (UOB)
+# UOB-Landscape 
+Landscape Website for University Of Bahrain (UOB)
 # Languages Used:
 - HTML + JS (Frontend)
 - PHP (Backend: Rest APIs)
