@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <script src="../../../js/chatbot/chatbot.js" defer></script>
     <script src="../../../js/users/login.js" defer></script>
 </head>
+
 <body class="bg-slate-50">
     <!-- Root Container (Full Screen Flex) -->
     <div class="flex h-screen overflow-hidden">
@@ -39,7 +41,7 @@
                 <!-- Navigation Menu -->
                 <nav class="mt-4 px-3 space-y-1">
                     <a href="../admin.html"
-                            class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6" />
@@ -113,7 +115,7 @@
                                         </svg>
                                         <span>Plants</span>
                                     </div>
-                                     <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400"
+                                    <svg class="w-3.5 h-3.5 transition-transform duration-200 group-open/nested:-rotate-180 text-slate-400"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 9l-7 7-7-7" />
@@ -162,13 +164,14 @@
                         </div>
                     </details>
 
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
+                    <a href="manage_users.html"
+                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
                         <svg class="w-5 h-5 shrink-0 text-slate-400 group-hover:text-white" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
-                        <span>Users</span>
+                        <span>Manage Users</span>
                     </a>
 
                     <a href="manage_locations.html"
@@ -203,7 +206,8 @@
                         <span>Manage Reports</span>
                     </a>
 
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-white bg-blue-800 rounded-lg font-medium shadow-sm">
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 text-white bg-blue-800 rounded-lg font-medium shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-activity" viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
@@ -312,78 +316,106 @@
             </header>
             <!-- Dashboard Body -->
             <main class="px-6 py-6 space-y-6 w-full flex-1 max-w-none">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header Section -->
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-        <div>
-            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Activity Audit Logs</h1>
-            <p class="mt-1 text-sm text-gray-600"><i class="bi bi-clock-history"></i> Track and monitor system actions and data modifications.</p>
-        </div>
-        
-        <!-- Export Dropdown -->
-        <div class="relative inline-block text-left group">
-            <button id="exportBtn" type="button" class="inline-flex justify-center items-center w-full px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                <i class="bi bi-download"></i> Export Logs 
-                <svg class="-mr-1 ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </button>
-            
-            <!-- Dropdown Content (Revealed on hover/focus or toggle) -->
-            <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none hidden group-hover:block transition-all z-10" id="exportDropdown">
-                <div class="py-1">
-                    <a href="#" id="exportExcel" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"><i class="bi bi-file-earmark-arrow-down"></i> Export as Excel</a>
-                    <a href="#" id="exportPdf" target="_blank" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"><i class="bi bi-file-earmark-arrow-down"></i> Export as PDF</a>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <!-- Header Section -->
+                    <header class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+                        <div>
+                            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Activity Audit Logs</h1>
+                            <p class="mt-1 text-sm text-gray-600"><i class="bi bi-clock-history"></i> Track and monitor
+                                system actions and data modifications.</p>
+                        </div>
+
+                        <!-- Export Dropdown -->
+                        <div class="relative inline-block text-left group">
+                            <button id="exportBtn" type="button"
+                                class="inline-flex justify-center items-center w-full px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                                <i class="bi bi-download"></i> Export Logs
+                                <svg class="-mr-1 ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                    fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Content -->
+                            <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none hidden transition-all z-10"
+                                id="exportDropdown">
+                                <div class="py-1">
+                                    <a href="#" id="exportExcel"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"><i
+                                            class="bi bi-file-earmark-arrow-down"></i> Export as Excel</a>
+                                    <a href="#" id="exportPdf" target="_blank"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"><i
+                                            class="bi bi-file-earmark-arrow-down"></i> Export as PDF</a>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <!-- Card Container -->
+                    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl overflow-hidden">
+
+                        <!-- Controls Bar -->
+                        <div
+                            class="p-6 border-b border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/50">
+                            <div class="w-full sm:w-96">
+                                <input type="text" id="searchInput" placeholder="Search action, table, or user..."
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                            </div>
+                            <div class="w-full sm:w-auto">
+                                <select id="userFilterSelect"
+                                    class="w-full sm:w-48 px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm bg-white focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                                    <option value="">All Users</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Responsive Table Container -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr id="tableHeaderRow">
+                                        <th scope="col"
+                                            class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            ID</th>
+                                        <th scope="col"
+                                            class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Action Type</th>
+                                        <th scope="col"
+                                            class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Table & Changes</th>
+                                        <th scope="col"
+                                            class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Row ID</th>
+                                        <th scope="col"
+                                            class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logTableBody" class="divide-y divide-gray-200 bg-white">
+                                    <tr>
+                                        <td colspan="5"
+                                            class="px-6 py-8 text-center text-sm text-gray-500 italic loading">Loading
+                                            logs...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination Section -->
+                        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between"
+                            id="paginationContainer">
+                            <button id="prevBtn" disabled
+                                class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">Previous</button>
+                            <span id="pageInfo" class="text-sm text-gray-700 font-medium">Page 1 of 1</span>
+                            <button id="nextBtn" disabled
+                                class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">Next</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Card Container -->
-    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl overflow-hidden">
-        
-        <!-- Controls Bar -->
-        <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/50">
-            <div class="w-full sm:w-96">
-                <input type="text" id="searchInput" placeholder="Search action, table, or user..." class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-            </div>
-            <div class="w-full sm:w-auto">
-                <select id="userFilterSelect" class="w-full sm:w-48 px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm bg-white focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                    <option value="">All Users</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Responsive Table Container -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr id="tableHeaderRow">
-                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
-                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action Type</th>
-                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Table & Changes</th>
-                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Row ID</th>
-                        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Timestamp</th>
-                    </tr>
-                </thead>
-                <tbody id="logTableBody" class="divide-y divide-gray-200 bg-white">
-                    <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500 italic loading">Loading logs...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination Section -->
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between" id="paginationContainer">
-            <button id="prevBtn" disabled class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">Previous</button>
-            <span id="pageInfo" class="text-sm text-gray-700 font-medium">Page 1 of 1</span>
-            <button id="nextBtn" disabled class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">Next</button>
-        </div>
-    </div>
-</div>
-</main>
-<!-- Notification Reader Modal Popup matching your drawing -->
+            </main>
+            <!-- Notification Reader Modal Popup matching your drawing -->
             <div id="notif-detail-modal"
                 class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                 <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 relative">
@@ -399,4 +431,5 @@
                 </div>
             </div>
 </body>
+
 </html>

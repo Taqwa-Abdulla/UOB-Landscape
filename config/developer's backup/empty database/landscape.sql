@@ -324,6 +324,67 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+--Notification function:
+-- 1. Create a function to generate notifications based on activity or project changes
+CREATE OR REPLACE FUNCTION generate_system_notifications()
+RETURNS TRIGGER AS $$
+DECLARE
+    target_user INT;
+    notif_title VARCHAR(255);
+    notif_msg TEXT;
+    notif_type VARCHAR(50);
+BEGIN
+    -- Handle Project Status Changes or Insertions
+    IF TG_TABLE_NAME = 'projects' THEN
+        notif_type := 'status_change';
+        if (TG_OP = 'INSERT') THEN
+            notif_title := 'New Project Created';
+            notif_msg := 'Project "' || NEW.title_en || '" has been added with status: ' || NEW.project_status;
+        ELSIF (TG_OP = 'UPDATE' AND OLD.project_status IS DISTINCT FROM NEW.project_status) THEN
+            notif_title := 'Project Status Updated';
+            notif_msg := 'Project "' || NEW.title_en || '" status changed from ' || OLD.project_status || ' to ' || NEW.project_status;
+        ELSE
+            RETURN NEW;
+        END IF;
+
+        -- Broadcast to all users except the one who triggered it (if tracked)
+        FOR target_user IN SELECT user_id FROM users WHERE user_id IS DISTINCT FROM NEW.updated_by LOOP
+            INSERT INTO notifications (user_id, title, message, type, is_read, created_at)
+            VALUES (target_user, notif_title, notif_msg, notif_type, FALSE, NOW());
+        END LOOP;
+
+    -- Handle General Activity Logs (Plants, Locations, News, etc.)
+    ELSIF TG_TABLE_NAME = 'activity_log' THEN
+        -- Only trigger for important inserts/updates to avoid notification fatigue
+        IF NEW.table_name IN ('plants', 'locations', 'news') THEN
+            notif_type := 'system';
+            notif_title := 'System Update: ' + INITCAP(NEW.table_name);
+            notif_msg := 'A ' || NEW.action_type || ' action was performed on ' || NEW.table_name;
+
+            FOR target_user IN SELECT user_id FROM users WHERE user_id IS DISTINCT FROM NEW.created_by LOOP
+                INSERT INTO notifications (user_id, title, message, type, is_read, created_at)
+                VALUES (target_user, notif_title, notif_msg, notif_type, FALSE, NOW());
+            END LOOP;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2. Attach triggers to Projects and Activity Log
+DROP TRIGGER IF EXISTS trg_notify_project_changes ON projects;
+CREATE TRIGGER trg_notify_project_changes
+AFTER INSERT OR UPDATE ON projects
+FOR EACH ROW
+EXECUTE FUNCTION generate_system_notifications();
+
+DROP TRIGGER IF EXISTS trg_notify_activity_changes ON activity_log;
+CREATE TRIGGER trg_notify_activity_changes
+AFTER INSERT ON activity_log
+FOR EACH ROW
+EXECUTE FUNCTION generate_system_notifications();
+
 -- ==========================================
 -- 3. TRIGGERS
 -- ==========================================

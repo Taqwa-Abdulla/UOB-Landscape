@@ -28,22 +28,30 @@ const exportBtn = document.getElementById('exportBtn');
 const exportExcelLink = document.getElementById('exportExcel');
 const exportPdfLink = document.getElementById('exportPdf');
 
-function setupExportLinks() {
+function setupExportLinks(search = '', userFilter = '') {
     const originalApiUrl = '/api/admin/admin_activity_logs.php';
-    if (exportExcelLink) exportExcelLink.href = `${originalApiUrl}?export=excel`;
-    if (exportPdfLink) exportPdfLink.href = `${originalApiUrl}?export=pdf`;
+    let excelUrl = `${originalApiUrl}?export=excel&search=${encodeURIComponent(search)}`;
+    let pdfUrl = `${originalApiUrl}?export=pdf&search=${encodeURIComponent(search)}`;
+    
+    if (userFilter) {
+        excelUrl += `&user_filter=${encodeURIComponent(userFilter)}`;
+        pdfUrl += `&user_filter=${encodeURIComponent(userFilter)}`;
+    }
+
+    if (exportExcelLink) exportExcelLink.href = excelUrl;
+    if (exportPdfLink) exportPdfLink.href = pdfUrl;
 }
 
 setupExportLinks();
 
 exportBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    exportDropdown.classList.toggle('active');
+    exportDropdown.classList.toggle('hidden');
 });
 
 window.addEventListener('click', () => {
-    if (exportDropdown.classList.contains('active')) {
-        exportDropdown.classList.remove('active');
+    if (!exportDropdown.classList.contains('hidden')) {
+        exportDropdown.classList.add('hidden');
     }
 });
 
@@ -74,6 +82,8 @@ async function fetchLogs(page = 1, search = '', userFilter = '') {
         await renderTable(data.logs, data.role);
         renderPagination(data.current_page, data.total_pages);
         currentPage = data.current_page;
+        
+        setupExportLinks(search, userFilter);
     } catch (error) {
         logTableBody.innerHTML = `<tr><td colspan="6" class="no-data" style="color: #ef4444;">Error: ${error.message}</td></tr>`;
     }
@@ -503,9 +513,6 @@ async function clearAllNotifications() {
     }
 }
 
-/**
- * Fetch all admin dashboard stats & profile info from backend
- */
 async function fetchDashboardData() {
     try {
         const response = await fetch('/api/admin/admin.php');
@@ -531,9 +538,7 @@ async function fetchDashboardData() {
         console.error("Failed to load dashboard data:", error);
     }
 }
-/**
- * Update Dynamic Sidebar / Header User Profile & store currentUserId
- */
+
 function updateUserProfile(user) {
     currentUserId = user.user_id || user.id || null;
 
@@ -545,9 +550,6 @@ function updateUserProfile(user) {
     if (emailEl) emailEl.textContent = user.email || 'admin@company.com';
     if (initialsEl) initialsEl.textContent = user.initials || 'AD';
 }
-// ==========================================
-// UTILITY HELPERS
-// ==========================================
 
 function setElementText(id, value) {
     const el = document.getElementById(id);
