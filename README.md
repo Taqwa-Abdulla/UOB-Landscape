@@ -19,6 +19,7 @@ Landscape Website for University Of Bahrain (UOB)
 - 3D campus locations map
 - Authentication: login & logout with Sanitization & basic Security (cleaning input and role-based access)
 # Website Structure
+```
 UOB-Landscape/
 ├── api/
 │   ├── admin/
@@ -169,5 +170,6 @@ UOB-Landscape/
 │       ├── proposal/
 │       └── records/
 └── README.md
+```
 #
 © 2026 University of Bahrain. All rights reserved.
