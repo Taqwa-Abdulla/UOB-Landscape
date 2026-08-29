@@ -107,15 +107,15 @@ function getUsers($db, $params) {
         }
     }
 
-    // College filter parameter
+    // College filter parameter (case-insensitive check)
     if (!empty($params['college'])) {
-        $conditions[] = "college = ?";
+        $conditions[] = "LOWER(college) = LOWER(?)";
         $bindParams[] = trim($params['college']);
     }
 
-    // Major filter parameter
+    // Major filter parameter (case-insensitive check)
     if (!empty($params['major'])) {
-        $conditions[] = "major = ?";
+        $conditions[] = "LOWER(major) = LOWER(?)";
         $bindParams[] = trim($params['major']);
     }
 
@@ -182,8 +182,11 @@ function createUser($db, $data) {
     $username = sanitizeInput($data['username']);
     $email = sanitizeInput($data['email']);
     $password = $data['password'];
-    $college = isset($data['college']) ? sanitizeInput($data['college']) : null;
-    $major = isset($data['major']) ? sanitizeInput($data['major']) : null;
+    
+    // Normalize college and major inputs to consistent title case regardless of admin input casing
+    $college = isset($data['college']) ? ucwords(strtolower(sanitizeInput($data['college']))) : null;
+    $major = isset($data['major']) ? ucwords(strtolower(sanitizeInput($data['major']))) : null;
+    
     $role = isset($data['role']) ? sanitizeInput($data['role']) : 'creator';
     
     // Explicitly cast to clean boolean
@@ -291,8 +294,10 @@ function updateUser($db, $data) {
     $bindParams = [];
 
     $newUsername = isset($data['username']) ? sanitizeInput($data['username']) : $currentUser['username'];
-    $newCollege = isset($data['college']) ? sanitizeInput($data['college']) : $currentUser['college'];
-    $newMajor = isset($data['major']) ? sanitizeInput($data['major']) : $currentUser['major'];
+    
+    // Normalize college and major updates to consistent title case
+    $newCollege = isset($data['college']) ? ucwords(strtolower(sanitizeInput($data['college']))) : $currentUser['college'];
+    $newMajor = isset($data['major']) ? ucwords(strtolower(sanitizeInput($data['major']))) : $currentUser['major'];
 
     if (isset($data['username'])) {
         $fieldsToUpdate[] = "username = ?";

@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        // Dynamically build root-relative URL so it works in guest, admin, and creator views
         const apiUrl = window.location.origin + '/api/users/team.php';
         
         const response = await fetch(apiUrl);
@@ -9,7 +8,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const result = await response.json();
 
         if (result.status === 'success' && Array.isArray(result.data)) {
-            // Map container IDs for easy reference and clean clearing
             const containers = {
                 bio: document.getElementById('science-biologists'),
                 landscape: document.getElementById('engineering-landscape'),
@@ -17,28 +15,29 @@ document.addEventListener("DOMContentLoaded", async () => {
                 cs: document.getElementById('it-computer-science')
             };
 
-            // Clear existing contents safely if elements exist
             Object.values(containers).forEach(container => {
                 if (container) container.innerHTML = '';
             });
 
-            // Populate members
             result.data.forEach(person => {
                 const nameElement = document.createElement('p');
                 nameElement.className = 'member-name';
                 nameElement.textContent = person.username;
 
-                // Match college and major to the corresponding container
-                if (person.college === 'College of Science' && person.major === 'Biology') {
+                // Normalize strings to lowercase and trim spaces for safe comparison
+                const college = (person.college || '').trim().toLowerCase();
+                const major = (person.major || '').trim().toLowerCase();
+
+                if (college === 'college of science' && major === 'biology') {
                     containers.bio?.appendChild(nameElement);
                 } 
-                else if (person.college === 'College of Engineering' && person.major === 'Landscape Architecture') {
+                else if (college === 'college of engineering' && major === 'landscape architecture') {
                     containers.landscape?.appendChild(nameElement);
                 } 
-                else if (person.college === 'College of Information Technology' && person.major === 'Software Engineering') {
+                else if (college === 'college of information technology' && major === 'software engineering') {
                     containers.software?.appendChild(nameElement);
                 } 
-                else if (person.college === 'College of Information Technology' && person.major === 'Computer Science') {
+                else if (college === 'college of information technology' && major === 'computer science') {
                     containers.cs?.appendChild(nameElement);
                 }
             });

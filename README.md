@@ -1,24 +1,31 @@
-# UOB-Landscape
-The Landscape Website for University Of Bahrain (UOB)
-# UOB-Landscape 
-Landscape Website for University Of Bahrain (UOB)
-# Languages Used:
+## UOB-Landscape 
+The Landscape Website for University Of Bahrain (UOB), a collaburative website between college of Information Technology, college of Science, and college of Engineering.
+## Readme Contents:
+- [Overview](#uob-landscape)
+- [Copyright & Usage Restrictions](#copyright--usage-restrictions)
+- [Languages Used](#languages-used)
+- [Frameworks Used](#frameworks-used)
+- [Website Features](#website-features)
+- [Website Structure](#website-structure)
+## Copyright & Usage Restrictions
+Copyright (c) 2026 University Of Bahrain. All rights reserved. This repository is public for viewing purposes only. Unauthorized downloading, copying, modification, distribution, or commercial use of any code or content herein, via any medium, is strictly prohibited.
+## Languages Used:
 - HTML + JS (Frontend)
 - PHP (Backend: Rest APIs)
-# Frameworks Used:
+## Frameworks Used:
 - CSS: Tailwind v4.3.3, maplibre-gl CSS v4.1.2
 - JS: Chart.js v4.5.1 and MapLibre GL JS v4.1.2
 - QR Code Library (PHP): Endroid QR Code v6.1.3 - composer
 - Bootstrap Icons v1.11.3 
 - MPDF (PDF PHP library) v8.3.1 - composer
-# Website Features
+## Website Features
 - FAQ Chatbot / Virtual Assistant (Aspen): An interactive, conversational chat window for FAQ with mitigation against Cross-Site Scripting (XSS) attacks.
 - Report generator: Generate Reports for single tables, stats and full report including tables and stats in both PDF and CSV formats.
 - Notifications, schedule personal and non-personal events with option to print them as PDF, and email users.
 - Full audit tracking based on role with option to export it as PDF or CSV formats.
 - 3D campus locations map
 - Authentication: login & logout with Sanitization & basic Security (cleaning input and role-based access)
-# Website Structure
+## Website Structure
 ```
 UOB-Landscape/
 ├── api/

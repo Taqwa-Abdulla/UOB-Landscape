@@ -69,7 +69,7 @@ window.addEventListener('load', function() {
         
         try {
             // Send request to secure PHP backend API endpoint
-            const response = await fetch('../../api/chatbot/chatbot.php', {
+            const response = await fetch('/api/chatbot/chatbot.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
