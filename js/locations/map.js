@@ -79,12 +79,12 @@ try {
       'paint': {
         'icon-color': [
           'match', ['get', 'category'],
-          'building', '#0284c7',       // sky-600
-          'facility', '#d97706',       // amber-600
-          'infrastructure', '#9333ea', // purple-600
-          'roadside', '#059669',       // blue-600
-          'gate', '#dc2626',           // red-600
-          'park', '#16a34a',           // green-600
+          'building', '#0284C7',       // sky-600
+          'facility', '#D97706',       // amber-600
+          'infrastructure', '#9333EA', // purple-600
+          'roadside', '#2563EB',       // blue-600
+          'gate', '#DC2626',           // red-600
+          'park', '#16A34A',           // green-600
           '#64748b'                    // slate-500
         ]
       }

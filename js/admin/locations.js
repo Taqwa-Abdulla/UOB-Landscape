@@ -80,10 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="px-6 py-4">
                     <div class="flex items-center gap-2">
                         <!-- Edit Button with hover shadow, translation lift, and active click feedback -->
-                        <button type="button" class="px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 shadow-sm" onclick="editLocation(${loc.location_id})">Edit</button>
+                        <button type="button" class="px-3 py-1.5 text-xs font-semibold bg-blue-50 hover:bg-blue-100 text-blue-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 shadow-sm" onclick="editLocation(${loc.location_id})">Edit</button>
                         
                         <!-- Delete Button with hover shadow, translation lift, and active click feedback -->
-                        <button type="button" class="px-3 py-1.5 text-xs font-semibold text-white bg-rose-600 rounded-lg hover:bg-rose-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 shadow-sm" onclick="deleteLocation(${loc.location_id})">Delete</button>
+                        <button type="button" class="px-3 py-1.5 text-xs font-semibold  bg-red-50 hover:bg-red-100 text-red-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 shadow-sm" onclick="deleteLocation(${loc.location_id})">Delete</button>
                     </div>
                 </td>
             `;

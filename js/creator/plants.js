@@ -62,14 +62,14 @@ function createPlantsRow(plant) {
   
   const editBtn = document.createElement('button');
   editBtn.type = 'button';
-  editBtn.className = 'edit-btn px-3 py-1.5 bg-amber-500 text-white text-xs font-semibold rounded-md shadow-sm hover:bg-amber-600 focus:ring-2 focus:ring-amber-400 focus:outline-none transition-all';
+  editBtn.className = 'edit-btn px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-md shadow-sm  focus:ring-2 focus:ring-amber-400 focus:outline-none transition-all';
   editBtn.setAttribute('data-id', plant.plant_id || plant.id || plant.ID || '');
   editBtn.textContent = 'Edit';
   actionTd.appendChild(editBtn);
 
   const deleteBtn = document.createElement('button');
   deleteBtn.type = 'button';
-  deleteBtn.className = 'delete-btn px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded-md shadow-sm hover:bg-rose-700 focus:ring-2 focus:ring-rose-400 focus:outline-none transition-all';
+  deleteBtn.className = 'delete-btn px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold rounded-md shadow-sm  focus:ring-2 focus:ring-rose-400 focus:outline-none transition-all';
   deleteBtn.setAttribute('data-id', plant.plant_id || plant.id || plant.ID || '');
   deleteBtn.textContent = 'Delete';
   actionTd.appendChild(deleteBtn);

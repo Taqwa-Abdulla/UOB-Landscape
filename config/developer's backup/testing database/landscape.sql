@@ -31,6 +31,7 @@ CREATE TABLE locations (
     location_image VARCHAR(500) DEFAULT NULL
 );
 
+-- Defined before plants to resolve strict execution order; foreign key added via ALTER TABLE below
 CREATE TABLE qrcode (
     qr_id SERIAL PRIMARY KEY,
     pdf_path VARCHAR(500) NOT NULL,
@@ -38,11 +39,11 @@ CREATE TABLE qrcode (
     updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
-    plant_id VARCHAR(50) REFERENCES plants(plant_id) ON DELETE SET NULL;
+    plant_id VARCHAR(50) DEFAULT NULL
 );
 
 CREATE TABLE plants (
-    plant_id VARCHAR(50) PRIMARY KEY, -- Changed from SERIAL to VARCHAR to support 'OP-101', etc.
+    plant_id VARCHAR(50) PRIMARY KEY,
     location_id INT REFERENCES locations(location_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
@@ -73,6 +74,11 @@ CREATE TABLE plants (
     qr_image BYTEA DEFAULT NULL,
     qr_id INT REFERENCES qrcode(qr_id) ON DELETE SET NULL
 );
+
+-- Resolve foreign key dependency back to plants
+ALTER TABLE qrcode 
+    ADD CONSTRAINT fk_qrcode_plants 
+    FOREIGN KEY (plant_id) REFERENCES plants(plant_id) ON DELETE SET NULL;
 
 CREATE TABLE projects (
     project_id SERIAL PRIMARY KEY,
@@ -124,7 +130,7 @@ CREATE TABLE news (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL,
+    updated_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     link VARCHAR(500) NOT NULL,
     title_en VARCHAR(255) NOT NULL,
     title_ar VARCHAR(255) NOT NULL,
@@ -133,12 +139,11 @@ CREATE TABLE news (
     SDGs VARCHAR(255) NOT NULL
 );
 
--- Fixed table name typo and added missing JSONB audit columns used by the trigger function
 CREATE TABLE activity_log (
     log_id SERIAL PRIMARY KEY,
     created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
     action_type VARCHAR(50) NOT NULL,
-    row_id TEXT NOT NULL, -- Changed to TEXT to safely accommodate string primary keys like plant_id
+    row_id TEXT NOT NULL, 
     table_name VARCHAR(100) NOT NULL,
     old_values JSONB DEFAULT NULL,
     new_values JSONB DEFAULT NULL,
@@ -190,7 +195,6 @@ CREATE TABLE user_notification_settings (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- In-app Notification Bell Feed
 CREATE TABLE notifications (
     notification_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
@@ -201,19 +205,17 @@ CREATE TABLE notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Messages Table (with optional Outlook tracking reference)
 CREATE TABLE messages (
     message_id SERIAL PRIMARY KEY,
     sender_id INT REFERENCES users(user_id) ON DELETE CASCADE,
     recipient_id INT REFERENCES users(user_id) ON DELETE CASCADE,
     subject VARCHAR(255) NOT NULL,
     body TEXT NOT NULL,
-    outlook_message_id VARCHAR(255) DEFAULT NULL, -- For future Microsoft Graph API sync
+    outlook_message_id VARCHAR(255) DEFAULT NULL,
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Calendar & Deadlines (Collaborative between Admin and Creator)
 CREATE TABLE calendar_events (
     event_id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -226,14 +228,13 @@ CREATE TABLE calendar_events (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_personal BOOLEAN DEFAULT TRUE,
     assigned_to INT REFERENCES users(user_id) ON DELETE CASCADE,
-    is_completed BOOLEAN DEFAULT FALSE;
+    is_completed BOOLEAN DEFAULT FALSE
 );
 
 -- ==========================================
 -- 2. FUNCTIONS
 -- ==========================================
 
--- QR Nullify Function
 CREATE OR REPLACE FUNCTION nullify_plant_qr_image()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -245,11 +246,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Logging Function
 CREATE OR REPLACE FUNCTION log_table_changes_func()
 RETURNS TRIGGER AS $$
 DECLARE
-    row_id_val INT;
+    row_id_val TEXT;
     old_data JSONB := NULL;
     new_data JSONB := NULL;
     current_user_val INT := NULL;
@@ -266,7 +266,6 @@ BEGIN
         current_user_val := NULL;
     END;
 
-    -- FALLBACK: If session variable is missing, try to grab the first available creator (or leave a safe fallback ID)
     IF current_user_val IS NULL THEN
         SELECT user_id INTO current_user_val 
         FROM users 
@@ -293,29 +292,29 @@ BEGIN
 
     IF (TG_OP = 'INSERT') THEN
         new_data := to_jsonb(NEW);
-        EXECUTE format('SELECT $1.%I', pk_column) USING NEW INTO row_id_val;
+        EXECUTE format('SELECT ($1).%I::text', pk_column) USING NEW INTO row_id_val;
         
         INSERT INTO activity_log (action_type, table_name, row_id, new_values, created_by, created_at)
-        VALUES ('INSERT', table_name_val, COALESCE(row_id_val, 0), new_data, current_user_val, NOW());
+        VALUES ('INSERT', table_name_val, COALESCE(row_id_val, '0'), new_data, current_user_val, NOW());
         
         RETURN NEW;
         
     ELSIF (TG_OP = 'UPDATE') THEN
         old_data := to_jsonb(OLD);
         new_data := to_jsonb(NEW);
-        EXECUTE format('SELECT $1.%I', pk_column) USING NEW INTO row_id_val;
+        EXECUTE format('SELECT ($1).%I::text', pk_column) USING NEW INTO row_id_val;
         
         INSERT INTO activity_log (action_type, table_name, row_id, old_values, new_values, created_by, created_at)
-        VALUES ('UPDATE', table_name_val, COALESCE(row_id_val, 0), old_data, new_data, current_user_val, NOW());
+        VALUES ('UPDATE', table_name_val, COALESCE(row_id_val, '0'), old_data, new_data, current_user_val, NOW());
         
         RETURN NEW;
         
     ELSIF (TG_OP = 'DELETE') THEN
         old_data := to_jsonb(OLD);
-        EXECUTE format('SELECT $1.%I', pk_column) USING OLD INTO row_id_val;
+        EXECUTE format('SELECT ($1).%I::text', pk_column) USING OLD INTO row_id_val;
         
         INSERT INTO activity_log (action_type, table_name, row_id, old_values, created_by, created_at)
-        VALUES ('DELETE', table_name_val, COALESCE(row_id_val, 0), old_data, current_user_val, NOW());
+        VALUES ('DELETE', table_name_val, COALESCE(row_id_val, '0'), old_data, current_user_val, NOW());
         
         RETURN OLD;
     END IF;
@@ -324,9 +323,68 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION generate_system_notifications()
+RETURNS TRIGGER AS $$
+DECLARE
+    target_user INT;
+    notif_title VARCHAR(255);
+    notif_msg TEXT;
+    notif_type VARCHAR(50);
+    actor_id INT;
+BEGIN
+    IF TG_TABLE_NAME = 'projects' THEN
+        notif_type := 'status_change';
+        actor_id := COALESCE(NEW.updated_by, NEW.created_by, -1);
+        
+        IF (TG_OP = 'INSERT') THEN
+            notif_title := 'New Project Created';
+            notif_msg := 'Project "' || NEW.title_en || '" has been added with status: ' || NEW.project_status;
+        ELSIF (TG_OP = 'UPDATE' AND OLD.project_status IS DISTINCT FROM NEW.project_status) THEN
+            notif_title := 'Project Status Updated';
+            notif_msg := 'Project "' || NEW.title_en || '" status changed from ' || OLD.project_status || ' to ' || NEW.project_status;
+        ELSE
+            RETURN NEW;
+        END IF;
+
+        FOR target_user IN SELECT user_id FROM users WHERE user_id IS DISTINCT FROM actor_id LOOP
+            INSERT INTO notifications (user_id, title, message, type, is_read, created_at)
+            VALUES (target_user, notif_title, notif_msg, notif_type, FALSE, NOW());
+        END LOOP;
+
+    ELSIF TG_TABLE_NAME = 'activity_log' THEN
+        IF NEW.table_name IN ('plants', 'locations', 'news') THEN
+            notif_type := 'system';
+            -- Changed '+' to standard PostgreSQL '||' string concatenation
+            notif_title := 'System Update: ' || INITCAP(NEW.table_name);
+            notif_msg := 'A ' || NEW.action_type || ' action was performed on ' || NEW.table_name;
+            actor_id := COALESCE(NEW.created_by, -1);
+
+            FOR target_user IN SELECT user_id FROM users WHERE user_id IS DISTINCT FROM actor_id LOOP
+                INSERT INTO notifications (user_id, title, message, type, is_read, created_at)
+                VALUES (target_user, notif_title, notif_msg, notif_type, FALSE, NOW());
+            END LOOP;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- ==========================================
 -- 3. TRIGGERS
 -- ==========================================
+
+DROP TRIGGER IF EXISTS trg_notify_project_changes ON projects;
+CREATE TRIGGER trg_notify_project_changes
+AFTER INSERT OR UPDATE ON projects
+FOR EACH ROW
+EXECUTE FUNCTION generate_system_notifications();
+
+DROP TRIGGER IF EXISTS trg_notify_activity_changes ON activity_log;
+CREATE TRIGGER trg_notify_activity_changes
+AFTER INSERT ON activity_log
+FOR EACH ROW
+EXECUTE FUNCTION generate_system_notifications();
 
 DROP TRIGGER IF EXISTS trg_nullify_qr_image_on_delete ON qrcode;
 CREATE TRIGGER trg_nullify_qr_image_on_delete

@@ -106,8 +106,8 @@ function renderNewsTable(newsItems) {
                 <td class="px-6 py-4">
                     <div class="flex items-center gap-2">
                         <button type="button" class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition" onclick="viewSingleNews(${id})">View</button>
-                        <button type="button" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition shadow-sm" onclick="openEditMode(${id})">Edit</button>
-                        <button type="button" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-medium hover:bg-rose-700 transition shadow-sm" onclick="deleteNews(${id})">Delete</button>
+                        <button type="button" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-medium transition shadow-sm" onclick="openEditMode(${id})">Edit</button>
+                        <button type="button" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-xs font-medium transition shadow-sm" onclick="deleteNews(${id})">Delete</button>
                     </div>
                 </td>
             </tr>
