@@ -1,12 +1,14 @@
+//=======================================
+// Improvments Script
+//=======================================
 document.addEventListener("DOMContentLoaded", () => {
     let allLocations = [];
     let categories = [];
 
-    // Absolute origin path ensuring compatibility across admin, creator, and guest views
+    
     const apiEndpoint = window.location.origin + '/api/improvments/improvments.php';
 
-    // Reliable fallback constants in case image URLs broken or missing
-    // Updated Fallback Image URLs
+    
 const FALLBACK_PROPOSAL = "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80";
 const FALLBACK_BEFORE   = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80";
 const FALLBACK_AFTER    = "https://images.unsplash.com/photo-1558449028-b53a39d100fc?auto=format&fit=crop&w=800&q=80";
@@ -27,7 +29,7 @@ const FALLBACK_AFTER    = "https://images.unsplash.com/photo-1558449028-b53a39d1
                 categories = result.categories;
 
                 populateDropdowns();
-                renderLocationsList(allLocations); // Displays ALL items on load
+                renderLocationsList(allLocations); 
             } else {
                 gridContainer.innerHTML = "<p>No locations or improvements currently found.</p>";
             }
@@ -38,7 +40,7 @@ const FALLBACK_AFTER    = "https://images.unsplash.com/photo-1558449028-b53a39d1
     }
 
     function populateDropdowns() {
-        // Populate Category dropdown
+        
         categories.forEach(cat => {
             const opt = document.createElement('option');
             opt.value = cat;
@@ -46,7 +48,7 @@ const FALLBACK_AFTER    = "https://images.unsplash.com/photo-1558449028-b53a39d1
             categorySelect.appendChild(opt);
         });
 
-        // Populate Locations dropdown initially with all locations
+        
         populateLocationDropdown(allLocations);
 
         categorySelect.addEventListener('change', handleFilterChange);
@@ -69,17 +71,17 @@ const FALLBACK_AFTER    = "https://images.unsplash.com/photo-1558449028-b53a39d1
 
         let filtered = allLocations;
 
-        // Apply Category filter
+        
         if (selectedCategory !== 'ALL') {
             filtered = filtered.filter(loc => loc.category.toLowerCase() === selectedCategory.toLowerCase());
         }
 
-        // Re-populate Location dropdown based on selected category if category changed
+        
         if (event && event.target === categorySelect) {
             populateLocationDropdown(filtered);
         }
 
-        // Apply Location ID filter
+        
         if (selectedLocationId !== 'ALL') {
             filtered = filtered.filter(loc => loc.location_id === parseInt(selectedLocationId, 10));
         }

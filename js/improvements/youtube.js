@@ -1,3 +1,6 @@
+//=======================================
+// Youtube Script
+//=======================================
 function getYouTubeId(url) {
     if (!url) return null;
     url = url.trim();
@@ -8,7 +11,7 @@ function getYouTubeId(url) {
 }
 
 let currentProjectId = new URLSearchParams(window.location.search).get('id') || '';
-let cachedDbVideo = null; // Stores the current database video to restore or reference
+let cachedDbVideo = null; 
 
 async function loadProjectAndChannelVideos(direction = '') {
     const playerDiv = document.getElementById('project-player');
@@ -34,7 +37,7 @@ async function loadProjectAndChannelVideos(direction = '') {
             const newUrl = `${window.location.pathname}?id=${currentProjectId}`;
             window.history.replaceState({ path: newUrl }, '', newUrl);
 
-            // 1. Render Main TV Project Video from DB
+            
             if (data.project_video && data.project_video.video_link) {
                 cachedDbVideo = {
                     videoId: getYouTubeId(data.project_video.video_link),
@@ -63,7 +66,7 @@ async function loadProjectAndChannelVideos(direction = '') {
                 if (playerDiv) playerDiv.innerHTML = `<p class="text-gray-400 p-4 text-center">No projects found in database.</p>`;
             }
 
-            // 2. Render Channel Videos into a horizontal scrollable row
+            
             if (channelGrid) {
                 channelGrid.innerHTML = '';
                 if (data.channel_videos && data.channel_videos.length > 0) {
@@ -92,7 +95,7 @@ async function loadProjectAndChannelVideos(direction = '') {
     }
 }
 
-// Function triggered when clicking a side channel video to swap into the main black box
+
 function playChannelVideo(videoId, title) {
     const playerDiv = document.getElementById('project-player');
     const titleEl = document.getElementById('project-title');

@@ -1,3 +1,6 @@
+//=======================================
+// Statistics Script
+//=======================================
 document.addEventListener("DOMContentLoaded", () => {
     const apiEndpoint = "/api/stats/stats.php";
 
@@ -7,12 +10,12 @@ document.addEventListener("DOMContentLoaded", () => {
         order: "DESC"
     };
 
-    // State for the Detailed Chart Data table (category filter only)
+    
     let chartTableState = {
         category: "indoor_outdoor"
     };
 
-    // State for the Detailed Annual Report table (with dropdown selection)
+    
     let detailedReportState = {
         search: "",
         selectedYear: "ALL"

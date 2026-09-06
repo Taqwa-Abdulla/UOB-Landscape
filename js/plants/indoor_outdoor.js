@@ -1,12 +1,6 @@
-/*
-  Requirement: Populate indoor and outdoor plant lists
-
-  Instructions:
-  1. Fetch 'plants.json'.
-  2. Filter plants based on their class ('indoor' or 'outdoor').
-  3. Render each plant into the corresponding container.
-*/
-
+//=======================================
+// Indoor and Outdoor Script
+//=======================================
 async function initializePlantLists() {
   try {
     const response = await fetch('/api/plants/plant.php');
@@ -20,7 +14,7 @@ async function initializePlantLists() {
     if (outdoorContainer) outdoorContainer.innerHTML = '';
 
     plants.forEach((plant) => {
-      // Use the custom plant_id string (e.g., "IND-201") for the URL parameter
+      
       const uniqueId = plant.plant_id;
 
       const fallbackImage = 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=500&q=80';

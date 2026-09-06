@@ -1,3 +1,6 @@
+//=======================================
+// Plants based on Locations Script
+//=======================================
 document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const locationId = urlParams.get('id');
@@ -13,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // Helper to generate correct root-relative link for plant detail page based on current view
+    
     function getPlantDetailsUrl(plantCustomCode) {
         const path = window.location.pathname;
         const encodedCode = encodeURIComponent(plantCustomCode);
@@ -26,12 +29,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         return `/site/guest/plants/plant.html?id=${encodedCode}`;
     }
 
-    // Helper to normalize image paths dynamically
+    
     function resolveImagePath(rawPath) {
         if (!rawPath) return 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=400&q=80';
         if (rawPath.startsWith('http://') || rawPath.startsWith('https://')) return rawPath;
         
-        // Strip relative dots and leading slashes
+        
         const cleanPath = rawPath.replace(/^(\.\.\/|\.\/|\/)+/, '');
         return `/${cleanPath}`;
     }
@@ -53,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        // Set Header Information
+        
         if (titleEl) {
             titleEl.textContent = `Plants at ${currentLocation.name_en || currentLocation.name || 'Location'}`;
         }
@@ -85,11 +88,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 const cardImage = resolveImagePath(plant.image_path);
 
-                // Safe field extraction for display text
+                
                 const plantNameEn = plant.name_en || plant.common_name || plant.title || plant.name || "Unnamed Plant";
                 const plantNameAr = plant.name_ar || plant.arabic_name || '';
 
-                // Strictly fetch custom code identifier (e.g. OP-102, IP-102)
+                
                 const customPlantCode = plant.plant_id || 'N/A';
                 const plantLinkUrl = getPlantDetailsUrl(customPlantCode);
 

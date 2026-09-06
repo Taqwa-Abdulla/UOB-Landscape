@@ -1,3 +1,6 @@
+//=======================================
+// QR Code Script
+//=======================================
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
     initNotifications();
@@ -19,7 +22,7 @@ async function loadFormDropdowns() {
         const formLocationSelect = document.getElementById('filterFormLocation');
         const uniqueFormLocations = new Set();
         
-        // Check both location_name and location_name_en safely
+        
         allPlantsData.forEach(p => { 
             const loc = p.location_name || p.location_name_en;
             if (loc) uniqueFormLocations.add(loc); 
@@ -181,7 +184,7 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
     }
 });
 
-// --- UPDATE MODAL LOGIC ---
+
 
 function populateUpdateLocationDropdown(selectedLocation = '') {
     const updateLocationSelect = document.getElementById('updateFilterLocation');
@@ -233,22 +236,22 @@ function filterUpdatePlantsByLocation() {
 function openUpdateModal(qr_id, currentPlantId, currentLocationName, currentPdfPath) {
     document.getElementById('update_qr_id').value = qr_id;
     
-    // 1. Set location dropdown and filter plants belonging to this location
+    
     populateUpdateLocationDropdown(currentLocationName);
     const filteredPlants = allPlantsData.filter(p => p.location_name === currentLocationName);
     updateUpdatePlantDropdown(filteredPlants, currentPlantId);
 
-    // 2. Show filename hint for current PDF
+    
     const fileName = currentPdfPath ? currentPdfPath.split('/').pop() : 'None';
     const pdfLabel = document.getElementById('currentPdfLabel');
     if (pdfLabel) {
         pdfLabel.textContent = `Current file: ${fileName} (Leave blank to keep)`;
     }
     
-    // 3. Clear file input field layout
+    
     document.getElementById('update_pdf_file').value = '';
 
-    // 4. Display the modal
+   
     document.getElementById('updateModal').style.display = 'flex';
 }
 
@@ -300,9 +303,7 @@ window.onload = () => {
     loadFormDropdowns();
     loadTableData();
 };
-    // ==========================================
-// NOTIFICATIONS & PREFERENCES LOGIC
-// ==========================================
+    
 
 async function loadNotifications() {
     try {
@@ -560,9 +561,7 @@ async function clearAllNotifications() {
     }
 }
 
-/**
- * Fetch all admin dashboard stats & profile info from backend
- */
+
 async function fetchDashboardData() {
     try {
         const response = await fetch('/api/creator/creator.php');
@@ -588,9 +587,7 @@ async function fetchDashboardData() {
         console.error("Failed to load dashboard data:", error);
     }
 }
-/**
- * Update Dynamic Sidebar / Header User Profile & store currentUserId
- */
+
 function updateUserProfile(user) {
     currentUserId = user.user_id || user.id || null;
 
@@ -602,10 +599,7 @@ function updateUserProfile(user) {
     if (emailEl) emailEl.textContent = user.email || 'admin@company.com';
     if (initialsEl) initialsEl.textContent = user.initials || 'AD';
 }
-// ==========================================
-// UTILITY HELPERS
-// ==========================================
-
+// Helper and Validation functions
 function setElementText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;

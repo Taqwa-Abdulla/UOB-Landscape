@@ -1,3 +1,6 @@
+//=======================================
+// Contributors Script
+//=======================================
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const apiUrl = window.location.origin + '/api/users/team.php';
@@ -24,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 nameElement.className = 'member-name';
                 nameElement.textContent = person.username;
 
-                // Normalize strings to lowercase and trim spaces for safe comparison
+                
                 const college = (person.college || '').trim().toLowerCase();
                 const major = (person.major || '').trim().toLowerCase();
 

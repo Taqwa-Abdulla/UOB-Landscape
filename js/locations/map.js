@@ -1,3 +1,6 @@
+//=======================================
+// Map Script
+//=======================================
 const uobCampusBounds = [[50.49928, 26.04479], [50.51986, 26.05739]];
 const default3DView = { center: [50.5134, 26.0506], zoom: 14.5, pitch: 100, bearing: -60 };
 
@@ -44,7 +47,7 @@ map.on('load', async () => {
   }
   map.addControl(new ViewToggleButtonControl(), 'top-right');
 
-  // Fetch GeoJSON data from backend API safely
+  
 let geojsonData = { type: 'FeatureCollection', features: [] };
 try {
   const response = await fetch('../../../api/locations/map.php');
@@ -184,7 +187,7 @@ try {
     if (layer.id === 'building') { map.setPaintProperty(layer.id, 'fill-color', '#D6B276'); map.setPaintProperty(layer.id, 'fill-opacity', 1.0); }
   });
 
-  // Inject 3D Buildings
+  
   map.addLayer({
     'id': 'pop-out-buildings-carto', 'source': 'carto', 'source-layer': 'building', 'type': 'fill-extrusion',
     'paint': { 'fill-extrusion-color': '#D6B276', 'fill-extrusion-height': 25, 'fill-extrusion-base': 0, 'fill-extrusion-opacity': 0.95 }

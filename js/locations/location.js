@@ -1,3 +1,6 @@
+//=======================================
+// Locations Script
+//=======================================
 document.addEventListener("DOMContentLoaded", () => {
     const navButtons = document.querySelectorAll(".category-nav .nav-btn");
     const contentPanels = document.querySelectorAll(".content-panel");
@@ -49,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!cat) return "";
         let c = cat.toLowerCase().trim();
 
-        // 1. Check Car Park variations first
+        
         if (
             c.includes("car") || 
             c.includes("park") || 
@@ -61,10 +64,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return "car-park";
         }
 
-        // Clean up symbols for other categories
+        
         c = c.replace(/[\s_]+/g, '-');
 
-        // 2. Map standard categories
+        
         if (c === "building" || c === "buildings") return "buildings";
         if (c === "gate" || c === "gates") return "gates";
         if (c === "roadside" || c === "roadsides" || c === "road-side") return "roadside";
@@ -77,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderPage() {
         const categories = ['buildings', 'gates', 'roadside', 'infrastructure', 'facilities', 'car-park'];
         
-        // 1. Dropdown management
+        
         const dropdownContainer = document.getElementById("location-dropdown-container");
         if (dropdownContainer) {
             if (!currentCategoryKey) {
@@ -110,14 +113,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const selectedClass = classFilter ? classFilter.value.toLowerCase().trim() : "";
 
-        // 2. Render Cards into Grids
+        
         categories.forEach(catKey => {
             const gridContainer = document.getElementById(`${catKey}-grid`);
             if (!gridContainer) return;
 
             gridContainer.innerHTML = "";
 
-            // Skip non-selected category sections if a tab is active
+            
             if (currentCategoryKey && catKey !== currentCategoryKey) return;
 
             const catLocations = locationsData.filter(loc => normalizeCategory(loc.category) === catKey);
@@ -134,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const indoorCount = allLocationPlants.filter(p => p.class && p.class.toLowerCase().trim() === 'indoor').length;
                 const outdoorCount = allLocationPlants.filter(p => p.class && p.class.toLowerCase().trim() === 'outdoor').length;
 
-                // Plant Class Filter Guard
+                
                 if (selectedClass && selectedClass !== "" && selectedClass !== "all") {
                     const hasMatchingPlant = allLocationPlants.some(p => p.class && p.class.toLowerCase().trim() === selectedClass);
                     if (!hasMatchingPlant && allLocationPlants.length > 0) return;
@@ -167,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Category Button Clicks
+    
     navButtons.forEach(button => {
         button.addEventListener("click", () => {
             const targetSectionId = button.getAttribute("data-target");
@@ -197,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
         classFilter.addEventListener("change", () => renderPage());
     }
 
-    // Ensure all 6 section panels are visible on load
+    
     contentPanels.forEach(panel => panel.classList.add("active"));
     fetchCampusData();
 });

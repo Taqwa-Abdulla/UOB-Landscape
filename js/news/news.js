@@ -1,4 +1,6 @@
-// State Management
+//=======================================
+// News Script
+//=======================================
 let institutionalMasterData = [];
 
 // Official SDG Colors
@@ -29,14 +31,14 @@ const sdgFullNames = {
     17: "SDG 17: Partnerships for the Goals"
 };
 
-// Origin-relative API path dynamically works across Guest (2 deep) & Admin/Creator (3 deep)
+
 const finalApiPath = window.location.origin + '/api/news/sdg_news.php'; 
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Fetch combined news feed
+    
     loadCombinedNews();
 
-    // 2. Attach click listeners to SDG card buttons on the page
+    
     const cards = document.querySelectorAll(".sdg-card-btn");
     cards.forEach(card => {
         card.addEventListener("click", () => {
@@ -45,16 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 3. Attach click listeners to reset elements
+    
     const resetBtn = document.querySelector(".global-reset-bar");
     if (resetBtn) {
         resetBtn.addEventListener("click", () => clearActiveFilters());
     }
 });
 
-/**
- * Single fetch call to retrieve both DB and Scraped news
- */
+
 async function loadCombinedNews() {
     const track = document.getElementById('ticker-track-injection');
     const grid = document.getElementById('static-filter-viewframe');
@@ -69,7 +69,7 @@ async function loadCombinedNews() {
         const result = await response.json();
 
         if (result.status === "success") {
-            // Standardize DB news items to fit the master feed array
+            
             const formattedDbNews = (result.db_news || []).map(item => {
                 let sdgList = [];
                 const rawSdgs = item.SDGs || item.sdgs;
@@ -88,7 +88,7 @@ async function loadCombinedNews() {
                 };
             });
 
-            // Combine Database News and Web-Scraped News into one master list
+            
             institutionalMasterData = [...formattedDbNews, ...(result.scraped_news || [])];
 
             if (institutionalMasterData.length > 0) {
@@ -105,9 +105,7 @@ async function loadCombinedNews() {
     }
 }
 
-/**
- * Render and Interaction functions for Combined News Ticker
- */
+
 function renderContinuousTicker(newsItems) {
     const track = document.getElementById('ticker-track-injection');
     const scrollFrame = document.getElementById('scrolling-viewframe');
@@ -120,7 +118,7 @@ function renderContinuousTicker(newsItems) {
 function handleSdgInteraction(selectedSdg) {
     const targetNum = Number(selectedSdg);
 
-    // 1. Stack Card Rotation Animation
+    
     const allStackCards = Array.from(document.querySelectorAll(".card-wrapper"));
     const targetCard = document.getElementById(`card-${selectedSdg}`);
     
@@ -139,19 +137,19 @@ function handleSdgInteraction(selectedSdg) {
         });
     }
 
-    // 2. Viewport Switching
+    
     const scrollFrame = document.getElementById('scrolling-viewframe');
     const grid = document.getElementById('static-filter-viewframe');
     if (scrollFrame) scrollFrame.style.display = 'none';
     if (grid) grid.style.display = 'grid';
     
-    // 3. Filter Logic supporting both Array (sdg/sdgs) or Single Values
+    
     const filteredSet = institutionalMasterData.filter(item => {
         const itemSdgs = Array.isArray(item.sdg) ? item.sdg : (Array.isArray(item.sdgs) ? item.sdgs : [item.sdg || 17]);
         return itemSdgs.map(Number).includes(targetNum);
     });
 
-    // 4. Render Filtered News Cards
+    
     if (grid) {
         grid.innerHTML = filteredSet.length > 0 
             ? filteredSet.map(item => buildExecutiveCardHTML(item)).join('') 
@@ -178,7 +176,7 @@ function navigateNews(direction) {
     if (frame) frame.scrollBy({ left: direction === 'next' ? scrollAmount : -scrollAmount, behavior: 'smooth' });
 }
 
-// Reusable card builder matching your visual spec & badge formatting
+
 function buildExecutiveCardHTML(item) {
     const sdgList = Array.isArray(item.sdg) ? item.sdg : (Array.isArray(item.sdgs) ? item.sdgs : [item.sdg || 17]);
     const primarySdg = sdgList[0] || 17;
@@ -208,9 +206,7 @@ function buildExecutiveCardHTML(item) {
     `;
 }
 
-/**
- * Security utility to prevent layout breaks or XSS from special characters
- */
+
 function escapeHTML(str) {
     if (!str) return '';
     return String(str)

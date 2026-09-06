@@ -13,19 +13,19 @@
 </head>
 
 <body class="bg-slate-50">
-    <!-- Root Container (Full Screen Flex) -->
+    
     <div class="flex h-screen overflow-hidden">
-        <!-- 1. Sidebar -->
+        
         <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen">
             <div>
-                <!-- Brand Logo -->
+                
                 <div
                     class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
                     <img class="rounded-xl w-12 h-15" src="/public/images/UOB logo.png" alt="UOB Logo">
                     <div>Admin<span class="text-blue-600">Panel</span></div>
                 </div>
 
-                <!-- Dynamic User Profile -->
+                
                 <div class="p-4 mx-3 mt-4 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center gap-3">
                     <div id="user-initials"
                         class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
@@ -37,10 +37,10 @@
                     </div>
                 </div>
 
-                <!-- 3. Navigation Menu -->
+                
                 <nav class="mt-4 px-3 space-y-1">
 
-                    <!-- Dashboard -->
+                    
                     <a href="../creator.html"
                         class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
                         <span>Dashboard</span>
                     </a>
 
-                    <!-- View Dropdown Menu -->
+                    
                     <details class="group [&_summary::-webkit-details-marker]:hidden">
                         <summary
                             class="flex items-center justify-between px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium cursor-pointer">
@@ -72,7 +72,7 @@
                         </summary>
 
                         <div class="mt-1 pl-4 space-y-1">
-                            <!-- Home -->
+                            
                             <a href="../view/home.html" target="_blank" rel="noopener noreferrer"
                                 class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +82,7 @@
                                 <span>Home</span>
                             </a>
 
-                            <!-- About -->
+                            
                             <a href="../view/about.html" target="_blank" rel="noopener noreferrer"
                                 class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@
                                 <span>About</span>
                             </a>
 
-                            <!-- Locations -->
+                            
                             <a href="../view/locations.html" target="_blank" rel="noopener noreferrer"
                                 class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,7 +104,7 @@
                                 <span>Locations</span>
                             </a>
 
-                            <!-- Nested: Plants -->
+                            
                             <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
                                 <summary
                                     class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
@@ -130,7 +130,7 @@
                                 </div>
                             </details>
 
-                            <!-- Nested: Projects -->
+                            
                             <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
                                 <summary
                                     class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
@@ -164,7 +164,7 @@
                             </details>
                         </div>
                     </details>
-                    <!-- Manage Plants -->
+                    
                     <a href="#"
                         class="flex items-center gap-3 px-4 py-3 text-white bg-blue-800 rounded-lg font-medium shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -210,23 +210,23 @@
                 </nav>
             </div>
 
-            <!-- Footer Action -->
+            
             <div class="p-4 border-t border-slate-800">
                 <p class="w-full flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium text-slate-400">
                     &copy; 2026 University of Bahrain.
                 </p>
             </div>
         </aside>
-        <!-- 2. Main Content Area -->
+        
         <div class="flex-1 flex flex-col h-screen overflow-y-auto">
 
-            <!-- Top Header -->
+            
             <header
                 class="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
                 <h1 class="text-2xl font-bold text-gray-800">Plants Overview</h1>
 
                 <div class="flex items-center gap-4">
-                    <!-- Notification Bell with Unread Badge & Popup Container -->
+                    
                     <div class="relative">
                         <button id="header-bell-btn"
                             class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition relative cursor-pointer focus:outline-none">
@@ -235,12 +235,12 @@
                                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
                                 </path>
                             </svg>
-                            <!-- Badge showing count: turns blue when 0 -->
+                            
                             <span id="header-unread-badge"
                                 class="absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
                         </button>
 
-                        <!-- Notification Popup Box -->
+                        
                         <div id="notification-popup"
                             class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 flex flex-col overflow-hidden">
                             <div
@@ -264,7 +264,7 @@
                                 </div>
                             </div>
 
-                            <!-- Notification Settings Sub-Panel -->
+                            
                             <div id="notif-settings-panel"
                                 class="hidden bg-slate-50 p-3 border-b border-gray-200 text-xs space-y-2">
                                 <div class="font-semibold text-gray-700">Notification Preferences</div>
@@ -307,11 +307,11 @@
                     </button>
                 </div>
             </header>
-            <!-- Dashboard Body -->
+            
             <main class="px-6 py-6 space-y-6 w-full flex-1 max-w-none">
                 <div class="max-w-7xl mx-auto px-4 py-8">
                     <main class="flex flex-col gap-8">
-                        <!-- Add New Plant Form Section -->
+                        
                         <section class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 w-full">
                             <h2 class="text-xl font-semibold text-gray-700 mb-6 pb-2 border-b border-gray-100"><i
                                     class="bi bi-patch-plus"></i> Add a New
@@ -320,10 +320,10 @@
                                 <fieldset>
                                     <legend class="sr-only">Plant Details</legend>
 
-                                    <!-- Multi-column grid container for fields -->
+                                    
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                                        <!-- Plant ID -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="plant-id">Plant ID</label>
@@ -336,7 +336,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Location Category -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="location-category">Location Category</label>
@@ -352,7 +352,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Location ID (Changed from input text to select dropdown) -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="location-id">Location</label>
@@ -363,7 +363,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Created By -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="created-by">Created By</label>
@@ -371,7 +371,7 @@
                                                 class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-500 cursor-not-allowed text-sm">
                                         </div>
 
-                                        <!-- English Common Name -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="common-name-en">English Common Name</label>
@@ -379,7 +379,7 @@
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                         </div>
 
-                                        <!-- Arabic Common Name -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="common-name-ar">Arabic Common Name</label>
@@ -387,7 +387,7 @@
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                         </div>
 
-                                        <!-- Scientific Name -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="scientific-name">Scientific Name</label>
@@ -396,7 +396,7 @@
                                                 required>
                                         </div>
 
-                                        <!-- Plant Image -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="image-file">Plant Image</label>
@@ -405,7 +405,7 @@
                                             <input id="image-path" type="hidden">
                                         </div>
 
-                                        <!-- Quantity -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="quantity">Quantity</label>
@@ -413,7 +413,7 @@
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                         </div>
 
-                                        <!-- Category -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="category">Category</label>
@@ -421,7 +421,7 @@
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                         </div>
 
-                                        <!-- Lifecycle -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="lifecycle">Lifecycle</label>
@@ -429,7 +429,7 @@
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                         </div>
 
-                                        <!-- Water Required -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="water-required">Water Required</label>
@@ -441,7 +441,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Sun Required -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="sun-required">Sun Required</label>
@@ -453,7 +453,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Height -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="height">Height (m)</label>
@@ -463,7 +463,7 @@
                                                 required>
                                         </div>
 
-                                        <!-- Spread -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="spread">Spread (m)</label>
@@ -473,7 +473,7 @@
                                                 required>
                                         </div>
 
-                                        <!-- Waste -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="waste">Waste</label>
@@ -485,7 +485,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Root Type -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="root-type">Root Type</label>
@@ -493,7 +493,7 @@
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                         </div>
 
-                                        <!-- Drought Tolerance -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="drought-tolerance">Drought Tolerance</label>
@@ -505,7 +505,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Heat Tolerance -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="heat-tolerance">Heat Tolerance</label>
@@ -517,7 +517,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Bloom -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="bloom">Bloom</label>
@@ -529,7 +529,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Environmental Impact -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="environmental-impact">Environmental Impact</label>
@@ -541,7 +541,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Oxygen Production -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="oxygen-production">Oxygen Production (g/year)</label>
@@ -550,7 +550,7 @@
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                         </div>
 
-                                        <!-- Carbon Dioxide Absorption -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="carbon-dioxide-absorption">Carbon Dioxide Absorption</label>
@@ -559,7 +559,7 @@
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                                         </div>
 
-                                        <!-- Class -->
+                                        
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1"
                                                 for="plant-class">Class</label>
@@ -570,7 +570,7 @@
                                             </select>
                                         </div>
 
-                                        <!-- Checkboxes side-by-side -->
+                                        
                                         <div class="flex items-center gap-6 pt-6 md:col-span-2 lg:col-span-3">
                                             <div class="flex items-center gap-2">
                                                 <input id="shade" type="checkbox"
@@ -587,7 +587,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Submit Button spanning full width at the bottom -->
+                                        
                                         <div class="md:col-span-2 lg:col-span-3 pt-4">
                                             <button id="add-plant" type="submit"
                                                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm text-sm">Add
@@ -599,7 +599,7 @@
                             </form>
                         </section>
 
-                        <!-- Current Plants Table Section -->
+                        
                         <section
                             class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 overflow-hidden w-full">
                             <h2 class="text-xl font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-100"><i
@@ -619,14 +619,14 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 text-sm text-gray-700" id="plants-tbody">
-                                        <!-- Dynamic rows will be inserted here -->
+                                        
                                     </tbody>
                                 </table>
                             </div>
                         </section>
                     </main>
                 </div>
-                <!-- Notification Reader Modal Popup matching your drawing -->
+                
                 <div id="notif-detail-modal"
                     class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                     <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 relative">

@@ -13,19 +13,19 @@
     <script src="../../../js/users/login.js" defer></script>
 </head>
 <body class="bg-slate-50">
-    <!-- Root Container (Full Screen Flex) -->
+    
     <div class="flex h-screen overflow-hidden">
-        <!-- 1. Sidebar -->
+        
         <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 h-screen">
             <div>
-                <!-- Brand Logo -->
+                
                 <div
                     class="p-6 text-xl font-bold text-white tracking-wide border-b border-slate-800 flex items-center gap-3">
                     <img class="rounded-xl w-12 h-15" src="/public/images/UOB logo.png" alt="UOB Logo">
                     <div>Admin<span class="text-blue-600">Panel</span></div>
                 </div>
 
-                <!-- Dynamic User Profile -->
+                
                 <div class="p-4 mx-3 mt-4 bg-slate-800/60 rounded-xl border border-slate-800 flex items-center gap-3">
                     <div id="user-initials"
                         class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center font-bold text-white shrink-0 shadow-sm">
@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <!-- Navigation Menu -->
+                
                 <nav class="mt-4 px-3 space-y-1">
                     <a href="../admin.html"
                             class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium">
@@ -48,7 +48,7 @@
                         <span>Dashboard</span>
                     </a>
 
-                    <!-- View Dropdown Menu -->
+                    
                     <details class="group [&_summary::-webkit-details-marker]:hidden">
                         <summary
                             class="flex items-center justify-between px-4 py-3 hover:bg-slate-800 hover:text-white rounded-lg transition-colors font-medium cursor-pointer">
@@ -70,7 +70,7 @@
                         </summary>
 
                         <div class="mt-1 pl-4 space-y-1">
-                            <!-- Home -->
+                            
                             <a href="../view/home.html" target="_blank" rel="noopener noreferrer"
                                 class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +80,7 @@
                                 <span>Home</span>
                             </a>
 
-                            <!-- About -->
+                            
                             <a href="../view/about.html" target="_blank" rel="noopener noreferrer"
                                 class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,7 +90,7 @@
                                 <span>About</span>
                             </a>
 
-                            <!-- Locations -->
+                            
                             <a href="../view/locations.html" target="_blank" rel="noopener noreferrer"
                                 class="flex items-center gap-3 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@
                                 <span>Locations</span>
                             </a>
 
-                            <!-- Nested: Plants -->
+                            
                             <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
                                 <summary
                                     class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
@@ -128,7 +128,7 @@
                                 </div>
                             </details>
 
-                            <!-- Nested: Projects -->
+                            
                             <details class="group/nested [&_summary::-webkit-details-marker]:hidden">
                                 <summary
                                     class="flex items-center justify-between px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors font-medium cursor-pointer">
@@ -214,23 +214,23 @@
                 </nav>
             </div>
 
-            <!-- Footer Action -->
+            
             <div class="p-4 border-t border-slate-800">
                 <p class="w-full flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium text-slate-400">
                     &copy; 2026 University of Bahrain.
                 </p>
             </div>
         </aside>
-        <!-- 2. Main Content Area -->
+        
         <div class="flex-1 flex flex-col h-screen overflow-y-auto">
 
-            <!-- Top Header -->
+            
             <header
                 class="sticky top-0 z-50 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
                 <h1 class="text-2xl font-bold text-gray-800">Reports Overview</h1>
 
                 <div class="flex items-center gap-4">
-                    <!-- Notification Bell with Unread Badge & Popup Container -->
+                    
                     <div class="relative">
                         <button id="header-bell-btn"
                             class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition relative cursor-pointer focus:outline-none">
@@ -239,12 +239,12 @@
                                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
                                 </path>
                             </svg>
-                            <!-- Badge showing count: turns blue when 0 -->
+                            
                             <span id="header-unread-badge"
                                 class="absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
                         </button>
 
-                        <!-- Notification Popup Box -->
+                        
                         <div id="notification-popup"
                             class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 flex flex-col overflow-hidden">
                             <div
@@ -268,7 +268,7 @@
                                 </div>
                             </div>
 
-                            <!-- Notification Settings Sub-Panel -->
+                            
                             <div id="notif-settings-panel"
                                 class="hidden bg-slate-50 p-3 border-b border-gray-200 text-xs space-y-2">
                                 <div class="font-semibold text-gray-700">Notification Preferences</div>
@@ -311,7 +311,7 @@
                     </button>
                 </div>
             </header>
-            <!-- Dashboard Body -->
+            
             <main class="px-6 py-6 space-y-6 w-full flex-1 max-w-none">
                 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
@@ -323,9 +323,9 @@
                             </svg>
                             System Statistics & Financial Reports
                         </h2>
-                        <!-- Streamlined 3 Export Dropdowns -->
+                        
                         <div class="flex gap-3 flex-wrap">
-                            <!-- 1. Stats Report Dropdown -->
+                            
                             <div class="relative inline-block text-left group">
                                 <button
                                     class="inline-flex justify-center items-center px-3 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 transition shadow-sm"
@@ -357,7 +357,7 @@
                                 </ul>
                             </div>
 
-                            <!-- 3. Full Report Dropdown -->
+                            
                             <div class="relative inline-block text-left group">
                                 <button
                                     class="inline-flex justify-center items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm"
@@ -389,7 +389,7 @@
                         </div>
                     </div>
 
-                    <!-- Metric Cards Row -->
+                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
                         <div
                             class="bg-white border border-gray-200 rounded-xl shadow-sm p-5 border-l-4 border-l-blue-600">
@@ -397,7 +397,7 @@
                                 Registered Users</h6>
                             <h3 id="stat-users" class="text-2xl font-bold text-gray-800 mb-0">0</h3>
                         </div>
-                        <!-- Professional Oxygen Card with Progress Bar -->
+                        
                         <div
                             class="bg-white border border-gray-200 rounded-xl shadow-sm p-5 border-l-4 border-l-sky-500">
                             <h6 class="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-1">Oxygen Output
@@ -423,7 +423,7 @@
                         </div>
                     </div>
 
-                    <!-- Financial Metric Cards Row -->
+                    
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="bg-sky-300 text-white rounded-xl shadow-sm p-5">
                             <h5 class="text-sm font-medium text-white mb-1">Total Water Cost</h5>
@@ -439,7 +439,7 @@
                         </div>
                     </div>
 
-                    <!-- Chart Visualizations with Fixed Resized Containers -->
+                    
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col"
                             style="height: 280px;">
@@ -459,7 +459,7 @@
                         </div>
                     </div>
 
-                    <!-- Financial Breakdown Chart Canvas -->
+                    
                     <div class="grid grid-cols-1 gap-6 mb-6">
                         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col"
                             style="height: 260px;">
@@ -471,7 +471,7 @@
                         </div>
                     </div>
 
-                    <!-- Table Data Section with Controls -->
+                    
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <div>
@@ -509,7 +509,7 @@
                                     <option value="DESC">Descending</option>
                                 </select>
                             </div>
-                            <!-- 2. Current Active Table Dropdown -->
+                            
                             <div class="relative inline-block text-left group">
                                 <button
                                     class="inline-flex justify-center items-center px-3 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 transition shadow-sm"
@@ -551,7 +551,7 @@
                     </div>
                 </div>
             </main>
-            <!-- Notification Reader Modal Popup matching your drawing -->
+            
             <div id="notif-detail-modal"
                 class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                 <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 relative">

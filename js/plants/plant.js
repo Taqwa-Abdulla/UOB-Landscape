@@ -1,20 +1,18 @@
-/*
-  Requirement: Populate the plant page directly from the Database API
-  Target API path: /api/plants/plant.php
-*/
+//=======================================
+// Plants Script
+//=======================================
 
-// --- API Configuration ---
-// Adjust the path to match where plant.php sits relative to plant.html
+// Variables
 const API_ENDPOINT = '../../../../api/plants/plant.php';
 
-// --- Global Data Store ---
+
 let currentplantId = null;
 let currentComments = [];
 
-// --- Fallback Image URL ---
+
 const FALLBACK_IMAGE_URL = 'https://images.unsplash.com/photo-1483794344563-d27a8d18014e?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
-// --- Element Selections ---
+
 const scientificNameEl = document.getElementById('scientific-name');
 const plantImageEl = document.getElementById('plant-image');
 const locationIdEl = document.getElementById('location-id');
@@ -42,18 +40,14 @@ const classEl = document.getElementById('class');
 
 // --- Functions ---
 
-/**
- * Gets the plant ID string (e.g., "OP-001" or "IP-123") from the URL query string.
- */
+
 function getPlantIdFromURL() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   return urlParams.get('id');
 }
 
-/**
- * Renders all details of the selected plant onto the page elements.
- */
+
 function renderPlantDetails(plant) {
   if (!plant) return;
   if (scientificNameEl) scientificNameEl.textContent = plant.scientific_name || '';
@@ -92,9 +86,7 @@ function renderPlantDetails(plant) {
   if (classEl) classEl.textContent = plant.class || '';
 }
 
-/**
- * Initializes the page by fetching the database records from plant.php and finding the target plant by string ID.
- */
+
 async function initializePage() {
   currentplantId = getPlantIdFromURL();
   
@@ -104,7 +96,7 @@ async function initializePage() {
   }
 
   try {
-    // Fetch directly from plant.php without passing query params
+    
     const response = await fetch(API_ENDPOINT);
     
     if (!response.ok) {
@@ -113,10 +105,10 @@ async function initializePage() {
 
     const data = await response.json();
     
-    // Supports arrays directly or wrapped objects like { rows: [...] } or { data: [...] }
+    
     const plants = Array.isArray(data) ? data : (data.rows || data.data || []);
     
-    // Find plant where plant_id matches string ID (e.g., "OP-001" or "IP-000") case-insensitively
+    
     const plant = plants.find(p => String(p.plant_id).trim().toUpperCase() === String(currentplantId).trim().toUpperCase());
 
     if (plant) {
@@ -130,5 +122,5 @@ async function initializePage() {
   }
 }
 
-// --- Initial Page Load ---
+
 initializePage();

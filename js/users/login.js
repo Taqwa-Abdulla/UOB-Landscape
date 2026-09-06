@@ -1,10 +1,15 @@
-// --- Element Selections ---
+//=======================================
+// Login Script
+//=======================================
+
+// Helper and validation functions and variables
+
 const loginForm = document.getElementById("login-form");
 const UserEmail = document.getElementById("email");
 const UserPassword = document.getElementById("password");
 const messageContainer = document.getElementById("message-container");
 
-// --- Display Message Helper ---
+
 function displayMessage(message, type) {
   if (messageContainer) {
     messageContainer.textContent = message;
@@ -12,11 +17,7 @@ function displayMessage(message, type) {
   }
 }
 
-/**
- * Validates email to match either:
- * 1. 9 digits followed by @stu.uob.edu.bh (e.g., 202801234@stu.uob.edu.bh)
- * 2. Staff / Faculty format ending with @uob.edu.bh (e.g., aikhalifa@uob.edu.bh)
- */
+
 function isValidEmail(email) {
   if (!email || typeof email !== 'string') return false;
   
@@ -26,9 +27,7 @@ function isValidEmail(email) {
   return patternStu.test(email) || patternStaff.test(email);
 }
 
-/**
- * Validates password: at least 8 characters, at least one uppercase letter, at least one special character.
- */
+
 function isValidPassword(password) {
   if (!password || typeof password !== 'string') return false;
   const hasMinLength = password.length >= 8;
@@ -38,7 +37,7 @@ function isValidPassword(password) {
   return hasMinLength && hasUppercase && hasSpecialChar;
 }
 
-// --- Login Handler ---
+// Login function
 async function handleLogin(event) {
   event.preventDefault();
 
@@ -71,7 +70,7 @@ async function handleLogin(event) {
       UserEmail.value = "";
       UserPassword.value = "";
       
-      // Redirect dashboard based on user role returned from backend
+      
       setTimeout(() => {
         if (result.user && result.user.role === 'admin') {
           window.location.href = "/site/admin/admin.html";
@@ -96,7 +95,7 @@ function setupLoginForm() {
   }
 }
 
-// --- Logout Handler ---
+// Logout functions
 async function handleLogout() {
   try {
     const response = await fetch("/api/auth/logout.php", {
@@ -108,7 +107,7 @@ async function handleLogout() {
 
     const result = await response.json();
 
-    // Clear client session/local storage
+    
     localStorage.clear();
     sessionStorage.clear();
 
@@ -123,10 +122,10 @@ async function handleLogout() {
   }
 }
 
-// --- Setup Logout Button (Global Event Listener) ---
+
 function setupLogoutButton() {
   document.addEventListener("click", (event) => {
-    // Intercepts clicks on any element with id="logout-btn" OR class="logout-btn" across the whole website
+    
     const logoutTarget = event.target.closest("#logout-btn, .logout-btn");
     
     if (logoutTarget) {
@@ -136,7 +135,7 @@ function setupLogoutButton() {
   });
 }
 
-// --- Initial Page Load ---
+-
 document.addEventListener("DOMContentLoaded", () => {
   setupLoginForm();
   setupLogoutButton();

@@ -1,3 +1,8 @@
+//=======================================
+// Creator Projects Script
+//=======================================
+
+// Functions calls
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
     initNotifications();
@@ -7,8 +12,8 @@ async function initDashboard() {
     await fetchDashboardData();
     await loadNotifications();
 }
-// Base API endpoint URL pointing to your backend router file
-const API_BASE_URL = '/api/creator/manage_projects.php'; 
+
+const API_BASE_URL = '/api/creator/manage_projects.php';
 
 document.addEventListener("DOMContentLoaded", () => {
     loadProjects();
@@ -17,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadAnnuleReports();
 });
 
-// Event listeners for filters and searches
+
 document.getElementById('filter-records-year')?.addEventListener('input', () => {
     loadRecords();
 });
@@ -26,13 +31,14 @@ document.getElementById('filter-reports-year')?.addEventListener('input', () => 
     loadAnnuleReports();
 });
 
+// Projects, Annual Reports, Costs, and Records Functions 
 async function loadProjects() {
     try {
         const search = document.getElementById('search-projects')?.value || '';
         const status = document.getElementById('filter-projects-status')?.value || '';
         const sortBy = document.getElementById('sort-projects-by')?.value || 'created_at';
         const sortOrder = document.getElementById('sort-projects-order')?.value || 'DESC';
-        
+
         const params = new URLSearchParams();
         if (search) params.append('q', search);
         if (status) params.append('status', status);
@@ -44,7 +50,7 @@ async function loadProjects() {
         const tbody = document.getElementById('projects-table-body');
         if (!tbody) return;
         tbody.innerHTML = '';
-        
+
         data.forEach(item => {
             tbody.innerHTML += `
                 <tr class="hover:bg-gray-50/50 transition-colors">
@@ -65,8 +71,8 @@ async function loadProjects() {
 async function loadRecords() {
     try {
         const search = document.getElementById('search-records')?.value || '';
-        const year = document.getElementById('filter-records-year')?.value 
-                  || document.getElementById('search-records-year')?.value || '';
+        const year = document.getElementById('filter-records-year')?.value
+            || document.getElementById('search-records-year')?.value || '';
         const sortBy = document.getElementById('sort-records-by')?.value || 'created_at';
         const sortOrder = document.getElementById('sort-records-order')?.value || 'DESC';
 
@@ -81,14 +87,14 @@ async function loadRecords() {
 
         const text = await response.text();
         if (!text) return;
-        
+
         const data = JSON.parse(text);
         const tbody = document.getElementById('records-table-body');
         if (!tbody) return;
         tbody.innerHTML = '';
-        
+
         data.forEach(item => {
-    tbody.innerHTML += `
+            tbody.innerHTML += `
         <tr class="hover:bg-gray-50/50 transition-colors">
             <td class="px-5 py-4 border-b border-gray-200 text-sm">${item.record_id}</td>
             <td class="px-5 py-4 border-b border-gray-200 text-sm text-gray-600">${item.year}</td>
@@ -104,9 +110,9 @@ async function loadRecords() {
             </td>
         </tr>
     `;
-});
-    } catch (error) { 
-        console.error("Error loading records:", error); 
+        });
+    } catch (error) {
+        console.error("Error loading records:", error);
     }
 }
 
@@ -121,12 +127,12 @@ async function loadCosts() {
 
         const text = await response.text();
         if (!text) return;
-        
+
         const data = JSON.parse(text);
         const tbody = document.getElementById('costs-table-body');
         if (!tbody) return;
         tbody.innerHTML = '';
-        
+
         data.forEach(item => {
             tbody.innerHTML += `
                 <tr class="hover:bg-gray-50/50 transition-colors">
@@ -141,8 +147,8 @@ async function loadCosts() {
                 </tr>
             `;
         });
-    } catch (error) { 
-        console.error("Error loading costs:", error); 
+    } catch (error) {
+        console.error("Error loading costs:", error);
     }
 }
 
@@ -208,7 +214,7 @@ async function openModal(resource, mode, data = {}) {
     const modal = document.getElementById('data-modal');
     const title = document.getElementById('modal-title');
     const container = document.getElementById('form-fields-container');
-    
+
     document.getElementById('form-resource').value = resource;
     document.getElementById('form-id').value = mode === 'edit' ? (data.project_id || data.record_id || data.cost_id || data.report_id) : '';
     title.innerText = `${mode === 'edit' ? 'Edit' : 'Add'} ${resource.replace('-', ' ').charAt(0).toUpperCase() + resource.replace('-', ' ').slice(1)}`;
@@ -241,26 +247,26 @@ async function openModal(resource, mode, data = {}) {
             { name: 'pdf_path', label: 'PDF Path', type: 'file', val: data.pdf_path || '' }
         ];
     } else if (resource === 'record') {
-    fields = [
-        { name: 'year', label: 'Year', type: 'number', val: data.year || new Date().getFullYear() },
-        { name: 'status', label: 'Record Status', type: 'text', val: data.status || '' },
-        { name: 'action_en', label: 'Action (EN)', type: 'text', val: data.action_en || '' },
-        { name: 'action_ar', label: 'Action (AR)', type: 'text', val: data.action_ar || '' },
-        { name: 'area', label: 'Area', type: 'number', val: data.area || '' },
-        { name: 'green_area', label: 'Green Area', type: 'number', val: data.green_area || '' },
-        { name: 'number_of_trees', label: 'Number of Trees', type: 'number', val: data.number_of_trees || 0 },
-        { name: 'estimated_cost', label: 'Estimated Cost', type: 'number', val: data.estimated_cost || '' },
-        { name: 'start_date', label: 'Start Date', type: 'date', val: data.start_date || '' },
-        { name: 'expected_end_date', label: 'Expected End Date', type: 'date', val: data.expected_end_date || '' },
-        { name: 'location_name', label: 'Location Name', type: 'loc_chained', val: data.location_name || '', catVal: data.location_category || '' },
-        { name: 'pdf_path', label: 'PDF File (Optional)', type: 'file', val: data.pdf_path || '' }, // <-- Optional PDF field
-        { name: 'previous_condition_en', label: 'Previous Condition (EN)', type: 'textarea', val: data.previous_condition_en || '', fullWidth: true },
-        { name: 'current_condition_en', label: 'Current Condition (EN)', type: 'textarea', val: data.current_condition_en || '', fullWidth: true },
-        { name: 'previous_condition_ar', label: 'Previous Condition (AR)', type: 'textarea', val: data.previous_condition_ar || '', fullWidth: true },
-        { name: 'current_condition_ar', label: 'Current Condition (AR)', type: 'textarea', val: data.current_condition_ar || '', fullWidth: true },
-        { name: 'notes_en', label: 'Notes (EN)', type: 'textarea', val: data.notes_en || '', fullWidth: true },
-        { name: 'notes_ar', label: 'Notes (AR)', type: 'textarea', val: data.notes_ar || '', fullWidth: true }
-    ];
+        fields = [
+            { name: 'year', label: 'Year', type: 'number', val: data.year || new Date().getFullYear() },
+            { name: 'status', label: 'Record Status', type: 'text', val: data.status || '' },
+            { name: 'action_en', label: 'Action (EN)', type: 'text', val: data.action_en || '' },
+            { name: 'action_ar', label: 'Action (AR)', type: 'text', val: data.action_ar || '' },
+            { name: 'area', label: 'Area', type: 'number', val: data.area || '' },
+            { name: 'green_area', label: 'Green Area', type: 'number', val: data.green_area || '' },
+            { name: 'number_of_trees', label: 'Number of Trees', type: 'number', val: data.number_of_trees || 0 },
+            { name: 'estimated_cost', label: 'Estimated Cost', type: 'number', val: data.estimated_cost || '' },
+            { name: 'start_date', label: 'Start Date', type: 'date', val: data.start_date || '' },
+            { name: 'expected_end_date', label: 'Expected End Date', type: 'date', val: data.expected_end_date || '' },
+            { name: 'location_name', label: 'Location Name', type: 'loc_chained', val: data.location_name || '', catVal: data.location_category || '' },
+            { name: 'pdf_path', label: 'PDF File (Optional)', type: 'file', val: data.pdf_path || '' }, // <-- Optional PDF field
+            { name: 'previous_condition_en', label: 'Previous Condition (EN)', type: 'textarea', val: data.previous_condition_en || '', fullWidth: true },
+            { name: 'current_condition_en', label: 'Current Condition (EN)', type: 'textarea', val: data.current_condition_en || '', fullWidth: true },
+            { name: 'previous_condition_ar', label: 'Previous Condition (AR)', type: 'textarea', val: data.previous_condition_ar || '', fullWidth: true },
+            { name: 'current_condition_ar', label: 'Current Condition (AR)', type: 'textarea', val: data.current_condition_ar || '', fullWidth: true },
+            { name: 'notes_en', label: 'Notes (EN)', type: 'textarea', val: data.notes_en || '', fullWidth: true },
+            { name: 'notes_ar', label: 'Notes (AR)', type: 'textarea', val: data.notes_ar || '', fullWidth: true }
+        ];
     } else if (resource === 'cost') {
         fields = [
             { name: 'reference_type', label: 'Reference Type', type: 'text', val: data.reference_type || '' },
@@ -279,7 +285,7 @@ async function openModal(resource, mode, data = {}) {
     fields.forEach(field => {
         const widthClass = field.fullWidth ? 'col-span-full' : 'col-span-1';
         let fieldHtml = `<div class="flex flex-col ${widthClass}"><label class="text-sm font-medium text-gray-600 mb-1">${field.label}</label>`;
-        
+
         if (field.type === 'select') {
             fieldHtml += `<select name="${field.name}" class="border border-gray-300 rounded-lg px-3 py-2 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">`;
             field.options.forEach(opt => {
@@ -305,7 +311,7 @@ async function openModal(resource, mode, data = {}) {
         } else {
             fieldHtml += `<input type="${field.type}" name="${field.name}" value="${field.val}" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">`;
         }
-        
+
         fieldHtml += `</div>`;
         container.innerHTML += fieldHtml;
     });
@@ -341,16 +347,16 @@ function closeModal() {
 
 async function handleFormSubmit(event) {
     event.preventDefault();
-    const resourceMap = { 
-        project: 'projects', 
-        record: 'records', 
+    const resourceMap = {
+        project: 'projects',
+        record: 'records',
         cost: 'costs',
         'annule-report': 'annule-reports'
     };
     const resourceInput = document.getElementById('form-resource').value;
     const resource = resourceMap[resourceInput];
     const id = document.getElementById('form-id').value;
-    
+
     const formData = new FormData(event.target);
 
     const method = 'POST';
@@ -363,12 +369,12 @@ async function handleFormSubmit(event) {
     try {
         const response = await fetch(url, {
             method: method,
-            body: formData 
+            body: formData
         });
-        
+
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || "Operation failed");
-        
+
         alert(result.message || "Operation successful");
         closeModal();
 
@@ -376,14 +382,14 @@ async function handleFormSubmit(event) {
         if (resource === 'records') loadRecords();
         if (resource === 'costs') loadCosts();
         if (resource === 'annule-reports') loadAnnuleReports();
-    } catch (error) { 
-        console.error("Error saving item:", error); 
+    } catch (error) {
+        console.error("Error saving item:", error);
         alert(error.message);
     }
 }
 
 // ==========================================
-// NOTIFICATIONS & PREFERENCES LOGIC
+// Notifications Functions
 // ==========================================
 
 async function loadNotifications() {
@@ -482,7 +488,7 @@ function renderNotifications(notifications, unreadCount) {
 
     if (badge) {
         badge.textContent = unreadCount;
-        badge.className = unreadCount === 0 
+        badge.className = unreadCount === 0
             ? "absolute top-1 right-1 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full"
             : "absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full";
         badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
@@ -498,9 +504,9 @@ function renderNotifications(notifications, unreadCount) {
     notifications.forEach(notif => {
         const item = document.createElement("div");
         item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-blue-50/40'}`;
-        
+
         const formattedDate = new Date(notif.created_at).toLocaleString();
-        
+
         item.innerHTML = `
             <div class="flex justify-between items-center mb-1">
                 <span class="font-bold">${escapeHtml(notif.title)}</span>
@@ -585,13 +591,13 @@ function savePreferences() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') {
-            console.error('Error saving preferences:', data.message);
-        }
-    })
-    .catch(err => console.error('Network error saving preferences:', err));
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                console.error('Error saving preferences:', data.message);
+            }
+        })
+        .catch(err => console.error('Network error saving preferences:', err));
 }
 
 function showNotifModal(title, message, dateStr) {
@@ -642,9 +648,7 @@ async function clearAllNotifications() {
     }
 }
 
-/**
- * Fetch all admin dashboard stats & profile info from backend
- */
+// Functions to fetch creator dashboard, profile data
 async function fetchDashboardData() {
     try {
         const response = await fetch('/api/creator/creator.php');
@@ -670,9 +674,7 @@ async function fetchDashboardData() {
         console.error("Failed to load dashboard data:", error);
     }
 }
-/**
- * Update Dynamic Sidebar / Header User Profile & store currentUserId
- */
+
 function updateUserProfile(user) {
     currentUserId = user.user_id || user.id || null;
 
@@ -685,7 +687,7 @@ function updateUserProfile(user) {
     if (initialsEl) initialsEl.textContent = user.initials || 'AD';
 }
 // ==========================================
-// UTILITY HELPERS
+// Helper and Validation Functions
 // ==========================================
 
 function setElementText(id, value) {
@@ -698,7 +700,7 @@ function getStatusBadge(status) {
     if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">In Progress</span>';
     if (s === 'completed') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>';
     if (s === 'planning') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>';
-    
+
     return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 capitalize">${escapeHtml(s || 'Unknown')}</span>`;
 }
 
