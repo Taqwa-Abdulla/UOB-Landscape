@@ -1,101 +1,53 @@
 <?php
-/**
- * Locations Management API
- * 
- * This is an API that handles all CRUD operations for locations
- * It uses PDO to interact with PostgreSQL database.
- * 
- * Database Table Structures (for reference):
- * 
- * Table: locations
- * Columns:
- *  locations (
-   * location_id SERIAL PRIMARY KEY,
-   * location_number VARCHAR(50) DEFAULT NULL,
-   * category VARCHAR(50) NOT NULL,
-   * name_en VARCHAR(255) NOT NULL,
-   * name_ar VARCHAR(255) NOT NULL,
-   * latitude NUMERIC(10,8) NOT NULL,
-   * longitude NUMERIC(11,8) NOT NULL,
-   * created_by INT REFERENCES users(user_id) ON DELETE SET NULL,
-   * updated_by INT REFERENCES users(user_id) ON DELETE SET NULL DEFAULT NULL
-*
- * HTTP Methods Supported:
- *    - GET: Retrieve location(s)
- *    - POST: Create a new location
- *    - PUT: Update an existing location
- *    - DELETE: Delete a location
- * 
- * Response Format: JSON
- */
-
-// ============================================================================
-// HEADERS AND CORS CONFIGURATION
-// ============================================================================
+/* Manage Locations API*/
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
 
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-
-
-// ============================================================================
-// DATABASE CONNECTION
-// ============================================================================
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-// Check if user is logged in and has the correct role (using 'user_role')
+// ==========================================
+// Authentication and checking role
+// ==========================================
 $role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
-
 if (!isset($_SESSION['user_id']) || ($role !== 'admin')) {
     header('Location: /login/login.html');
     exit;
 }
-
 require_once __DIR__ . '/../../config/db.php';
-
 $database = new Database();
 $db = $database->getConnection();
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-// ============================================================================
-// REQUEST PARSING
-// ============================================================================
-
 $method = $_SERVER['REQUEST_METHOD'];
 $resource = isset($_GET['resource']) ? $_GET['resource'] : '';
 $id = isset($_GET['id']) ? $_GET['id'] : null;
-
-// Support method spoofing for updates (FormData sent via POST with _method=PUT)
 if ($method === 'POST' && isset($_POST['_method']) && strtoupper($_POST['_method']) === 'PUT') {
     $method = 'PUT';
 }
-
-// Determine data source: Use $_POST if it's multipart/form-data, otherwise fallback to php://input (JSON)
 if (!empty($_POST)) {
     $data = $_POST;
 } else {
     $input = json_decode(file_get_contents("php://input"), true);
     $data = is_array($input) ? $input : [];
 }
-
 // ============================================================================
-// LOCATIONS CRUD FUNCTIONS
+// CRUD Functions
 // ============================================================================
-
 /**
  * Function: Get all locations
  * Method: GET
  * Endpoint: ?resource=locations
  */
-function getAllLocations($db) {
+function getAllLocations($db)
+{
     $query = "SELECT l.*, 
                      u_created.username AS created_by_username, 
                      u_updated.username AS updated_by_username 
@@ -104,32 +56,32 @@ function getAllLocations($db) {
               LEFT JOIN users u_updated ON l.updated_by = u_updated.user_id
               WHERE 1=1";
     $params = [];
-    
+
     if (isset($_GET['search']) && !empty($_GET['search'])) {
         $searchTerm = "%" . sanitizeInput($_GET['search']) . "%";
         $query .= " AND (l.category ILIKE :search OR l.name_en ILIKE :search OR l.name_ar ILIKE :search OR l.location_number ILIKE :search)";
         $params[':search'] = $searchTerm;
     }
-    
-   $allowedSortColumns = ['location_number', 'category', 'name_en', 'name_ar', 'location_id'];
-    
+
+    $allowedSortColumns = ['location_number', 'category', 'name_en', 'name_ar', 'location_id'];
+
     // Ensure we safely map the column with the table alias 'l.' without duplicating
     $sortCol = isset($_GET['sort']) && validateAllowedValue($_GET['sort'], $allowedSortColumns) ? $_GET['sort'] : 'location_id';
     $sort = "l." . $sortCol;
-    
+
     $order = isset($_GET['order']) && strtolower($_GET['order']) === 'desc' ? 'DESC' : 'ASC';
-    
+
     $query .= " ORDER BY {$sort} {$order}";
-    
+
     $stmt = $db->prepare($query);
-    
+
     foreach ($params as $key => $val) {
         $stmt->bindValue($key, $val);
     }
-    
+
     $stmt->execute();
     $locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     foreach ($locations as &$location) {
         if (isset($location['files']) && !empty($location['files'])) {
             $location['files'] = json_decode($location['files'], true);
@@ -138,21 +90,20 @@ function getAllLocations($db) {
         }
     }
     unset($location);
-    
+
     sendResponse($locations, 200);
 }
-
-
 /**
  * Function: Get a single location by ID
  * Method: GET
  * Endpoint: ?resource=locations&id={location_id}
  */
-function getLocationById($db, $locationId) {
+function getLocationById($db, $locationId)
+{
     if (empty($locationId)) {
         sendResponse(["error" => "Location ID is required."], 400);
     }
-    
+
     $query = "SELECT l.*, 
                      u_created.username AS created_by_username, 
                      u_updated.username AS updated_by_username 
@@ -160,33 +111,32 @@ function getLocationById($db, $locationId) {
               LEFT JOIN users u_created ON l.created_by = u_created.user_id
               LEFT JOIN users u_updated ON l.updated_by = u_updated.user_id
               WHERE l.location_id = :id LIMIT 1";
-              
+
     $stmt = $db->prepare($query);
     $stmt->bindValue(':id', $locationId, PDO::PARAM_INT);
     $stmt->execute();
-    
+
     $location = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$location) {
         sendResponse(["error" => "Location not found."], 404);
     }
-    
+
     if (isset($location['files']) && !empty($location['files'])) {
         $location['files'] = json_decode($location['files'], true);
     } else {
         $location['files'] = [];
     }
-    
+
     sendResponse($location, 200);
 }
-
-
 /**
  * Function: Create a new location
  * Method: POST
  * Endpoint: ?resource=locations
  */
-function createLocation($db, $data, $files) {
+function createLocation($db, $data, $files)
+{
     $requiredFields = ['category', 'name_en', 'name_ar', 'latitude', 'longitude', 'created_by'];
     foreach ($requiredFields as $field) {
         if (!isset($data[$field]) || trim($data[$field]) === '') {
@@ -216,7 +166,7 @@ function createLocation($db, $data, $files) {
     $query = "INSERT INTO locations (location_number, category, name_en, name_ar, latitude, longitude, location_image, created_by, updated_by) 
               VALUES (:location_number, :category, :name_en, :name_ar, :latitude, :longitude, :location_image, :created_by, :updated_by) 
               RETURNING location_id";
-              
+
     $stmt = $db->prepare($query);
 
     $stmt->bindValue(':location_number', $location_number);
@@ -229,7 +179,7 @@ function createLocation($db, $data, $files) {
     $stmt->bindValue(':created_by', $created_by, PDO::PARAM_INT);
     $stmt->bindValue(':updated_by', $updated_by, $updated_by !== null ? PDO::PARAM_INT : PDO::PARAM_NULL);
     $executed = $stmt->execute();
-    
+
     if ($executed) {
         $newLocationId = $stmt->fetchColumn();
         getLocationById($db, $newLocationId);
@@ -250,36 +200,32 @@ function createLocation($db, $data, $files) {
  * Method: PUT (or POST with multipart/form-data)
  * Endpoint: ?resource=locations
  */
-function updateLocation($db, $data, $files = null) {
+function updateLocation($db, $data, $files = null)
+{
     if (!isset($data['id']) || empty($data['id'])) {
         sendResponse(["error" => "Location ID is required for updates."], 400);
     }
-    
     $locationId = filter_var($data['id'], FILTER_VALIDATE_INT);
-    
     // Check if location exists and fetch current image path (to delete old file if replaced)
     $checkQuery = "SELECT location_id, location_image FROM locations WHERE location_id = :id";
     $checkStmt = $db->prepare($checkQuery);
     $checkStmt->bindValue(':id', $locationId, PDO::PARAM_INT);
     $checkStmt->execute();
-    
     $existingLocation = $checkStmt->fetch(PDO::FETCH_ASSOC);
     if (!$existingLocation) {
         sendResponse(["error" => "Location not found."], 404);
     }
-    
     $fieldsToUpdate = [];
     $params = [':id' => $locationId];
-    
+
     $allowedFields = ['location_number', 'category', 'name_en', 'name_ar', 'latitude', 'longitude', 'updated_by'];
-    
+
     foreach ($allowedFields as $field) {
         if (isset($data[$field])) {
             $fieldsToUpdate[] = "{$field} = :{$field}";
             $params[":{$field}"] = sanitizeInput($data[$field]);
         }
     }
-    
     // Handle new image upload if provided
     $newImagePath = null;
     if (isset($files['location_image']) && $files['location_image']['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -293,11 +239,11 @@ function updateLocation($db, $data, $files = null) {
     if (empty($fieldsToUpdate)) {
         sendResponse(["error" => "No valid fields provided for update."], 400);
     }
-    
+
     $query = "UPDATE locations SET " . implode(", ", $fieldsToUpdate) . " WHERE location_id = :id";
-    
+
     $stmt = $db->prepare($query);
-    
+
     foreach ($params as $key => $val) {
         if ($key === ':id' || $key === ':updated_by') {
             $stmt->bindValue($key, $val, PDO::PARAM_INT);
@@ -305,9 +251,9 @@ function updateLocation($db, $data, $files = null) {
             $stmt->bindValue($key, $val);
         }
     }
-    
+
     $executed = $stmt->execute();
-    
+
     if ($executed) {
         // If update was successful and a new image was uploaded, delete the old image file
         if ($newImagePath && !empty($existingLocation['location_image'])) {
@@ -316,10 +262,9 @@ function updateLocation($db, $data, $files = null) {
                 unlink($oldFilePath);
             }
         }
-        
+
         sendResponse(["success" => true, "message" => "Location updated successfully."], 200);
     } else {
-        // If DB update fails, cleanup the newly uploaded file to avoid leftovers
         if ($newImagePath) {
             $newFullFilePath = dirname(__DIR__, 2) . $newImagePath;
             if (file_exists($newFullFilePath)) {
@@ -329,41 +274,35 @@ function updateLocation($db, $data, $files = null) {
         sendResponse(["error" => "Failed to update location."], 500);
     }
 }
-
 /**
  * Function: Delete an existing location
  * Method: DELETE
  * Endpoint: ?resource=locations&id={location_id}
  */
-function deleteLocation($db, $locationId) {
+function deleteLocation($db, $locationId)
+{
     if (empty($locationId)) {
         sendResponse(["error" => "Location ID is required for deletion."], 400);
     }
-    
+
     $locationId = filter_var($locationId, FILTER_VALIDATE_INT);
     if ($locationId === false) {
         sendResponse(["error" => "Invalid location ID."], 400);
     }
-
-    // 1. Fetch the image path first so we can delete the file after successful deletion
     $query = "SELECT location_image FROM locations WHERE location_id = :id";
     $stmt = $db->prepare($query);
     $stmt->bindValue(':id', $locationId, PDO::PARAM_INT);
     $stmt->execute();
     $location = $stmt->fetch(PDO::FETCH_ASSOC);
-
     if (!$location) {
         sendResponse(["error" => "Location not found."], 404);
     }
-
-    // 2. Delete the record from the database
     $deleteQuery = "DELETE FROM locations WHERE location_id = :id";
     $deleteStmt = $db->prepare($deleteQuery);
     $deleteStmt->bindValue(':id', $locationId, PDO::PARAM_INT);
     $executed = $deleteStmt->execute();
 
     if ($executed) {
-        // 3. If DB deletion succeeds and an image file exists, delete it from storage
         if (!empty($location['location_image'])) {
             $filePath = dirname(__DIR__, 2) . $location['location_image'];
             if (file_exists($filePath)) {
@@ -376,15 +315,11 @@ function deleteLocation($db, $locationId) {
         sendResponse(["error" => "Failed to delete location."], 500);
     }
 }
-
 // ============================================================================
-// MAIN REQUEST ROUTER
+// Routing
 // ============================================================================
-
 try {
     $method = $_SERVER['REQUEST_METHOD'];
-    
-    // Support method spoofing for updates (FormData sent via POST with _method=PUT)
     if ($method === 'POST' && isset($_POST['_method']) && strtoupper($_POST['_method']) === 'PUT') {
         $method = 'PUT';
     }
@@ -399,23 +334,18 @@ try {
         } else {
             sendResponse(["error" => "Invalid resource specified."], 400);
         }
-        
     } elseif ($method === 'POST') {
         if ($resource === 'locations') {
-            // Pass both POST data and uploaded files
             createLocation($db, $_POST, $_FILES);
         } else {
             sendResponse(["error" => "Invalid resource specified."], 400);
         }
-            
     } elseif ($method === 'PUT') {
         if ($resource === 'locations') {
-            // Handle PUT/FormData request with $_POST and $_FILES
             updateLocation($db, $_POST, $_FILES);
         } else {
             sendResponse(["error" => "Invalid resource specified."], 400);
         }
-        
     } elseif ($method === 'DELETE') {
         if ($resource === 'locations') {
             $deleteId = $id !== null ? $id : (isset($data['id']) ? $data['id'] : null);
@@ -426,30 +356,27 @@ try {
     } else {
         sendResponse(["error" => "Method not supported."], 405);
     }
-    
 } catch (PDOException $e) {
     sendResponse(["error" => "Database error: " . $e->getMessage()], 500);
 } catch (Exception $e) {
     sendResponse(["error" => "Server error: " . $e->getMessage()], 500);
 }
-
-
 // ============================================================================
-// HELPER FUNCTIONS
+// Helper and Validation functions
 // ============================================================================
-
-function sendResponse($data, $statusCode = 200) {
+function sendResponse($data, $statusCode = 200)
+{
     http_response_code($statusCode);
-    
+
     if (!is_array($data)) {
         $data = [$data];
     }
-    
+
     echo json_encode($data);
     exit();
 }
-
-function sanitizeInput($data) {
+function sanitizeInput($data)
+{
     if (is_array($data)) {
         return $data;
     }
@@ -458,16 +385,16 @@ function sanitizeInput($data) {
     $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
     return $data;
 }
-
-function validateAllowedValue($value, $allowedValues) {
+function validateAllowedValue($value, $allowedValues)
+{
     $isValid = in_array($value, $allowedValues);
     return $isValid;
 }
-
 /**
  * Helper Function: Validate and process secure image uploads
  */
-function validateAndProcessImage($file) {
+function validateAndProcessImage($file)
+{
     if (!isset($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
         return null; // Image is optional
     }
@@ -475,17 +402,16 @@ function validateAndProcessImage($file) {
     if ($file['error'] !== UPLOAD_ERR_OK) {
         sendResponse(["error" => "File upload failed with error code: " . $file['error']], 400);
     }
-
-    // 1. Validate file size (max 5MB)
+    //Validate file size (max 5MB)
     $maxFileSize = 5 * 1024 * 1024;
     if ($file['size'] > $maxFileSize) {
         sendResponse(["error" => "File size exceeds the maximum allowed limit of 5MB."], 400);
     }
 
-    // 2. Validate real MIME type using finfo (prevents extension spoofing)
+    //Validate real MIME type using finfo (prevents extension spoofing)
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     $mimeType = $finfo->file($file['tmp_name']);
-    
+
     $allowedMimeTypes = [
         'image/jpeg' => 'jpg',
         'image/png'  => 'png'
@@ -494,29 +420,21 @@ function validateAndProcessImage($file) {
     if (!array_key_exists($mimeType, $allowedMimeTypes)) {
         sendResponse(["error" => "Invalid file type. Only JPG and PNG images are allowed."], 400);
     }
-
     $extension = $allowedMimeTypes[$mimeType];
-
-    // 3. Generate a secure unique filename
+    // Generate a secure unique filename
     $secureFileName = bin2hex(random_bytes(16)) . '.' . $extension;
-    
-    // Go up two levels from /api/admin/ to reach the project root
-    $rootPath = dirname(__DIR__, 2); 
+    $rootPath = dirname(__DIR__, 2);
     $uploadDir = $rootPath . '/uploads/locations/';
 
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
-    
     $destination = $uploadDir . $secureFileName;
-    
-    // This string is what gets saved in your VARCHAR(500) database column
     $dbPath = '/uploads/locations/' . $secureFileName;
 
     if (!move_uploaded_file($file['tmp_name'], $destination)) {
         sendResponse(["error" => "Failed to move uploaded file."], 500);
     }
-
     return $dbPath;
 }
 ?>

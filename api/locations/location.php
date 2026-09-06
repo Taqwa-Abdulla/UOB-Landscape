@@ -1,10 +1,12 @@
 <?php
-// Enable output buffering to ensure clean JSON output
-ob_start();
-
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
-
+// ==========================================
+// Display Locations
+// ==========================================
+ob_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=UTF-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');

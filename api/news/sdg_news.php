@@ -1,8 +1,9 @@
 <?php
-// Prevent PHP warnings/errors from corrupting the JSON response output
-error_reporting(0);
+error_reporting(E_ALL);
 ini_set('display_errors', 0);
-
+// ============================================================================
+// Display news from DB and news from UOB website
+// ============================================================================
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -13,13 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-
-// --------------------------------------------------------------------------
-// SECTION 1: DATABASE FETCHING
-// --------------------------------------------------------------------------
+// ==========================================================================
+// Fetching news from DB
+// ==========================================================================
 $dbNewsList = [];
 $dbConfigFile = __DIR__ . '/../../config/db.php';
-
 if (file_exists($dbConfigFile)) {
     require_once $dbConfigFile;
     try {
@@ -31,58 +30,60 @@ if (file_exists($dbConfigFile)) {
                       FROM news 
                       ORDER BY news_id DESC 
                       LIMIT 20';
-                      
+
             $stmt = $db->prepare($query);
             $stmt->execute();
             $dbNewsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     } catch (PDOException $e) {
-        // Silently skip database errors so web scraping can still run, or record error
         $dbError = $e->getMessage();
     }
 }
-
-// --------------------------------------------------------------------------
-// SECTION 2: SCRAPING & CACHING LOGIC
-// --------------------------------------------------------------------------
-// Locate news_cache.json at project root (assumes file is in /api/news/ or similar subdirectory)
+// ==========================================================================
+// Fetching news form UOB website using scraping and chaching logic
+// ==========================================================================
 $cacheFile = dirname(__DIR__, 2) . '/json/news/news_cache.json';
-
-// Fallback to local directory if parent resolution fails
 if (!file_exists(dirname($cacheFile))) {
     $cacheFile = __DIR__ . '/news_cache.json';
 }
-
-// Cache valid for 24 hours / 1 day (86,400 seconds)
-$cacheLifetime = 24 * 3600; 
+// ============================================================================
+// News cache updates every day (24 hours/86400 seconds)
+// News cache file is valid for one day
+// ============================================================================
+$cacheLifetime = 24 * 3600;
 $scrapedArticles = [];
-
-// 1. Serve cached scraped JSON if valid and non-empty
+// ============================================================================
+// Check if cache is valid and not empty
+// ============================================================================
 if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheLifetime)) {
     $cachedData = @file_get_contents($cacheFile);
     if (!empty($cachedData) && $cachedData !== '[]') {
         $scrapedArticles = json_decode($cachedData, true) ?? [];
     }
 }
-
-// 2. Cache expired or missing -> Perform batch scraping
+// ============================================================================
+// If batch scraping if cache is expired or missing 
+// To prevent crashing, timeouts and flagged action as a try to attack (DDos attack):
+//  - scaping 30 pages (300 or more articles) per batch
+//  - Use parallel CURL connections to batch in group of 10
+// ============================================================================
 if (empty($scrapedArticles)) {
     set_time_limit(180);
     ini_set('memory_limit', '256M');
 
-    $maxPages = 30; // Scrape up to 30 pages (~300 articles)
-    $batchSize = 10; // Batch in groups of 10 parallel cURL connections
+    $maxPages = 30;
+    $batchSize = 10;
     $articles = [];
 
     for ($batchStart = 1; $batchStart <= $maxPages; $batchStart += $batchSize) {
         $batchEnd = min($batchStart + $batchSize - 1, $maxPages);
-        
+
         $mh = curl_multi_init();
         $curlHandles = [];
 
         for ($p = $batchStart; $p <= $batchEnd; $p++) {
             $url = ($p === 1) ? "https://www.uob.edu.bh/news/" : "https://www.uob.edu.bh/news/page/{$p}/";
-            
+
             $ch = curl_init();
             curl_setopt_array($ch, [
                 CURLOPT_URL => $url,
@@ -148,9 +149,10 @@ if (empty($scrapedArticles)) {
             }
         }
         curl_multi_close($mh);
-        
-        // Brief 200ms pause between batches
-        usleep(200000); 
+        // ============================================================================
+        // Pause for 200ms between batches
+        // ============================================================================
+        usleep(200000);
     }
 
     $scrapedArticles = array_values($articles);
@@ -158,17 +160,18 @@ if (empty($scrapedArticles)) {
         $item['id'] = $index;
     }
     unset($item);
-
-    // Save output to cache file at root
+    // ============================================================================
+    // Save to cache log file
+    // ============================================================================
     if (!empty($scrapedArticles)) {
         $jsonResult = json_encode($scrapedArticles, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         @file_put_contents($cacheFile, $jsonResult, LOCK_EX);
     }
 }
 
-// --------------------------------------------------------------------------
-// SECTION 3: OUTPUT COMBINED RESULTS
-// --------------------------------------------------------------------------
+// ==========================================================================
+// Combine news form DB and UOB website to display them
+//===========================================================================
 http_response_code(200);
 echo json_encode([
     "status" => "success",
@@ -176,14 +179,15 @@ echo json_encode([
     "scraped_news" => $scrapedArticles
 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
-// --------------------------------------------------------------------------
-// HELPER FUNCTIONS
-// --------------------------------------------------------------------------
+// ==========================================================================
+// Helper and Validation Functions
+// ==========================================================================
 
 /**
  * Validates whether a scraped URL is a genuine news article link
  */
-function isValidUobNewsLink($url, $title) {
+function isValidUobNewsLink($url, $title)
+{
     $path = parse_url($url, PHP_URL_PATH);
 
     if (empty($path) || $path === '/' || $path === '/news/' || $path === '/news') {
@@ -208,7 +212,8 @@ function isValidUobNewsLink($url, $title) {
 /**
  * Maps article titles to corresponding Sustainable Development Goals
  */
-function extractSdgsFromTitle($title) {
+function extractSdgsFromTitle($title)
+{
     $titleLower = mb_strtolower($title, 'UTF-8');
     $sdgs = [];
 

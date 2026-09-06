@@ -1,32 +1,35 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+// ==========================================
+// Authentication and checking role
+// ==========================================
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 $role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
 
 if (!isset($_SESSION['user_id']) || ($role !== 'admin')) {
     header('Location: /login/login.html');
     exit;
 }
-
 ob_start();
 error_reporting(E_ALL);
-ini_set('display_errors', '0'); 
-ini_set('memory_limit', '2048M'); 
-set_time_limit(900);              
-
-// Include mPDF via Composer autoloader
+ini_set('display_errors', '0');
+ini_set('memory_limit', '2048M');
+set_time_limit(900);
+// ==========================================
+// Generate report PDF and CSV
+// ==========================================              
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../config/db.php';
-
 $database = new Database();
 $conn = $database->getConnection();
 $action = $_GET['action'] ?? 'fetch';
 $allowed_tables = ['users', 'locations', 'plants', 'projects', 'records', 'news', 'activity_log', 'annual_reports', 'contributors', 'qrcode', 'costs', 'stats_archive'];
 $currentDateStr = date('d_m_Y');
-
-function sanitizeRows($rows) {
+function sanitizeRows($rows)
+{
     foreach ($rows as &$row) {
         if (array_key_exists('password_hash', $row)) {
             $row['password_last_changed'] = $row['updated_at'] ?? 'Never';
@@ -36,7 +39,6 @@ function sanitizeRows($rows) {
     }
     return $rows;
 }
-
 if ($action === 'stats') {
     $stats = [];
     try {
@@ -44,19 +46,19 @@ if ($action === 'stats') {
             $stmt = $conn->query("SELECT COUNT(*) as total FROM \"$tbl\"");
             $stats[$tbl] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
         }
-        
+
         $stmt = $conn->query("SELECT SUM(quantity) as total_plants, 
                             SUM(CASE WHEN evaporation_mitigation::integer = 1 OR evaporation_mitigation = TRUE THEN quantity ELSE 0 END) as mitigated_count 
                             FROM plants");
         $plantMetrics = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         $totalPlantsQty = max(1, $plantMetrics['total_plants'] ?? 1);
         $totalOxygen = $totalPlantsQty * 12.5;
-        
-        $oxygenTarget = 5000; 
+
+        $oxygenTarget = 5000;
         $stats['total_oxygen_units'] = $totalOxygen;
         $stats['oxygen_percentage'] = min(100, round(($totalOxygen / $oxygenTarget) * 100, 1));
-        
+
         $totalWaterConsumed = $totalPlantsQty * 5;
         $mitigatedSaved = ($plantMetrics['mitigated_count'] ?? 0) * 3;
         $stats['total_water_waste_units'] = max(0, $totalWaterConsumed - $mitigatedSaved);
@@ -71,7 +73,7 @@ if ($action === 'stats') {
                                        LEFT JOIN costs c ON c.reference_type = 'water_tier' AND LOWER(c.reference_name) = LOWER(p.water_required)");
         $waterRows = $stmtWaterCost->fetchAll(PDO::FETCH_ASSOC);
         $totalWaterCost = 0;
-        foreach($waterRows as $w) {
+        foreach ($waterRows as $w) {
             $totalWaterCost += ($w['quantity'] * 5) * ($w['unit_cost'] ?? 1.00);
         }
 
@@ -113,7 +115,7 @@ if ($action === 'fetch') {
 
     $sort_by = $_GET['sort_by'] ?? '';
     $sort_order = (isset($_GET['sort_order']) && strtoupper($_GET['sort_order']) === 'DESC') ? 'DESC' : 'ASC';
-    
+
     $query = "SELECT * FROM \"$table\"";
     $logical_sorts = ['created_at', 'name_en', 'title_en', 'quantity', 'year', 'username', 'category', 'report_year'];
     if (!empty($sort_by) && in_array($sort_by, $logical_sorts)) {
@@ -127,8 +129,8 @@ if ($action === 'fetch') {
 
         ob_clean();
         echo json_encode([
-            'status' => 'success', 
-            'columns' => !empty($rows) ? array_keys($rows[0]) : [], 
+            'status' => 'success',
+            'columns' => !empty($rows) ? array_keys($rows[0]) : [],
             'data' => $rows
         ]);
     } catch (PDOException $e) {
@@ -144,12 +146,12 @@ if ($action === 'download_csv') {
     if (!in_array($table, $allowed_tables)) exit('Invalid table');
 
     $stmt = $conn->query("SELECT * FROM \"$table\"");
-    
+
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="' . $table . '_' . $currentDateStr . '.csv"');
-    
+
     $output = fopen('php://output', 'w');
-    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+    fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
     $isHeaderWritten = false;
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -168,9 +170,9 @@ if ($action === 'full_report_download_csv') {
     ob_clean();
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="full_report_' . $currentDateStr . '.csv"');
-    
+
     $output = fopen('php://output', 'w');
-    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+    fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
     fputcsv($output, ["=== SYSTEM & ENVIRONMENTAL METRICS SUMMARY ==="], ',', '"', '');
     foreach (['users', 'plants', 'projects', 'locations', 'records', 'news'] as $tbl) {
@@ -182,7 +184,7 @@ if ($action === 'full_report_download_csv') {
     foreach ($allowed_tables as $tbl) {
         fputcsv($output, ["--- DATABASE TABLE: " . strtoupper($tbl) . " ---"], ',', '"', '');
         $stmt = $conn->query("SELECT * FROM \"$tbl\"");
-        
+
         $isHeaderWritten = false;
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $cleanRow = sanitizeRows([$row])[0];
@@ -202,12 +204,12 @@ if ($action === 'download_stats_csv') {
     ob_clean();
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="stats_summary_' . $currentDateStr . '.csv"');
-    
+
     $output = fopen('php://output', 'w');
-    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+    fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
     fputcsv($output, ["Metric Name", "Value"], ',', '"', '');
-    
+
     foreach (['users', 'plants', 'projects', 'locations', 'records', 'news'] as $tbl) {
         $stmt = $conn->query("SELECT COUNT(*) as total FROM \"$tbl\"");
         $total = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
@@ -216,7 +218,7 @@ if ($action === 'download_stats_csv') {
 
     $stmt = $conn->query("SELECT SUM(quantity) as total_plants FROM plants");
     $totalPlantsQty = max(1, $stmt->fetch(PDO::FETCH_ASSOC)['total_plants'] ?? 1);
-    
+
     fputcsv($output, ["Total Plant Quantity", $totalPlantsQty], ',', '"', '');
     fputcsv($output, ["Total Oxygen Units", $totalPlantsQty * 12.5], ',', '"', '');
     fputcsv($output, ["Water Cost (BD)", round($totalPlantsQty * 5 * 1.00, 2)], ',', '"', '');
@@ -246,7 +248,6 @@ if ($action === 'download_pdf' || $action === 'full_report_download_pdf' || $act
         $reportTitle = 'UOB Landscape Table Module Report: ' . strtoupper($singleTbl);
         $outputFilename = $singleTbl . '_' . $currentDateStr . '.pdf';
     }
-
     // Set up standard HTML layout wrapper with styling
     $html = '
     <div style="background-color: #198754; color: #ffffff; padding: 10px; text-align: center; font-weight: bold; font-size: 14pt;">
@@ -296,11 +297,11 @@ if ($action === 'download_pdf' || $action === 'full_report_download_pdf' || $act
             $html .= '<table border="1" cellpadding="4" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 7.5pt;">
                 <thead>
                     <tr style="background-color: #2874a6; color: #ffffff; text-align: center;">';
-            
+
             foreach ($columns as $col) {
                 $html .= '<th>' . htmlspecialchars($col) . '</th>';
             }
-            
+
             $html .= '</tr></thead><tbody>';
 
             $isAlt = false;
@@ -310,7 +311,7 @@ if ($action === 'download_pdf' || $action === 'full_report_download_pdf' || $act
                 foreach ($columns as $colName) {
                     $val = $cleanRow[$colName] ?? '';
                     $displayVal = is_null($val) ? '' : (string)$val;
-                    
+
                     // mPDF natively handles Arabic text perfectly without placeholders!
                     $html .= '<td>' . htmlspecialchars($displayVal) . '</td>';
                 }

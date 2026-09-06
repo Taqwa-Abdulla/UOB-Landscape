@@ -1,20 +1,23 @@
 <?php
+/**Manage Projects, records, annule reports and costs */
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+// ==========================================
+// Authentication and checking role
+// ==========================================
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 $role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
 
 if (!isset($_SESSION['user_id']) || ($role !== 'creator')) {
     header('Location: /login/login.html');
     exit;
 }
-
 require_once __DIR__ . '/../../config/db.php';
 $database = new Database();
 $conn = $database->getConnection();
@@ -58,8 +61,6 @@ $inputData = !empty($rawInput) ? json_decode($rawInput, true) : $_POST;
 if (!is_array($inputData)) {
     $inputData = [];
 }
-
-// Allow POST to act as PUT when updating with files if an ID is present
 if ($method === 'POST' && isset($_POST['_method']) && strtoupper($_POST['_method']) === 'PUT') {
     $method = 'PUT';
 }
@@ -103,7 +104,9 @@ function handleLocations($method, $conn)
         echo json_encode(["message" => "Method not allowed"]);
     }
 }
-
+// ==========================================
+// Projects
+// ==========================================
 function handleProjects($method, $id, $conn, $data, $files)
 {
     switch ($method) {
@@ -225,7 +228,7 @@ function handleProjects($method, $id, $conn, $data, $files)
 }
 
 // ==========================================
-// RECORDS HANDLER (All Columns + Sorting + PDF Support)
+// Records
 // ==========================================
 function handleRecords($method, $id, $conn, $data)
 {
@@ -382,7 +385,7 @@ function handleRecords($method, $id, $conn, $data)
 }
 
 // ==========================================
-// COSTS HANDLER
+// COSTS
 // ==========================================
 function handleCosts($method, $id, $conn, $data)
 {
@@ -459,7 +462,7 @@ function handleCosts($method, $id, $conn, $data)
 }
 
 // ==========================================
-// ANNULE REPORTS HANDLER
+// Annule reports
 // ==========================================
 function handleAnnuleReports($method, $id, $conn, $data, $files)
 {
@@ -557,7 +560,7 @@ function handleAnnuleReports($method, $id, $conn, $data, $files)
             if (!$id) {
                 sendResponse(["error" => "ID required"], 400);
             }
-            
+
             // Optionally delete the physical file
             $stmt = $conn->prepare("SELECT pdf_path FROM annual_reports WHERE report_id = ?");
             $stmt->execute([$id]);
@@ -673,3 +676,4 @@ function validateAndProcessPDF($file)
 
     return $dbPath;
 }
+?>

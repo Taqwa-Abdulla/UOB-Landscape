@@ -1,9 +1,12 @@
 <?php
-// 1. Prevent PHP warning/notice strings from corrupting the JSON payload
-error_reporting(0);
+// =============================================
+// Display names of contributors in about page
+// =============================================
+error_reporting(E_ALL);
 ini_set('display_errors', 0);
-
-// 2. Comprehensive Headers for CORS and Cache Control
+// ==========================================
+// Authentication and checking role
+// ==========================================
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
@@ -15,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// 3. Single Direct Path for db.php
 $dbConfigFile = __DIR__ . '/../../config/db.php';
 
 if (!file_exists($dbConfigFile)) {
@@ -40,7 +42,6 @@ try {
 
     $method = $_SERVER['REQUEST_METHOD'];
 
-    // Handle POST Request (Add New Contributor)
     if ($method === 'POST') {
         $input = json_decode(file_get_contents('php://input'), true);
         if (empty($input)) {
@@ -82,7 +83,6 @@ try {
         exit();
     }
 
-    // Handle GET Request (Fetch Contributors)
     if ($method === 'GET') {
         $query = "SELECT username, college, major FROM contributors ORDER BY username ASC";
         $stmt = $db->prepare($query);
@@ -113,7 +113,6 @@ try {
         'status' => 'error',
         'message' => 'Method not allowed.'
     ]);
-
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode([

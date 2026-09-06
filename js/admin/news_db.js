@@ -1,6 +1,10 @@
-// ============================================================================
-// CONFIGURATION & GLOBAL STATE
-// ============================================================================
+// =============================================
+// Manage DB news Script
+// =============================================
+
+// =======================================
+// Functions Calls and varibales
+// =======================================
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
     initNotifications();
@@ -12,7 +16,6 @@ async function initDashboard() {
 }
 const API_BASE_URL = '/api/admin/manage_news.php';
 
-// DOM Element References
 const newsTableBody = document.getElementById('newsTableBody');
 const newsForm = document.getElementById('news-form');
 const formHeading = document.getElementById('form-heading');
@@ -20,17 +23,12 @@ const submitBtn = document.getElementById('submit-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 const newsDetailView = document.getElementById('news-detail-view');
 
-// Hidden input for tracking update mode vs create mode
+// Tracks update/create(hidden) 
 const newsIdInput = document.getElementById('news_id');
 
-// ============================================================================
-// INITIALIZATION
-// ============================================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Initial fetch of news list
     fetchNewsList();
 
-    // Event Listeners
     if (newsForm) {
         newsForm.addEventListener('submit', handleFormSubmit);
     }
@@ -41,12 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================================================
-// READ OPERATIONS (FETCH & DISPLAY)
+// News Functions
 // ============================================================================
-
-/**
- * Fetches the entire news list from the API and renders it in the HTML table
- */
 async function fetchNewsList() {
     try {
         const response = await fetch(`${API_BASE_URL}?resource=news`);
@@ -65,9 +59,6 @@ async function fetchNewsList() {
     }
 }
 
-/**
- * Renders array of news items into HTML table rows
- */
 function renderNewsTable(newsItems) {
     if (!newsTableBody) return;
 
@@ -85,7 +76,6 @@ function renderNewsTable(newsItems) {
         const titleEn = item.title_en || item.title || 'Untitled';
         const titleAr = item.title_ar || '-';
 
-        // Robust check for SDGs field variations across backend models
         let sdgsRaw = item.SDGs ?? item.sdgs ?? item.sdg_tags ?? item.sdg ?? '-';
         if (Array.isArray(sdgsRaw)) {
             sdgsRaw = sdgsRaw.join(', ');
@@ -115,9 +105,6 @@ function renderNewsTable(newsItems) {
     }).join('');
 }
 
-/**
- * Fetches and displays details for a single news article inside #news-detail-view
- */
 async function viewSingleNews(id) {
     if (!newsDetailView) return;
 
@@ -127,7 +114,6 @@ async function viewSingleNews(id) {
 
         const news = await response.json();
 
-        // Safe resolution for SDGs field in details view
         let sdgsVal = news.SDGs ?? news.sdgs ?? news.sdg_tags ?? news.sdg ?? '-';
         if (Array.isArray(sdgsVal)) {
             sdgsVal = sdgsVal.join(', ');
@@ -158,13 +144,6 @@ async function viewSingleNews(id) {
     }
 }
 
-// ============================================================================
-// EDIT FORM PRE-FILL LOGIC
-// ============================================================================
-
-/**
- * Fetches item by ID and PRE-FILLS form fields for EDITING
- */
 async function openEditMode(id) {
     try {
         const response = await fetch(`${API_BASE_URL}?resource=news&id=${id}`);
@@ -174,7 +153,6 @@ async function openEditMode(id) {
 
         const news = await response.json();
 
-        // 1. Set requested title heading
         if (formHeading) {
             formHeading.textContent = `Edit "${news.title_en}" news`;
         }
@@ -187,10 +165,8 @@ async function openEditMode(id) {
             cancelBtn.style.display = 'inline-block';
         }
 
-        // 2. Pre-fill form fields with existing DB values so users don't start from scratch
         newsIdInput.value = news.news_id || news.id || '';
 
-        // Extract SDGs value safely
         let sdgsVal = news.SDGs ?? news.sdgs ?? news.sdg_tags ?? news.sdg ?? '';
         if (Array.isArray(sdgsVal)) {
             sdgsVal = sdgsVal.join(', ');
@@ -203,7 +179,6 @@ async function openEditMode(id) {
         setInputValue('news_description_en', news.news_description_en || news.content || news.summary || '');
         setInputValue('news_description_ar', news.news_description_ar || '');
 
-        // Smooth scroll to top form
         if (newsForm) {
             newsForm.scrollIntoView({ behavior: 'smooth' });
         }
@@ -214,9 +189,6 @@ async function openEditMode(id) {
     }
 }
 
-/**
- * Resets form state back to Create mode
- */
 function resetFormState() {
     if (newsForm) newsForm.reset();
     if (newsIdInput) newsIdInput.value = '';
@@ -234,20 +206,12 @@ function resetFormState() {
     }
 }
 
-// ============================================================================
-// CREATE & UPDATE HANDLER
-// ============================================================================
-
-/**
- * Handles Form Submission (Detects whether to call POST or PUT)
- */
 async function handleFormSubmit(event) {
     event.preventDefault();
 
     const id = newsIdInput ? newsIdInput.value : '';
     const isEditing = Boolean(id);
 
-    // Extract payload from form inputs
     const payload = {
         title_en: getInputValue('title_en'),
         title_ar: getInputValue('title_ar'),
@@ -280,7 +244,6 @@ async function handleFormSubmit(event) {
             throw new Error(result.error || 'Failed to save news article.');
         }
 
-        // Reset form state and refresh table list
         resetFormState();
         await fetchNewsList();
 
@@ -290,13 +253,6 @@ async function handleFormSubmit(event) {
     }
 }
 
-// ============================================================================
-// DELETE OPERATION
-// ============================================================================
-
-/**
- * Deletes a news item by ID
- */
 async function deleteNews(id) {
     if (!confirm(`Are you sure you want to delete news item #${id}?`)) {
         return;
@@ -313,7 +269,6 @@ async function deleteNews(id) {
             throw new Error(result.error || 'Failed to delete news article.');
         }
 
-        // Refresh table list after deletion
         await fetchNewsList();
 
     } catch (error) {
@@ -322,7 +277,7 @@ async function deleteNews(id) {
     }
 }
 // ==========================================
-// NOTIFICATIONS & PREFERENCES LOGIC
+// Notification Functions
 // ==========================================
 
 async function loadNotifications() {
@@ -421,7 +376,7 @@ function renderNotifications(notifications, unreadCount) {
 
     if (badge) {
         badge.textContent = unreadCount;
-        badge.className = unreadCount === 0 
+        badge.className = unreadCount === 0
             ? "absolute top-1 right-1 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full"
             : "absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full";
         badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
@@ -437,9 +392,9 @@ function renderNotifications(notifications, unreadCount) {
     notifications.forEach(notif => {
         const item = document.createElement("div");
         item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-blue-50/40'}`;
-        
+
         const formattedDate = new Date(notif.created_at).toLocaleString();
-        
+
         item.innerHTML = `
             <div class="flex justify-between items-center mb-1">
                 <span class="font-bold">${escapeHtml(notif.title)}</span>
@@ -524,13 +479,13 @@ function savePreferences() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') {
-            console.error('Error saving preferences:', data.message);
-        }
-    })
-    .catch(err => console.error('Network error saving preferences:', err));
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                console.error('Error saving preferences:', data.message);
+            }
+        })
+        .catch(err => console.error('Network error saving preferences:', err));
 }
 
 function showNotifModal(title, message, dateStr) {
@@ -581,9 +536,9 @@ async function clearAllNotifications() {
     }
 }
 
-/**
- * Fetch all admin dashboard stats & profile info from backend
- */
+// ===================================================
+// Functions to fetch admin dashboard and profile data
+// ===================================================
 async function fetchDashboardData() {
     try {
         const response = await fetch('/api/admin/admin.php');
@@ -609,9 +564,7 @@ async function fetchDashboardData() {
         console.error("Failed to load dashboard data:", error);
     }
 }
-/**
- * Update Dynamic Sidebar / Header User Profile & store currentUserId
- */
+
 function updateUserProfile(user) {
     currentUserId = user.user_id || user.id || null;
 
@@ -624,16 +577,15 @@ function updateUserProfile(user) {
     if (initialsEl) initialsEl.textContent = user.initials || 'AD';
 }
 // ==========================================
-// UTILITY HELPERS
+// Helper and Validation Functions
 // ==========================================
-// Helper function to safely set input values by ID
 function setInputValue(id, value) {
     const element = document.getElementById(id);
     if (element) {
         element.value = value !== null && value !== undefined ? value : '';
     }
 }
-// Helper function to safely get input values by ID
+
 function getInputValue(id) {
     const element = document.getElementById(id);
     return element ? element.value.trim() : '';
@@ -649,7 +601,7 @@ function getStatusBadge(status) {
     if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">In Progress</span>';
     if (s === 'completed') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>';
     if (s === 'planning') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>';
-    
+
     return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 capitalize">${escapeHtml(s || 'Unknown')}</span>`;
 }
 

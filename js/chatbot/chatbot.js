@@ -1,5 +1,8 @@
-// 1. Build the layout as soon as the file executes
-(function() {
+// =============================================
+// Chatbot (Aspen) Script
+// =============================================
+
+(function () {
     const chatbotWrapper = document.createElement('div');
     chatbotWrapper.id = 'global-chat-widget';
     chatbotWrapper.innerHTML = `
@@ -50,15 +53,14 @@
     document.body.appendChild(chatbotWrapper);
 })();
 
-// 2. Set up all bot logic, message routing, and interactions
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     const chatInput = document.getElementById('chatInput');
     if (chatInput) {
-        chatInput.addEventListener('keypress', function(e) {
+        chatInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter' && chatInput.value.trim() !== '') {
                 const userText = chatInput.value.trim();
                 appendMessage(userText, 'user-msg');
-                chatInput.value = ''; 
+                chatInput.value = '';
                 processBotResponse(userText);
             }
         });
@@ -66,9 +68,8 @@ window.addEventListener('load', function() {
 
     async function processBotResponse(userInput) {
         const optionsContainer = document.getElementById('chatOptions');
-        
+
         try {
-            // Send request to secure PHP backend API endpoint
             const response = await fetch('/api/chatbot/chatbot.php', {
                 method: 'POST',
                 headers: {
@@ -85,8 +86,7 @@ window.addEventListener('load', function() {
 
             setTimeout(() => {
                 appendMessage(data.reply, 'bot-msg');
-                
-                // Show options container if user greeted the bot
+
                 const cleanedInput = userInput.toLowerCase().trim();
                 if ((cleanedInput === 'hello' || cleanedInput === 'hi' || cleanedInput === 'السلام عليكم' || cleanedInput === 'مرحبا' || cleanedInput === 'مرحبًا') && optionsContainer) {
                     optionsContainer.style.display = 'flex';
@@ -105,17 +105,17 @@ window.addEventListener('load', function() {
         if (!messagesContainer) return;
         const msgDiv = document.createElement('div');
         msgDiv.className = className;
-        msgDiv.innerHTML = text; 
+        msgDiv.innerHTML = text;
         messagesContainer.appendChild(msgDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight; 
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    window.handleOption = function(optionText) {
+    window.handleOption = function (optionText) {
         appendMessage(optionText, 'user-msg');
         processBotResponse(optionText);
     };
 
-    window.resetChat = function() {
+    window.resetChat = function () {
         const messagesContainer = document.getElementById('chatMessages');
         const optionsContainer = document.getElementById('chatOptions');
         if (messagesContainer) {
@@ -125,14 +125,13 @@ window.addEventListener('load', function() {
         if (chatInput) chatInput.value = '';
     };
 
-    // 3. Interface Toggling Logic
-    window.toggleChat = function() {
+    window.toggleChat = function () {
         const chatBox = document.getElementById('chatBox');
         const inputField = document.getElementById('chatInput');
         if (chatBox) {
             if (chatBox.style.display === 'none' || chatBox.style.display === '') {
                 chatBox.style.display = 'flex';
-                if(inputField) inputField.focus();
+                if (inputField) inputField.focus();
             } else {
                 chatBox.style.display = 'none';
             }
@@ -144,20 +143,19 @@ window.addEventListener('load', function() {
         botContainer.addEventListener('click', window.toggleChat);
     }
 
-    // 4. Mouse Tracking Eye Vector System
     const pupils = document.querySelectorAll('.pupil');
     window.addEventListener('mousemove', (e) => {
         pupils.forEach(pupil => {
             const rect = pupil.getBoundingClientRect();
             const eyeX = rect.left + rect.width / 2;
             const eyeY = rect.top + rect.height / 2;
-            
+
             const angle = Math.atan2(e.clientY - eyeY, e.clientX - eyeX);
-            const maxDistance = 3; 
-            
+            const maxDistance = 3;
+
             const moveX = Math.cos(angle) * maxDistance;
             const moveY = Math.sin(angle) * maxDistance;
-            
+
             pupil.style.transform = `translate(${moveX}px, ${moveY}px)`;
         });
     });
@@ -168,9 +166,9 @@ window.addEventListener('load', function() {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.type = 'text/css';
-    link.href = '/public/css/aspen.css'; 
+    link.href = '/public/css/aspen.css';
 
-    link.onerror = function() {
+    link.onerror = function () {
         console.error("Failed to load bot CSS on this page: " + window.location.pathname);
     };
 

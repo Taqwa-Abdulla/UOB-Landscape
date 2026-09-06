@@ -1,6 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
 // ==========================================
-// SCHEDULE API (schedule.php)
+// Schedule API
 // ==========================================
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -26,15 +28,16 @@ $currentUserId = $_SESSION['user_id'];
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Helper function to calculate event status dynamically
-function calculateEventStatus($startTime, $endTime, $isCompleted = false) {
+function calculateEventStatus($startTime, $endTime, $isCompleted = false)
+{
     if ($isCompleted) {
         return 'completed';
     }
-    
+
     $now = new DateTime();
     $start = new DateTime($startTime);
     $end = $endTime ? new DateTime($endTime) : clone $start;
-    
+
     $diff = $now->diff($start);
     $hoursRemaining = ($diff->days * 24) + $diff->h;
 
@@ -49,17 +52,17 @@ function calculateEventStatus($startTime, $endTime, $isCompleted = false) {
     }
 }
 
-// Handle GET Requests
+// ==========================================
+// Fetch data from DB
+// ==========================================
 if ($method === 'GET') {
     $action = $_GET['action'] ?? '';
-
-    // Fetch user emails for the dropdown
     if ($action === 'get_users') {
         try {
             $stmt = $pdo->prepare("SELECT user_id, username, email FROM users ORDER BY username ASC");
             $stmt->execute();
             $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
+
             header('Content-Type: application/json');
             echo json_encode(['success' => true, 'data' => $users]);
         } catch (\Exception $e) {
@@ -68,7 +71,9 @@ if ($method === 'GET') {
         }
         exit;
     }
-
+    // ==========================================
+    // Generate PDF for schedules for each user
+    // ==========================================
     if ($action === 'download_pdf') {
         require_once __DIR__ . '/../../vendor/setasign/fpdf/fpdf.php';
 
@@ -86,7 +91,7 @@ if ($method === 'GET') {
             $pdf = new FPDF();
             $pdf->AddPage();
             $pdf->SetFont('Arial', 'B', 16);
-            
+
             $pdf->Cell(0, 10, 'Schedule & Deadlines Report', 0, 1, 'C');
             $pdf->SetFont('Arial', 'I', 10);
             $pdf->Cell(0, 6, 'Generated on: ' . date('Y-m-d H:i'), 0, 1, 'C');
@@ -103,7 +108,7 @@ if ($method === 'GET') {
             $pdf->SetFont('Arial', '', 9);
             foreach ($events as $event) {
                 $status = calculateEventStatus($event['start_time'], $event['end_time'], $event['is_completed'] ?? false);
-                
+
                 $pdf->Cell(55, 7, substr($event['title'], 0, 30), 1, 0, 'L');
                 $pdf->Cell(40, 7, $event['start_time'], 1, 0, 'L');
                 $pdf->Cell(40, 7, $event['end_time'] ?? 'N/A', 1, 0, 'L');
@@ -144,8 +149,9 @@ if ($method === 'GET') {
     }
     exit;
 }
-
-// Handle POST Requests (Create, Update, Delete, Clear)
+// ==========================================
+// Schedule CRUD and clear option
+// ==========================================
 if ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     $action = $input['action'] ?? '';
@@ -159,11 +165,10 @@ if ($method === 'POST') {
         $event_type = $input['event_type'] ?? 'task';
         $start_time = $input['start_time'] ?? null;
         $end_time = $input['end_time'] ?? null;
-        
-        // Safe explicit boolean conversions for PostgreSQL
+
         $is_personal = isset($input['is_personal']) && filter_var($input['is_personal'], FILTER_VALIDATE_BOOLEAN) ? true : false;
         $is_completed = isset($input['is_completed']) && filter_var($input['is_completed'], FILTER_VALIDATE_BOOLEAN) ? true : false;
-        
+
         $assigned_email = trim($input['assigned_to'] ?? '');
 
         if (empty($title) || empty($start_time) || empty($end_time)) {
@@ -184,7 +189,6 @@ if ($method === 'POST') {
             exit;
         }
 
-        // Resolve email to user_id if assigned, otherwise default to current user
         $assigned_to_id = $currentUserId;
         if (!empty($assigned_email)) {
             $userStmt = $pdo->prepare("SELECT user_id FROM users WHERE email = ?");
@@ -199,8 +203,9 @@ if ($method === 'POST') {
                 exit;
             }
         }
-
-        // Determine status based on dates and completion
+        // =======================================================
+        // Determine schedule status based on dates and completion
+        // =======================================================
         $status = calculateEventStatus($start_time, $end_time, $is_completed);
 
         try {
@@ -220,7 +225,7 @@ if ($method === 'POST') {
                     SET title = ?, description = ?, event_type = ?, start_time = ?, end_time = ?, status = ?, is_personal = ?, is_completed = ?, assigned_to = ?
                     WHERE event_id = ?
                 ");
-                
+
                 $stmt->bindValue(1, $title, PDO::PARAM_STR);
                 $stmt->bindValue(2, $description, PDO::PARAM_STR);
                 $stmt->bindValue(3, $event_type, PDO::PARAM_STR);
@@ -239,7 +244,7 @@ if ($method === 'POST') {
                     INSERT INTO calendar_events (title, description, event_type, start_time, end_time, status, created_by, is_personal, is_completed, assigned_to)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
-                
+
                 $stmt->bindValue(1, $title, PDO::PARAM_STR);
                 $stmt->bindValue(2, $description, PDO::PARAM_STR);
                 $stmt->bindValue(3, $event_type, PDO::PARAM_STR);

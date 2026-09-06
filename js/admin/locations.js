@@ -1,7 +1,14 @@
-/**
- * Locations Management Script
- */
+// =============================================
+// Manage Locations Script 
+// =============================================
+
+// =============================================
+// Variables
+// =============================================
 let locations = [];
+// =============================================
+// Function calls
+// =============================================
 const apiUrl = '/api/admin/manage_locations.php';
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
@@ -21,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const orderSelect = document.getElementById('order-select');
     const locationImageInput = document.getElementById('location-image');
 
-    // Function to fetch locations from the PHP API
-    window.fetchLocations = async function(search = '', sort = 'location_id', order = 'asc') {
+    // fetch locations
+    window.fetchLocations = async function (search = '', sort = 'location_id', order = 'asc') {
         try {
             let url = `${apiUrl}?resource=locations&sort=${sort}&order=${order}`;
             if (search) {
@@ -44,10 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-   function renderTable(data) {
+    function renderTable(data) {
         if (!locationsTableBody) return;
         locationsTableBody.innerHTML = '';
-        
+
         if (!data || data.length === 0) {
             locationsTableBody.innerHTML = `
                 <tr class="hover:bg-slate-50/60 transition-colors">
@@ -61,12 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         data.forEach(loc => {
             const row = document.createElement('tr');
-            // Added subtle hover effect and smooth color transitions for the whole row
             row.className = 'hover:bg-blue-50/40 transition-all duration-150';
-            
-            // Generate image thumbnail preview with a subtle hover zoom effect
-            const imageHtml = loc.location_image 
-                ? `<img src="${loc.location_image}" alt="Location Image" class="w-12 h-12 object-cover rounded-lg shadow-sm border border-slate-200 transform hover:scale-105 transition-transform duration-200 cursor-pointer">` 
+            const imageHtml = loc.location_image
+                ? `<img src="${loc.location_image}" alt="Location Image" class="w-12 h-12 object-cover rounded-lg shadow-sm border border-slate-200 transform hover:scale-105 transition-transform duration-200 cursor-pointer">`
                 : '<span class="text-xs text-slate-400 italic">No Image</span>';
 
             row.innerHTML = `
@@ -90,23 +94,21 @@ document.addEventListener('DOMContentLoaded', () => {
             locationsTableBody.appendChild(row);
         });
     }
-    
-    // Handle Add/Update Location Form Submission using FormData
+
+    //Add or update location
     if (addLocationForm) {
         addLocationForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const idField = document.getElementById('location-id').value;
             const isUpdate = Boolean(idField);
-            
-            // Use FormData to support binary file uploads seamlessly
             const formData = new FormData();
-            
+
             if (isUpdate) {
                 formData.append('id', idField);
-                formData.append('_method', 'PUT'); // Method spoofing for PHP backend router
+                formData.append('_method', 'PUT');
             }
-            
+
             formData.append('location_number', document.getElementById('location-number').value);
             formData.append('category', document.getElementById('location-category').value);
             formData.append('name_en', document.getElementById('name-en').value);
@@ -116,19 +118,16 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('created_by', document.getElementById('created-by').value || 1);
             formData.append('updated_by', document.getElementById('updated-by').value || 1);
 
-            // Append image file if selected
             if (locationImageInput && locationImageInput.files[0]) {
                 formData.append('location_image', locationImageInput.files[0]);
             }
 
             try {
-                // FIX: Explicitly include ?resource=locations in the fetch URL request
                 let url = `${apiUrl}?resource=locations`;
-                
+
                 const response = await fetch(url, {
-                    method: 'POST', // Sent via POST with method-spoofing so PHP parses $_FILES and $_POST properly
+                    method: 'POST',
                     body: formData
-                    // Note: Do NOT manually set 'Content-Type': 'application/json' when using FormData.
                 });
 
                 if (!response.ok) {
@@ -150,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Handle Search Filter
+    //Search
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value;
@@ -160,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Handle Sorting changes
+    //sort
     if (sortSelect && orderSelect) {
         const triggerSort = () => {
             const query = searchInput ? searchInput.value : '';
@@ -169,13 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
         sortSelect.addEventListener('change', triggerSort);
         orderSelect.addEventListener('change', triggerSort);
     }
-
-    // Initial render
     fetchLocations();
 });
 
-// Global function to populate the form for editing
-window.editLocation = function(id) {
+// =============================================
+// Global update and delete functions
+// =============================================
+window.editLocation = function (id) {
     const location = locations.find(loc => loc.location_id == id);
     if (!location) return;
 
@@ -192,8 +191,7 @@ window.editLocation = function(id) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// Global function to delete a location via API
-window.deleteLocation = async function(id) {
+window.deleteLocation = async function (id) {
     if (!confirm('Are you sure you want to delete this location?')) return;
 
     try {
@@ -212,7 +210,7 @@ window.deleteLocation = async function(id) {
     }
 };
 // ==========================================
-// NOTIFICATIONS & PREFERENCES LOGIC
+// Notifications functions
 // ==========================================
 
 async function loadNotifications() {
@@ -311,7 +309,7 @@ function renderNotifications(notifications, unreadCount) {
 
     if (badge) {
         badge.textContent = unreadCount;
-        badge.className = unreadCount === 0 
+        badge.className = unreadCount === 0
             ? "absolute top-1 right-1 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full"
             : "absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full";
         badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
@@ -327,9 +325,9 @@ function renderNotifications(notifications, unreadCount) {
     notifications.forEach(notif => {
         const item = document.createElement("div");
         item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-blue-50/40'}`;
-        
+
         const formattedDate = new Date(notif.created_at).toLocaleString();
-        
+
         item.innerHTML = `
             <div class="flex justify-between items-center mb-1">
                 <span class="font-bold">${escapeHtml(notif.title)}</span>
@@ -414,13 +412,13 @@ function savePreferences() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') {
-            console.error('Error saving preferences:', data.message);
-        }
-    })
-    .catch(err => console.error('Network error saving preferences:', err));
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                console.error('Error saving preferences:', data.message);
+            }
+        })
+        .catch(err => console.error('Network error saving preferences:', err));
 }
 
 function showNotifModal(title, message, dateStr) {
@@ -470,10 +468,9 @@ async function clearAllNotifications() {
         console.error("Error clearing notifications:", err);
     }
 }
-
-/**
- * Fetch all admin dashboard stats & profile info from backend
- */
+// =============================================
+// Functions to fetch dashboard and profile data
+// =============================================
 async function fetchDashboardData() {
     try {
         const response = await fetch('/api/admin/admin.php');
@@ -499,9 +496,7 @@ async function fetchDashboardData() {
         console.error("Failed to load dashboard data:", error);
     }
 }
-/**
- * Update Dynamic Sidebar / Header User Profile & store currentUserId
- */
+
 function updateUserProfile(user) {
     currentUserId = user.user_id || user.id || null;
 
@@ -514,7 +509,7 @@ function updateUserProfile(user) {
     if (initialsEl) initialsEl.textContent = user.initials || 'AD';
 }
 // ==========================================
-// UTILITY HELPERS
+// Helper and Validation functions
 // ==========================================
 
 function setElementText(id, value) {
@@ -527,7 +522,7 @@ function getStatusBadge(status) {
     if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">In Progress</span>';
     if (s === 'completed') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>';
     if (s === 'planning') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>';
-    
+
     return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 capitalize">${escapeHtml(s || 'Unknown')}</span>`;
 }
 

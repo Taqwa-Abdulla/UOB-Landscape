@@ -1,4 +1,10 @@
-// Global variable to hold the logged-in user's ID for password updates
+// =============================================
+// Creator Dashboard Script
+// =============================================
+
+// =============================================
+// Functions calls and variables
+// =============================================
 let currentUserId = null;
 let schedule = [];
 let editingScheduleId = null;
@@ -17,20 +23,18 @@ async function initDashboard() {
     await fetchDashboardData();
     await loadMessages();
     await loadSchedule();
-    await  loadAssigneeDropdown();
+    await loadAssigneeDropdown();
     await loadActivityLog();
     await loadRecentProjects();
 }
 
-
-/**
- * Fetch all creator dashboard stats & profile info from backend
- */
+// ==============================================================================
+// Funtions to fetch creator dashboard, profile, stats, recent logs and projects
+// ==============================================================================
 async function fetchDashboardData() {
     try {
         const response = await fetch('/api/creator/creator.php');
 
-        // Guard Check: Redirect unauthorized/non-creator users to guest homepage
         if (response.status === 401 || response.status === 403) {
             window.location.href = "../guest/home.html";
             return;
@@ -42,7 +46,6 @@ async function fetchDashboardData() {
 
         const data = await response.json();
 
-        // Populate UI if response is successful
         if (data.success) {
             if (data.user) updateUserProfile(data.user);
             if (data.stats) updateStats(data.stats);
@@ -57,11 +60,7 @@ async function fetchDashboardData() {
     }
 }
 
-/**
- * Update Dynamic Sidebar / Header User Profile & store currentUserId
- */
 function updateUserProfile(user) {
-    // Store user ID for password changes
     currentUserId = user.user_id || user.id || null;
 
     const nameEl = document.getElementById('user-name');
@@ -73,9 +72,6 @@ function updateUserProfile(user) {
     if (initialsEl) initialsEl.textContent = user.initials || 'JD';
 }
 
-/**
- * Update Metric Summary Cards
- */
 function updateStats(stats) {
     setElementText('stat-projects', stats.projects ?? 0);
     setElementText('stat-locations', stats.locations ?? 0);
@@ -86,9 +82,7 @@ function updateStats(stats) {
     setElementText('stat-outdoor-species', stats.outdoor_species ?? 0);
     setElementText('stat-outdoor-qty', stats.outdoor_quantity ?? 0);
 }
-/**
- * Load and Render User Activity Log
- */
+
 async function loadActivityLog() {
     try {
         const response = await fetch('/api/creator/creator.php?action=activities');
@@ -103,15 +97,13 @@ async function loadActivityLog() {
         }
     }
 }
-/**
- * Render User Activity Log Timeline
- */
+
 function updateActivityLog(activities) {
     const container = document.querySelector('.relative.pl-6.space-y-6');
     if (!container) return;
 
     container.innerHTML = '';
-    
+
     if (!activities || activities.length === 0) {
         container.innerHTML = `
             <div class="relative group">
@@ -127,7 +119,7 @@ function updateActivityLog(activities) {
     activities.forEach((activity, index) => {
         const colorClass = colors[index % colors.length];
         const timeStr = timeAgo(activity.created_at);
-        
+
         const html = `
             <div class="relative group">
                 <span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full ${colorClass} ring-4 ring-white group-hover:scale-110 transition-transform"></span>
@@ -139,9 +131,7 @@ function updateActivityLog(activities) {
         container.insertAdjacentHTML('beforeend', html);
     });
 }
-/**
- * Load and Render Recent Projects
- */
+
 async function loadRecentProjects() {
     try {
         const response = await fetch('/api/creator/creator.php?action=recent_projects');
@@ -156,9 +146,7 @@ async function loadRecentProjects() {
         }
     }
 }
-/**
- * Render Recent Projects Table (Limited to latest 3)
- */
+
 function updateRecentProjects(projects) {
     const container = document.querySelector('tbody.divide-y');
     if (!container) return;
@@ -186,12 +174,9 @@ function updateRecentProjects(projects) {
 }
 
 // ==========================================
-// CHANGE PASSWORD HANDLING
+// Function for changing password
 // ==========================================
 
-/**
- * Setup Event Listener for Password Form
- */
 function setupPasswordForm() {
     const passwordForm = document.getElementById("password-form");
     if (passwordForm) {
@@ -199,9 +184,6 @@ function setupPasswordForm() {
     }
 }
 
-/**
- * Handle Change Password Submit
- */
 async function handlePasswordChange(event) {
     event.preventDefault();
 
@@ -213,13 +195,11 @@ async function handlePasswordChange(event) {
     const newPassword = newPasswordInput.value;
     const confirmPassword = confirmPasswordInput.value;
 
-    // 1. Validation: Match check
     if (newPassword !== confirmPassword) {
         showPasswordMessage("New password and confirmation password do not match.", "error");
         return;
     }
 
-    // 2. Validation: Strength check
     if (!isValidPassword(newPassword)) {
         showPasswordMessage(
             "New password must be at least 8 characters long, with at least one uppercase letter and one special character.",
@@ -228,13 +208,11 @@ async function handlePasswordChange(event) {
         return;
     }
 
-    // 3. Ensure user_id is loaded
     if (!currentUserId) {
         showPasswordMessage("Unable to identify current user. Please reload the page.", "error");
         return;
     }
 
-    // 4. Send request to PHP API
     try {
         const response = await fetch('../../api/creator/dashboard.php', {
             method: "POST",
@@ -263,10 +241,10 @@ async function handlePasswordChange(event) {
         showPasswordMessage("Unable to process request. Please try again later.", "error");
     }
 }
+// ===========================================================================
+// Password validation functions
+// ===========================================================================
 
-/**
- * Validates password strength (min 8 chars, 1 uppercase, 1 special char)
- */
 function isValidPassword(password) {
     if (!password || typeof password !== "string") return false;
     const hasMinLength = password.length >= 8;
@@ -276,9 +254,6 @@ function isValidPassword(password) {
     return hasMinLength && hasUppercase && hasSpecialChar;
 }
 
-/**
- * Displays a styled alert message inside the password form
- */
 function showPasswordMessage(message, type) {
     const form = document.getElementById("password-form");
     let msgContainer = document.getElementById("password-message-container");
@@ -304,7 +279,7 @@ function showPasswordMessage(message, type) {
 }
 
 // ==========================================
-// NOTIFICATIONS & PREFERENCES LOGIC
+// Notifications Functions
 // ==========================================
 
 async function loadNotifications() {
@@ -403,7 +378,7 @@ function renderNotifications(notifications, unreadCount) {
 
     if (badge) {
         badge.textContent = unreadCount;
-        badge.className = unreadCount === 0 
+        badge.className = unreadCount === 0
             ? "absolute top-1 right-1 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full"
             : "absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full";
         badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
@@ -419,9 +394,9 @@ function renderNotifications(notifications, unreadCount) {
     notifications.forEach(notif => {
         const item = document.createElement("div");
         item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-blue-50/40'}`;
-        
+
         const formattedDate = new Date(notif.created_at).toLocaleString();
-        
+
         item.innerHTML = `
             <div class="flex justify-between items-center mb-1">
                 <span class="font-bold">${escapeHtml(notif.title)}</span>
@@ -506,13 +481,13 @@ function savePreferences() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') {
-            console.error('Error saving preferences:', data.message);
-        }
-    })
-    .catch(err => console.error('Network error saving preferences:', err));
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                console.error('Error saving preferences:', data.message);
+            }
+        })
+        .catch(err => console.error('Network error saving preferences:', err));
 }
 
 function showNotifModal(title, message, dateStr) {
@@ -562,13 +537,15 @@ async function clearAllNotifications() {
         console.error("Error clearing notifications:", err);
     }
 }
-
+// ===========================================================================
+// Helper function for notifications
+// ===========================================================================
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 // ==========================================
-// MESSAGES
+// Messages Functions
 // ==========================================
 
 async function loadMessages() {
@@ -578,7 +555,7 @@ async function loadMessages() {
         const res = await fetch('/api/users/message.php');
         const result = await res.json();
         const messages = result.data || [];
-        
+
         if (!messages.length) {
             msgList.innerHTML = `<div class="p-4 text-sm text-gray-500 text-center">No messages available.</div>`;
             return;
@@ -636,7 +613,7 @@ async function clearAllMessages() {
 }
 
 // ==========================================
-// SCHEDULE & DEADLINES (Task / Meeting handling)
+// Schedules functions
 // ==========================================
 
 async function loadSchedule() {
@@ -653,7 +630,7 @@ async function loadSchedule() {
 
         schedule = result.data;
         container.innerHTML = '';
-        
+
         schedule.forEach(event => {
             let statusClass = 'bg-gray-100 text-gray-800';
             if (event.status === 'due_soon') statusClass = 'bg-yellow-100 text-yellow-800';
@@ -709,12 +686,11 @@ async function handleScheduleSubmit(event) {
         return;
     }
 
-    // Prevent end date/time from being earlier than start date/time
     if (new Date(endTime) < new Date(startTime)) {
         alert('End date and time cannot be earlier than the start date and time.');
         return;
     }
-    
+
     const payload = {
         action: eventId ? 'update' : 'create',
         event_id: eventId || null,
@@ -753,14 +729,14 @@ function editEventById(eventId) {
     const e = schedule.find(s => s.event_id == eventId);
     if (!e || e.created_by != currentUserId) return;
 
-    if(document.getElementById('sched-id')) document.getElementById('sched-id').value = e.event_id;
+    if (document.getElementById('sched-id')) document.getElementById('sched-id').value = e.event_id;
     document.getElementById('sched-title').value = e.title;
     document.getElementById('sched-start-date').value = e.start_time.replace(' ', 'T').slice(0, 16);
     document.getElementById('sched-end-date').value = e.end_time ? e.end_time.replace(' ', 'T').slice(0, 16) : '';
     document.getElementById('sched-priority').value = e.event_type;
-    
-    if(document.getElementById('sched-desc')) document.getElementById('sched-desc').value = e.description || '';
-    
+
+    if (document.getElementById('sched-desc')) document.getElementById('sched-desc').value = e.description || '';
+
     const assignedToEl = document.getElementById('sched-assigned-to');
     if (assignedToEl) assignedToEl.value = e.assigned_email || '';
 
@@ -828,7 +804,7 @@ async function loadAssigneeDropdown() {
         const response = await fetch('/api/users/schedule.php?action=get_users');
         const result = await response.json();
         const selectEl = document.getElementById('sched-assigned-to');
-        
+
         if (!selectEl) return;
 
         selectEl.innerHTML = '<option value="">-- Select Assignee Email (Optional) --</option>';
@@ -846,9 +822,9 @@ async function loadAssigneeDropdown() {
     }
 }
 //===========================================
-//  Message or email
+//  Function to load emails
 //===========================================
-  async function loadRecipients() {
+async function loadRecipients() {
     try {
         const response = await fetch('/api/users/messages.php');
         const result = await response.json();
@@ -860,7 +836,7 @@ async function loadAssigneeDropdown() {
                 return;
             }
 
-            selectDropdown.innerHTML = '<option value="">Select Recipient...</option>' + 
+            selectDropdown.innerHTML = '<option value="">Select Recipient...</option>' +
                 result.users.map(user => `
                     <option value="${user.email}">${user.username} (${user.email})</option>
                 `).join('');
@@ -872,13 +848,17 @@ async function loadAssigneeDropdown() {
         document.getElementById('msg-recipient-email').innerHTML = `<option value="">Error loading recipients</option>`;
     }
 }
-
+// ===========================================================================
+// Email Validation Function
+// ===========================================================================
 function validateEmailClient(email) {
     const patternStu = /^\d{9}@stu\.uob\.edu\.bh$/i;
     const patternStaff = /^[a-z](\.[a-z]+)+@uob\.edu\.bh$|^[a-z]{2,}[a-z0-9._%+-]*@uob\.edu\.bh$/i;
     return patternStu.test(email) || patternStaff.test(email);
 }
-
+// ===========================================================================
+// Send/Submit message function
+// ===========================================================================
 async function handleMessageSubmit(event) {
     event.preventDefault();
     const recipientEmail = document.getElementById('msg-recipient-email').value.trim();
@@ -899,11 +879,8 @@ async function handleMessageSubmit(event) {
         const result = await response.json();
 
         if (result.status === 'success' && result.mailto) {
-            // Open Outlook with pre-filled content
             window.location.href = result.mailto;
-            // Clear form fields
             document.getElementById('message-form').reset();
-            // Re-trigger recipient default placeholder selection
             loadRecipients();
         } else {
             alert(result.message || 'Error preparing mailto link.');
@@ -914,7 +891,7 @@ async function handleMessageSubmit(event) {
 }
 
 // ==========================================
-// UTILITY HELPERS
+// Helper and validation Functions
 // ==========================================
 
 function setElementText(id, value) {
@@ -927,7 +904,7 @@ function getStatusBadge(status) {
     if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">In Progress</span>';
     if (s === 'completed') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>';
     if (s === 'planning') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>';
-    
+
     return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 capitalize">${escapeHtml(s || 'Unknown')}</span>`;
 }
 

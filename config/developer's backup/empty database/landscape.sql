@@ -1,5 +1,5 @@
 -- ==========================================
--- 1. TABLES
+-- Tables
 -- ==========================================
 
 CREATE TABLE users (
@@ -232,7 +232,7 @@ CREATE TABLE calendar_events (
 );
 
 -- ==========================================
--- 2. FUNCTIONS
+-- Functions
 -- ==========================================
 
 CREATE OR REPLACE FUNCTION nullify_plant_qr_image()
@@ -371,7 +371,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ==========================================
--- 3. TRIGGERS
+-- Triggers
 -- ==========================================
 
 DROP TRIGGER IF EXISTS trg_notify_project_changes ON projects;

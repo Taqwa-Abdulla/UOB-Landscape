@@ -1,22 +1,22 @@
+// =============================================
+// Admin reports and anayltics Script
+// =============================================
+
 // ==========================================
-// Admin Reports & Analytics JavaScript (reports.js)
+// Functions calls and Variables
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
     initNotifications();
     initTailwindDropdowns();
-    // Initialize Dashboard Data & Charts
     loadSystemStats();
     loadTableData();
 
-    // Event Listeners for Filters & Controls
     document.getElementById('tableSelect')?.addEventListener('change', () => loadTableData());
     document.getElementById('sortBySelect')?.addEventListener('change', () => loadTableData());
     document.getElementById('sortOrderSelect')?.addEventListener('change', () => loadTableData());
 
-    // --- Streamlined Dropdown Export Event Listeners with Verified Paths ---
-    
-    // 1. Stats Reports
+
     document.getElementById('downloadStatsCsv')?.addEventListener('click', (e) => {
         e.preventDefault();
         window.location.href = '/api/admin/reports_generator.php?action=download_stats_csv';
@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/api/admin/reports_generator.php?action=download_stats_pdf';
     });
 
-    // 2. Active Table Reports (Dynamically appends whatever table is currently selected)
     document.getElementById('downloadTableCsv')?.addEventListener('click', (e) => {
         e.preventDefault();
         const table = document.getElementById('tableSelect').value;
@@ -38,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = `/api/admin/reports_generator.php?action=download_pdf&table=${table}`;
     });
 
-    // 3. Complete Mega System Reports
     document.getElementById('downloadMegaCsv')?.addEventListener('click', (e) => {
         e.preventDefault();
         window.location.href = '/api/admin/reports_generator.php?action=full_report_download_csv';
@@ -54,12 +52,13 @@ async function initDashboard() {
     await loadNotifications();
 }
 
-// Global Chart References to allow destroying/re-rendering on reload
 let plantsChartInstance = null;
 let projectsChartInstance = null;
 let financialChartInstance = null;
 
-// Load System Statistics & Render Charts
+// =============================================
+// Reports and analytics functions
+// =============================================
 function loadSystemStats() {
     fetch('/api/admin/reports_generator.php?action=stats')
         .then(response => response.json())
@@ -67,24 +66,20 @@ function loadSystemStats() {
             if (res.status === 'success') {
                 const data = res.data;
 
-                // 1. Populate Basic Metric Cards
                 document.getElementById('stat-users').innerText = data.users || 0;
                 document.getElementById('stat-water-waste').innerText = (data.water_waste_percentage || 0) + '%';
                 document.getElementById('stat-eco-score').innerText = (data.eco_friendly_score || 0) + '%';
 
-                // 2. Professional Oxygen KPI Updates & Progress Bar
                 const oxygenValue = data.total_oxygen_units || 0;
                 const oxygenPercent = data.oxygen_percentage || 0;
                 document.getElementById('stat-oxygen').innerText = oxygenValue.toLocaleString();
                 document.getElementById('oxygen-progress').style.width = oxygenPercent + '%';
                 document.getElementById('oxygen-label').innerText = oxygenPercent + '% of target goal';
 
-                // 3. Financial Metrics formatted in BD
-                document.getElementById('stat-water-cost').innerText = Number(data.total_water_cost || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) + ' BD';
-                document.getElementById('stat-proj-cost').innerText = Number(data.total_project_cost || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) + ' BD';
-                document.getElementById('stat-overall-cost').innerText = Number(data.overall_financial_cost || 0).toLocaleString(undefined, {minimumFractionDigits: 2}) + ' BD';
+                document.getElementById('stat-water-cost').innerText = Number(data.total_water_cost || 0).toLocaleString(undefined, { minimumFractionDigits: 2 }) + ' BD';
+                document.getElementById('stat-proj-cost').innerText = Number(data.total_project_cost || 0).toLocaleString(undefined, { minimumFractionDigits: 2 }) + ' BD';
+                document.getElementById('stat-overall-cost').innerText = Number(data.overall_financial_cost || 0).toLocaleString(undefined, { minimumFractionDigits: 2 }) + ' BD';
 
-                // 4. Render Visual Graphs via Chart.js
                 renderPlantsChart(data.plants_by_class || []);
                 renderProjectsChart(data.projects_by_status || []);
                 renderFinancialChart(data.total_water_cost || 0, data.total_project_cost || 0);
@@ -95,10 +90,9 @@ function loadSystemStats() {
         .catch(err => console.error('Network or parsing error on stats:', err));
 }
 
-// Render Plant Classes Distribution Chart
 function renderPlantsChart(chartData) {
     const ctx = document.getElementById('plantsChart').getContext('2d');
-    
+
     const labels = chartData.map(item => item.class || 'Unassigned');
     const counts = chartData.map(item => item.count || 0);
 
@@ -123,10 +117,9 @@ function renderPlantsChart(chartData) {
     });
 }
 
-// Render Project Status Spread Chart
 function renderProjectsChart(chartData) {
     const ctx = document.getElementById('projectsChart').getContext('2d');
-    
+
     const labels = chartData.map(item => item.project_status || 'Unknown');
     const counts = chartData.map(item => item.count || 0);
 
@@ -155,7 +148,6 @@ function renderProjectsChart(chartData) {
     });
 }
 
-// Render Financial Breakdown Chart
 function renderFinancialChart(waterCost, projectCost) {
     const ctx = document.getElementById('financialChart').getContext('2d');
 
@@ -184,7 +176,6 @@ function renderFinancialChart(waterCost, projectCost) {
     });
 }
 
-// Fetch and Populate Interactive Data Tables
 function loadTableData() {
     const table = document.getElementById('tableSelect')?.value || 'plants';
     const sortBy = document.getElementById('sortBySelect')?.value || '';
@@ -204,7 +195,6 @@ function loadTableData() {
         .catch(err => console.error('Error fetching table grid:', err));
 }
 
-// Build HTML Table Head and Rows Dynamically
 function populateTableUI(columns, rows) {
     const thead = document.getElementById('tableHead');
     const tbody = document.getElementById('tableBody');
@@ -217,7 +207,6 @@ function populateTableUI(columns, rows) {
         return;
     }
 
-    // Build Header
     let headerRow = '<tr>';
     columns.forEach(col => {
         headerRow += `<th>${escapeHtml(col)}</th>`;
@@ -225,7 +214,6 @@ function populateTableUI(columns, rows) {
     headerRow += '</tr>';
     thead.innerHTML = headerRow;
 
-    // Build Rows
     if (rows.length === 0) {
         tbody.innerHTML = `<tr><td colspan="${columns.length}" class="text-center text-muted py-3">Table is currently empty.</td></tr>`;
         return;
@@ -248,7 +236,7 @@ function populateTableUI(columns, rows) {
 }
 
 // ==========================================
-// NOTIFICATIONS & PREFERENCES LOGIC
+// Notifications Functions
 // ==========================================
 
 async function loadNotifications() {
@@ -347,7 +335,7 @@ function renderNotifications(notifications, unreadCount) {
 
     if (badge) {
         badge.textContent = unreadCount;
-        badge.className = unreadCount === 0 
+        badge.className = unreadCount === 0
             ? "absolute top-1 right-1 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full"
             : "absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full";
         badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
@@ -363,9 +351,9 @@ function renderNotifications(notifications, unreadCount) {
     notifications.forEach(notif => {
         const item = document.createElement("div");
         item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-blue-50/40'}`;
-        
+
         const formattedDate = new Date(notif.created_at).toLocaleString();
-        
+
         item.innerHTML = `
             <div class="flex justify-between items-center mb-1">
                 <span class="font-bold">${escapeHtml(notif.title)}</span>
@@ -450,13 +438,13 @@ function savePreferences() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') {
-            console.error('Error saving preferences:', data.message);
-        }
-    })
-    .catch(err => console.error('Network error saving preferences:', err));
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                console.error('Error saving preferences:', data.message);
+            }
+        })
+        .catch(err => console.error('Network error saving preferences:', err));
 }
 
 function showNotifModal(title, message, dateStr) {
@@ -507,9 +495,9 @@ async function clearAllNotifications() {
     }
 }
 
-/**
- * Fetch all admin dashboard stats & profile info from backend
- */
+// ===================================================
+// Functions to fetch admin dashboard and profile data
+// ===================================================
 async function fetchDashboardData() {
     try {
         const response = await fetch('/api/admin/admin.php');
@@ -536,9 +524,6 @@ async function fetchDashboardData() {
     }
 }
 
-/**
- * Update Dynamic Sidebar / Header User Profile & store currentUserId
- */
 function updateUserProfile(user) {
     currentUserId = user.user_id || user.id || null;
 
@@ -560,7 +545,6 @@ function initTailwindDropdowns() {
 
         button.addEventListener('click', (e) => {
             e.stopPropagation();
-            // Close all other open dropdowns first
             document.querySelectorAll('.group ul').forEach(el => {
                 if (el !== menu) el.classList.add('hidden');
             });
@@ -568,7 +552,6 @@ function initTailwindDropdowns() {
         });
     });
 
-    // Close dropdowns when clicking outside
     document.addEventListener('click', () => {
         document.querySelectorAll('.group ul').forEach(menu => {
             menu.classList.add('hidden');
@@ -577,7 +560,7 @@ function initTailwindDropdowns() {
 }
 
 // ==========================================
-// UTILITY HELPERS
+// Helper and Validation Functions
 // ==========================================
 
 function setElementText(id, value) {
@@ -590,7 +573,7 @@ function getStatusBadge(status) {
     if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">In Progress</span>';
     if (s === 'completed') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>';
     if (s === 'planning') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>';
-    
+
     return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 capitalize">${escapeHtml(s || 'Unknown')}</span>`;
 }
 

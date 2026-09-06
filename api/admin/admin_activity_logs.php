@@ -1,4 +1,9 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+// ==========================================
+// Authentication and checking role
+// ==========================================
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -14,7 +19,9 @@ if (strtolower(trim($raw_role)) !== 'admin') {
     echo json_encode(['success' => false, 'error' => 'Unauthorized access.']);
     exit;
 }
-
+// ==========================================
+// Generate PDF for audit logs
+// ==========================================
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -38,7 +45,8 @@ try {
     $db_error = "Database connection failed: " . $e->getMessage();
 }
 
-function cleanExportValue($val) {
+function cleanExportValue($val)
+{
     if ($val === null || $val === '') return '';
     if (is_array($val) || is_object($val)) $val = json_encode($val, JSON_UNESCAPED_UNICODE);
     $val = (string)$val;
@@ -50,7 +58,8 @@ function cleanExportValue($val) {
     return trim($val);
 }
 
-function resolveLogChanges($action_type, $old_val, $new_val) {
+function resolveLogChanges($action_type, $old_val, $new_val)
+{
     $summary = [];
     if ($action_type === 'UPDATE' && $old_val && $new_val) {
         $oldObj = is_string($old_val) ? json_decode($old_val, true) : $old_val;
@@ -80,18 +89,22 @@ function resolveLogChanges($action_type, $old_val, $new_val) {
     return empty($summary) ? 'N/A' : implode('<br>', $summary);
 }
 
-function resolveLogChangesCsv($action_type, $old_val, $new_val) {
+function resolveLogChangesCsv($action_type, $old_val, $new_val)
+{
     $htmlResult = resolveLogChanges($action_type, $old_val, $new_val);
     $plain = str_replace(['<strong>', '</strong>'], '', $htmlResult);
     $plain = str_replace('&rarr;', '->', $plain);
     return str_replace('<br>', ' | ', $plain);
 }
-
-// 1. EXPORT ENDPOINT (Admin)
+// ==========================================
+// Exporting logs
+// ==========================================
 if (isset($_GET['export'])) {
     error_reporting(0);
     ini_set('display_errors', '0');
-    while (ob_get_level()) { ob_end_clean(); }
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
     ob_start();
 
     $export_type = $_GET['export'];
@@ -107,9 +120,9 @@ if (isset($_GET['export'])) {
             header('Content-Type: text/csv; charset=utf-8');
             header('Content-Disposition: attachment; filename=admin_activity_logs_' . date('Y-m-d') . '.csv');
             $output = fopen('php://output', 'w');
-            fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
             fputcsv($output, ['Log ID', 'Action Type', 'Table Name', 'Row ID', 'Changes Summary', 'Performed By', 'Timestamp'], ',', '"', '\\');
-            
+
             foreach ($logs as $log) {
                 $changes = resolveLogChangesCsv($log['action_type'], $log['old_values'], $log['new_values']);
                 fputcsv($output, [
@@ -161,8 +174,6 @@ if (isset($_GET['export'])) {
         die("Export failed: " . $e->getMessage());
     }
 }
-
-// 2. AJAX ENDPOINT (Admin)
 if (isset($_GET['fetch_logs']) && $_GET['fetch_logs'] == '1') {
     header('Content-Type: application/json');
     if (isset($db_error)) {
@@ -181,7 +192,7 @@ if (isset($_GET['fetch_logs']) && $_GET['fetch_logs'] == '1') {
                        u.username AS creator_name, u.email AS creator_email, u.role AS creator_role, u.user_id AS creator_id 
                 FROM activity_log a LEFT JOIN users u ON a.created_by = u.user_id";
         $countSql = "SELECT COUNT(*) FROM activity_log a LEFT JOIN users u ON a.created_by = u.user_id";
-        
+
         $params = [];
         $whereClauses = [];
 
@@ -208,7 +219,7 @@ if (isset($_GET['fetch_logs']) && $_GET['fetch_logs'] == '1') {
 
         $sql .= " ORDER BY a.created_at DESC LIMIT ? OFFSET ?";
         $stmt = $db->prepare($sql);
-        
+
         $bindIndex = 1;
         foreach ($params as $param) {
             $stmt->bindValue($bindIndex++, $param);
@@ -253,7 +264,6 @@ try {
         $cleanupStmt->execute();
     }
 } catch (Exception $e) {
-    // Fails silently so user experience is never interrupted
     error_log("Background log cleanup failed: " . $e->getMessage());
 }
 ?>

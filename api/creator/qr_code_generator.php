@@ -1,12 +1,13 @@
 <?php
-
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+// ==========================================
+// Authentication and checking role
+// ==========================================
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-// Check if user is logged in and has the correct role (using 'user_role')
 $role = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : '';
-
 if (!isset($_SESSION['user_id']) || ($role !== 'creator')) {
     header('Location: /login/login.html');
     exit;
@@ -15,12 +16,13 @@ if (!isset($_SESSION['user_id']) || ($role !== 'creator')) {
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-
+// ==========================================
+// Generate QR-code for plants
+// ==========================================
 require_once __DIR__ . '/../../config/db.php';
 require __DIR__ . '/../../vendor/autoload.php';
 
@@ -36,27 +38,24 @@ $db = property_exists($database, 'conn') ? $database->conn : null;
 if (!$db && method_exists($database, 'getConnection')) {
     $db = $database->getConnection();
 }
-// Check 2: Get user role (from session, fallback to database)
-    $userRole = $_SESSION['role'] ?? null;
+$userRole = $_SESSION['role'] ?? null;
 
-    if (!$userRole) {
-        $roleStmt = $db->prepare("SELECT role FROM users WHERE user_id = ?");
-        $roleStmt->execute([$_SESSION['user_id']]);
-        $userRole = $roleStmt->fetchColumn();
-    }
+if (!$userRole) {
+    $roleStmt = $db->prepare("SELECT role FROM users WHERE user_id = ?");
+    $roleStmt->execute([$_SESSION['user_id']]);
+    $userRole = $roleStmt->fetchColumn();
+}
 
-    // Verify role is strictly 'creator'
-    if (strtolower(trim((string)$userRole)) !== 'creator') {
-        sendResponse([
-            'success' => false, 
-            'error' => 'Forbidden Access',
-            'redirect' => '/site/guest/home.html'
-        ], 403);
-    }
-// 1. Generate QR Code Image with Logo in Center
+if (strtolower(trim((string)$userRole)) !== 'creator') {
+    sendResponse([
+        'success' => false,
+        'error' => 'Forbidden Access',
+        'redirect' => '/site/guest/home.html'
+    ], 403);
+}
 if (isset($_GET['url'])) {
     $pdf_url = $_GET['url'];
-    $logo_path = __DIR__ . '/../../public/images/UOB logo.png'; 
+    $logo_path = __DIR__ . '/../../public/images/UOB logo.png';
 
     $builder = new Builder(
         writer: new PngWriter(),
@@ -72,7 +71,7 @@ if (isset($_GET['url'])) {
         logoResizeToWidth: 90,
         logoPunchoutBackground: true
     );
-    
+
     $result = $builder->build();
 
     header('Content-Type: ' . $result->getMimeType());
@@ -82,7 +81,6 @@ if (isset($_GET['url'])) {
 
 $action = $_REQUEST['action'] ?? '';
 
-// 2. Fetch Plants for Dropdown
 if ($action === 'get_plants') {
     header('Content-Type: application/json; charset=utf-8');
     try {
@@ -100,7 +98,6 @@ if ($action === 'get_plants') {
     exit;
 }
 
-// 3. Fetch Data (Restricted to creators)
 if ($action === 'get_data') {
     header('Content-Type: application/json; charset=utf-8');
     try {
@@ -132,8 +129,9 @@ if ($action === 'get_data') {
     }
     exit;
 }
-
-// 4. Create Record (Automatically uses session user for created_by)
+// =================================================
+// Getting user's details to map each action with it
+// =================================================
 if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
     try {
@@ -147,14 +145,12 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Please select a plant.");
         }
 
-        // CHECK FOR DUPLICATE: Does a QR code for this plant already exist?
         $stmtCheck = $db->prepare("SELECT qr_id FROM qrcode WHERE plant_id = ?");
         $stmtCheck->execute([$plant_id]);
         if ($stmtCheck->rowCount() > 0) {
             throw new Exception("A QR code for this plant at this location already exists!");
         }
 
-        // Validate that a file was sent
         if (!isset($_FILES['pdf_file']) || $_FILES['pdf_file']['error'] === UPLOAD_ERR_NO_FILE) {
             throw new Exception("PDF file is required.");
         }
@@ -174,15 +170,16 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
 }
-
-// 5. Update Record (Automatically uses session user for updated_by)
+// ==========================================
+// Update
+// ==========================================
 if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
     try {
         $qr_id = $_POST['qr_id'] ?? null;
         $plant_id = $_POST['plant_id'] ?? null; // 1. Get the new plant_id from request
         $updated_by = $_SESSION['user_id'] ?? null;
-        
+
         if (!$updated_by) {
             throw new Exception("Unauthorized action. Please log in.");
         }
@@ -192,16 +189,12 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$plant_id) {
             throw new Exception("Please select a plant.");
         }
-
-        // 2. CHECK FOR DUPLICATE: Does another QR code record already use this plant?
-        // (Exclude the current QR record so it doesn't conflict with itself)
         $stmtCheck = $db->prepare("SELECT qr_id FROM qrcode WHERE plant_id = ? AND qr_id != ?");
         $stmtCheck->execute([$plant_id, $qr_id]);
         if ($stmtCheck->rowCount() > 0) {
             throw new Exception("A QR code for this plant already exists!");
         }
 
-        // Fetch current file path
         $stmtGet = $db->prepare("SELECT pdf_path FROM qrcode WHERE qr_id = ?");
         $stmtGet->execute([$qr_id]);
         $current = $stmtGet->fetch(PDO::FETCH_ASSOC);
@@ -209,16 +202,14 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $pdf_path = $old_pdf_path; // Default to keeping the old path if no new file is uploaded
 
-        // If a new PDF file is provided, validate/upload it and delete the old one
+        // If a new PDF file is provided, validate and upload it, and delete the old one
         if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] !== UPLOAD_ERR_NO_FILE) {
-            
-            // Validate and process the new PDF using your helper function
+
             $new_pdf_path = validateAndProcessPDF($_FILES['pdf_file']);
             if (!$new_pdf_path) {
                 throw new Exception("New PDF validation or upload failed.");
             }
 
-            // Delete the old file if it exists
             if ($old_pdf_path) {
                 $rootPath = dirname(__DIR__, 2);
                 $oldFileFull = $rootPath . '/' . ltrim($old_pdf_path, '/');
@@ -230,7 +221,6 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdf_path = $new_pdf_path;
         }
 
-        // 3. Update both plant_id, pdf_path, and metadata in the database
         $stmt = $db->prepare("UPDATE qrcode SET plant_id = ?, pdf_path = ?, updated_by = ?, updated_at = NOW() WHERE qr_id = ?");
         $stmt->execute([$plant_id, $pdf_path, $updated_by, $qr_id]);
 
@@ -240,7 +230,9 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
 }
-
+// ==========================================
+// Helper and Validation Functions
+// ==========================================
 /**
  * Helper Function: Validate and process secure PDF uploads
  */
@@ -288,19 +280,18 @@ function validateAndProcessPDF($file)
 
     return $dbPath;
 }
-
-// 6. Delete Record
+// ==========================================
+// Delete
+// ==========================================
 if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
     try {
         $qr_id = $_POST['qr_id'];
-        
-        // 1. Fetch the pdf_path before deleting the record
+
         $stmtGet = $db->prepare("SELECT pdf_path FROM qrcode WHERE qr_id = ?");
         $stmtGet->execute([$qr_id]);
         $row = $stmtGet->fetch(PDO::FETCH_ASSOC);
 
-        // 2. If a file path exists, delete the physical file from the server root
         if ($row && !empty($row['pdf_path'])) {
             $fullFilePath = $_SERVER['DOCUMENT_ROOT'] . '/' . $row['pdf_path'];
             if (file_exists($fullFilePath)) {
@@ -308,10 +299,9 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // 3. Delete the record from the database
         $stmt = $db->prepare("DELETE FROM qrcode WHERE qr_id = ?");
         $stmt->execute([$qr_id]);
-        
+
         echo json_encode(['success' => true]);
     } catch (PDOException $e) {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);

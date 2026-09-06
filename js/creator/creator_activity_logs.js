@@ -1,3 +1,10 @@
+// =============================================
+// Creator logs Script
+// =============================================
+
+// =============================================
+// Fucntions calls and Variables
+// =============================================
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
     initNotifications();
@@ -17,7 +24,7 @@ let globalUsersMap = {};
 let isDropdownInitialized = false;
 
 const searchInput = document.getElementById('searchInput');
-const userFilterSelect = document.getElementById('userFilterSelect'); 
+const userFilterSelect = document.getElementById('userFilterSelect');
 const logTableBody = document.getElementById('logTableBody');
 const tableHeaderRow = document.getElementById('tableHeaderRow');
 const prevBtn = document.getElementById('prevBtn');
@@ -28,11 +35,14 @@ const exportBtn = document.getElementById('exportBtn');
 const exportExcelLink = document.getElementById('exportExcel');
 const exportPdfLink = document.getElementById('exportPdf');
 
+// =============================================
+// creator activity logs (audit logs) functions
+// =============================================
 function setupExportLinks(search = '', userFilter = '') {
     const originalApiUrl = '/api/creator/creator_activity_logs.php';
     let excelUrl = `${originalApiUrl}?export=excel&search=${encodeURIComponent(search)}`;
     let pdfUrl = `${originalApiUrl}?export=pdf&search=${encodeURIComponent(search)}`;
-    
+
     if (userFilter) {
         excelUrl += `&user_filter=${encodeURIComponent(userFilter)}`;
         pdfUrl += `&user_filter=${encodeURIComponent(userFilter)}`;
@@ -82,7 +92,7 @@ async function fetchLogs(page = 1, search = '', userFilter = '') {
         await renderTable(data.logs, data.role);
         renderPagination(data.current_page, data.total_pages);
         currentPage = data.current_page;
-        
+
         setupExportLinks(search, userFilter);
     } catch (error) {
         logTableBody.innerHTML = `<tr><td colspan="5" class="no-data" style="color: #ef4444;">Error: ${error.message}</td></tr>`;
@@ -100,19 +110,19 @@ function populateUserDropdown(users, currentSelection) {
 
 async function resolveValue(key, val) {
     if (val === null || val === undefined) return 'NULL';
-    
+
     const userKeys = ['updated_by', 'created_by', 'user_id', 'owner_id', 'creator_id'];
     if (userKeys.includes(key.toLowerCase()) && !isNaN(val)) {
         const userId = Number(val);
         if (userId === 0) return 'System';
-        
+
         if (globalUsersMap[userId]) {
             return globalUsersMap[userId];
         }
-        
+
         return `User #${userId}`;
     }
-    
+
     return String(val);
 }
 
@@ -136,22 +146,22 @@ async function renderLogsTableRows(logs, role) {
 
     for (let log of logs) {
         let detailsHtml = `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">`;
-        
+
         if (log.action_type === 'UPDATE' && log.old_values && log.new_values) {
             let oldObj = typeof log.old_values === 'string' ? JSON.parse(log.old_values) : log.old_values;
             let newObj = typeof log.new_values === 'string' ? JSON.parse(log.new_values) : log.new_values;
-            
+
             let changesCount = 0;
             for (let key in newObj) {
                 if (oldObj[key] !== newObj[key]) {
                     changesCount++;
-                    
+
                     if (key.toLowerCase().includes('password')) {
                         detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#3b82f6; font-style:italic;">Password was changed</span></div>`;
                     } else {
                         let oldValStr = await resolveValue(key, oldObj[key]);
                         let newValStr = await resolveValue(key, newObj[key]);
-                        
+
                         detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#ef4444">${escapeHtml(oldValStr)}</span> → <span style="color:#10b981">${escapeHtml(newValStr)}</span></div>`;
                     }
                 }
@@ -161,7 +171,7 @@ async function renderLogsTableRows(logs, role) {
             }
         } else if (log.action_type === 'INSERT' && log.new_values) {
             let newObj = typeof log.new_values === 'string' ? JSON.parse(log.new_values) : log.new_values;
-            
+
             for (let key in newObj) {
                 if (key.toLowerCase().includes('password')) {
                     detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#3b82f6; font-style:italic;">[Password configured]</span></div>`;
@@ -172,7 +182,7 @@ async function renderLogsTableRows(logs, role) {
             }
         } else if (log.action_type === 'DELETE' && log.old_values) {
             let oldObj = typeof log.old_values === 'string' ? JSON.parse(log.old_values) : log.old_values;
-            
+
             for (let key in oldObj) {
                 if (key.toLowerCase().includes('password')) {
                     detailsHtml += `<div><strong>${escapeHtml(key)}:</strong> <span style="color:#3b82f6; font-style:italic;">[Protected]</span></div>`;
@@ -237,7 +247,7 @@ nextBtn.addEventListener('click', () => {
 });
 
 // ==========================================
-// NOTIFICATIONS & PREFERENCES LOGIC
+// Notifications Functions
 // ==========================================
 
 async function loadNotifications() {
@@ -336,7 +346,7 @@ function renderNotifications(notifications, unreadCount) {
 
     if (badge) {
         badge.textContent = unreadCount;
-        badge.className = unreadCount === 0 
+        badge.className = unreadCount === 0
             ? "absolute top-1 right-1 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full"
             : "absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full";
         badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
@@ -352,9 +362,9 @@ function renderNotifications(notifications, unreadCount) {
     notifications.forEach(notif => {
         const item = document.createElement("div");
         item.className = `p-3 text-xs cursor-pointer hover:bg-gray-50 transition border-b border-gray-100 ${notif.is_read ? 'text-gray-500 bg-white opacity-60' : 'font-semibold text-gray-900 bg-blue-50/40'}`;
-        
+
         const formattedDate = new Date(notif.created_at).toLocaleString();
-        
+
         item.innerHTML = `
             <div class="flex justify-between items-center mb-1">
                 <span class="font-bold">${escapeHtml(notif.title)}</span>
@@ -439,13 +449,13 @@ function savePreferences() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') {
-            console.error('Error saving preferences:', data.message);
-        }
-    })
-    .catch(err => console.error('Network error saving preferences:', err));
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                console.error('Error saving preferences:', data.message);
+            }
+        })
+        .catch(err => console.error('Network error saving preferences:', err));
 }
 
 function showNotifModal(title, message, dateStr) {
@@ -495,7 +505,9 @@ async function clearAllNotifications() {
         console.error("Error clearing notifications:", err);
     }
 }
-
+// =====================================================
+// Functions to fetch creator dashboard and profile data
+// =====================================================
 async function fetchDashboardData() {
     try {
         const response = await fetch('/api/creator/creator.php');
@@ -533,7 +545,9 @@ function updateUserProfile(user) {
     if (emailEl) emailEl.textContent = user.email || 'creator@company.com';
     if (initialsEl) initialsEl.textContent = user.initials || 'CR';
 }
-
+// =============================================
+// Helper and Validation Functions
+// =============================================
 function setElementText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
@@ -544,7 +558,7 @@ function getStatusBadge(status) {
     if (s === 'in progress') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">In Progress</span>';
     if (s === 'completed') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Completed</span>';
     if (s === 'planning') return '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Planning</span>';
-    
+
     return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 capitalize">${escapeHtml(s || 'Unknown')}</span>`;
 }
 

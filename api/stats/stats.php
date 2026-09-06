@@ -1,14 +1,16 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+// ==========================================
+// Statistics and reports API
+// ==========================================
 session_start();
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 require_once __DIR__ . '/../../config/db.php';
-
 try {
     $database = new Database();
     $conn = $database->getConnection();
-
-    // Core Counts & Metrics
     $plantsCount = $conn->query("SELECT COUNT(*) as total FROM plants")->fetch()['total'] ?? 0;
     $locationsCount = $conn->query("SELECT COUNT(*) as total FROM locations")->fetch()['total'] ?? 0;
     $projectsCount = $conn->query("SELECT COUNT(*) as total FROM projects")->fetch()['total'] ?? 0;
@@ -30,11 +32,9 @@ try {
     $areaPerYear = $conn->query("SELECT year, SUM(green_area) as total_green_area FROM records WHERE green_area IS NOT NULL GROUP BY year ORDER BY year ASC")->fetchAll();
     $completedProjectsPerYear = $conn->query("SELECT EXTRACT(YEAR FROM COALESCE(updated_at, created_at)) as year, COUNT(*) as count FROM projects WHERE project_status = 'completed' GROUP BY EXTRACT(YEAR FROM COALESCE(updated_at, created_at)) ORDER BY year ASC")->fetchAll();
 
-    // Fetch distinct years for dropdown options
     $yearsStmt = $conn->query("SELECT DISTINCT report_year FROM annual_reports ORDER BY report_year DESC");
     $availableYears = $yearsStmt->fetchAll(PDO::FETCH_COLUMN);
 
-    // Capture parameters sent via GET
     $searchQuery = trim($_GET['search'] ?? '');
     $filterYear = trim($_GET['year'] ?? '');
     $order = strtoupper($_GET['order'] ?? 'DESC');
@@ -46,13 +46,11 @@ try {
     $reportsSql = "SELECT report_id, title_en, title_ar, report_year, pdf_path FROM annual_reports WHERE 1=1";
     $params = [];
 
-    // Apply search filter
     if (!empty($searchQuery)) {
         $reportsSql .= " AND (title_en ILIKE :search OR title_ar ILIKE :search)";
         $params[':search'] = "%" . $searchQuery . "%";
     }
 
-    // Apply year filter if selected and not empty string
     if (!empty($filterYear)) {
         $reportsSql .= " AND report_year = :filter_year";
         $params[':filter_year'] = (int)$filterYear;
@@ -63,7 +61,6 @@ try {
     $reportsStmt->execute($params);
     $annualReports = $reportsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Detailed Report Rows (Matched to the location and records layout)
     $detailsQuery = "
         SELECT 
             r.record_id,
@@ -84,7 +81,9 @@ try {
     $detailsResult = $conn->query($detailsQuery);
     $detailedReportRows = $detailsResult ? $detailsResult->fetchAll(PDO::FETCH_ASSOC) : [];
 
-    // Role Verification
+// ==========================================
+// Checking role
+// ==========================================
     $userRole = 'guest';
     if (isset($_SESSION['user_role'])) {
         if ($_SESSION['user_role'] === 'admin') {

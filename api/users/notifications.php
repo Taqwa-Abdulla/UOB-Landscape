@@ -1,4 +1,12 @@
 <?php
+// ==========================================
+// Notifications API
+// ==========================================
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+// ==========================================
+// Authentication and checking role
+// ==========================================
 header("Content-Type: application/json; charset=UTF-8");
 require_once __DIR__ . '/../../config/db.php';
 if (session_status() === PHP_SESSION_NONE) {
@@ -11,21 +19,21 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
-$userRole = $_SESSION['role'] ?? 'creator'; 
+$userRole = $_SESSION['role'] ?? 'creator';
 $method = $_SERVER['REQUEST_METHOD'];
-
+// ==========================================================
+// Fetch data from DB
+// Automatically notifications applies FIFO rule + 3 days old for deletion
+// 20 as limit
+// ==========================================================
 try {
     $db = new Database();
     $conn = $db->getConnection();
 
     if ($method === 'GET') {
-        // FIFO Rule: Automatically delete read notifications older than 3 days
         $cleanupQuery = "DELETE FROM notifications WHERE user_id = :user_id AND is_read = TRUE AND created_at < NOW() - INTERVAL '3 days'";
         $cleanupStmt = $conn->prepare($cleanupQuery);
         $cleanupStmt->execute(['user_id' => $userId]);
-
-        // Based on your schema, notifications table doesn't have table_name or source_user_id columns.
-        // General notifications belong directly to the user. For calendar events, we LEFT JOIN calendar_events to filter out personal events and own events.
         if ($userRole === 'admin') {
             $query = "SELECT n.notification_id, n.title, n.message, n.type, n.is_read, n.created_at 
                       FROM notifications n
@@ -37,8 +45,6 @@ try {
                         )
                       ORDER BY n.created_at DESC LIMIT 20";
         } else {
-            // Creators are restricted. If your notifications can be tied to activity_log or tables, 
-            // we filter standard general notifications while allowing calendar events from other non-personal creators.
             $query = "SELECT n.notification_id, n.title, n.message, n.type, n.is_read, n.created_at 
                       FROM notifications n
                       LEFT JOIN calendar_events c ON n.type = 'deadline' AND n.message LIKE '%' || c.title || '%'
@@ -72,8 +78,9 @@ try {
         $countStmt = $conn->prepare($countQuery);
         $countStmt->execute(['user_id' => $userId]);
         $unreadCount = $countStmt->fetch(PDO::FETCH_ASSOC)['unread_count'] ?? 0;
-
-        // Fetch user preferences from DB
+        // ==========================================
+        // Notifications prefrences
+        // ==========================================
         $prefQuery = "SELECT receive_all, mute_all, notify_system, notify_updates FROM user_notification_settings WHERE user_id = :user_id";
         $prefStmt = $conn->prepare($prefQuery);
         $prefStmt->execute(['user_id' => $userId]);
@@ -94,8 +101,7 @@ try {
             "data" => $notifications,
             "preferences" => $preferences
         ]);
-    } 
-    elseif ($method === 'POST') {
+    } elseif ($method === 'POST') {
         $data = json_decode(file_get_contents("php://input"), true);
         $action = $data['action'] ?? '';
 
@@ -103,13 +109,11 @@ try {
             $stmt = $conn->prepare("UPDATE notifications SET is_read = TRUE WHERE notification_id = :id AND user_id = :user_id");
             $stmt->execute(['id' => $data['notification_id'], 'user_id' => $userId]);
             echo json_encode(["status" => "success", "message" => "Marked as read."]);
-        } 
-        elseif ($action === 'clear_all') {
+        } elseif ($action === 'clear_all') {
             $stmt = $conn->prepare("DELETE FROM notifications WHERE user_id = :user_id");
             $stmt->execute(['user_id' => $userId]);
             echo json_encode(["status" => "success", "message" => "All notifications cleared for current user."]);
-        }
-        elseif ($action === 'save_preferences') {
+        } elseif ($action === 'save_preferences') {
             $receiveAll = isset($data['receive_all']) ? filter_var($data['receive_all'], FILTER_VALIDATE_BOOLEAN) : false;
             $muteAll = isset($data['mute_all']) ? filter_var($data['mute_all'], FILTER_VALIDATE_BOOLEAN) : false;
             $system = isset($data['notify_system']) ? filter_var($data['notify_system'], FILTER_VALIDATE_BOOLEAN) : false;
@@ -126,7 +130,7 @@ try {
                     notify_updates = EXCLUDED.notify_updates,
                     updated_at = NOW()
             ");
-            
+
             $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
             $stmt->bindValue(':receive_all', $receiveAll, PDO::PARAM_BOOL);
             $stmt->bindValue(':mute_all', $muteAll, PDO::PARAM_BOOL);

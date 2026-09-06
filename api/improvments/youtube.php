@@ -1,30 +1,27 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+// ================================================================
+// Display Youtube videos of projects by embedding RSS (channle ID)
+// ================================================================
 header('Content-Type: application/json');
-
 require_once __DIR__ . '/../../config/db.php';
-
 $projectId = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
-$direction = isset($_GET['direction']) ? $_GET['direction'] : ''; // 'next', 'prev', or empty
-
+$direction = isset($_GET['direction']) ? $_GET['direction'] : '';
 $response = [
     'project_video' => null,
     'channel_videos' => [],
     'current_id' => 0
 ];
-
 try {
     $database = new Database();
     $db = $database->getConnection();
 
     $project = false;
-
-    // Handle directional navigation skipping deleted IDs automatically
     if ($projectId > 0 && $direction === 'next') {
         $stmt = $db->prepare("SELECT project_id, video_proposal_link, title_en, EXTRACT(YEAR FROM created_at) AS project_year FROM projects WHERE project_id > ? ORDER BY project_id ASC LIMIT 1");
         $stmt->execute([$projectId]);
         $project = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // If there's no "next" project, loop back or stay on the current one
         if (!$project) {
             $stmt = $db->prepare("SELECT project_id, video_proposal_link, title_en, EXTRACT(YEAR FROM created_at) AS project_year FROM projects WHERE project_id = ?");
             $stmt->execute([$projectId]);
@@ -34,23 +31,20 @@ try {
         $stmt = $db->prepare("SELECT project_id, video_proposal_link, title_en, EXTRACT(YEAR FROM created_at) AS project_year FROM projects WHERE project_id < ? ORDER BY project_id DESC LIMIT 1");
         $stmt->execute([$projectId]);
         $project = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // If there's no "previous" project, stay on the current one
         if (!$project) {
             $stmt = $db->prepare("SELECT project_id, video_proposal_link, title_en, EXTRACT(YEAR FROM created_at) AS project_year FROM projects WHERE project_id = ?");
             $stmt->execute([$projectId]);
             $project = $stmt->fetch(PDO::FETCH_ASSOC);
         }
     }
-
-    // Default fetch if no direction or specific ID lookup
     if (!$project && $projectId > 0) {
         $stmt = $db->prepare("SELECT project_id, video_proposal_link, title_en, EXTRACT(YEAR FROM created_at) AS project_year FROM projects WHERE project_id = ?");
         $stmt->execute([$projectId]);
         $project = $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
-    // Ultimate fallback: Grab the absolute latest project if nothing else matches
+    // ==========================================
+    // Fallback
+    // ==========================================
     if (!$project) {
         $stmt = $db->prepare("SELECT project_id, video_proposal_link, title_en, EXTRACT(YEAR FROM created_at) AS project_year FROM projects ORDER BY project_id DESC LIMIT 1");
         $stmt->execute();
@@ -65,11 +59,12 @@ try {
             'year' => $project['project_year']
         ];
     }
-
+    // ==========================================
     // Fetch latest videos from YouTube RSS Feed
-    $channelId = 'UCM5UfujAklBwqFCAYDWXMMA'; 
+    // ==========================================
+    $channelId = 'UCM5UfujAklBwqFCAYDWXMMA';
     $rssUrl = "https://www.youtube.com/feeds/videos.xml?channel_id=" . $channelId;
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $rssUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -93,7 +88,6 @@ try {
     }
 
     echo json_encode(['success' => true, 'data' => $response]);
-
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }

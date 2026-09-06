@@ -1,9 +1,12 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+// ==========================================
+// Display locations and their improvments
+// ==========================================
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-
 require_once __DIR__ . '/../../config/db.php';
-
 try {
     $database = new Database();
     $db = $database->getConnection();
@@ -30,19 +33,18 @@ try {
         LEFT JOIN projects p ON l.location_id = p.location_id
         ORDER BY l.category ASC, l.name_en ASC
     ";
-
     $stmt = $db->prepare($query);
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     $locations = [];
     $categories = [];
-
+    // ==========================================
+    // Fallback images incase DB has no image
+    // ==========================================
     // Working, direct Unsplash Fallback URLs
     $default_proposal = "https://images.unsplash.com/photo-1541888946425-d0fbb18f86f6?auto=format&fit=crop&w=800&q=80";
     $default_before   = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80";
     $default_after    = "https://images.unsplash.com/photo-1558449028-b53a39d100fc?auto=format&fit=crop&w=800&q=80";
-
     foreach ($rows as $row) {
         $cat = trim($row['category']);
         if (!empty($cat) && !in_array($cat, $categories)) {
@@ -83,7 +85,6 @@ try {
         "categories" => array_values($categories),
         "data"       => $locations
     ], JSON_UNESCAPED_UNICODE);
-
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode([
