@@ -425,3 +425,54 @@ CREATE TRIGGER audit_annual_reports_changes AFTER INSERT OR UPDATE OR DELETE ON 
 -- ==========================================
 -- Testing data
 -- ==========================================
+INSERT INTO users (username, email, college, major, password_hash, role, is_contributor, updated_by) VALUES
+('Dr. Ali Ahmed', 'a.ahmed@uob.edu.bh', NULL, NULL, 'ff7bd97b1a7789ddd2775122fd6817f3173672da9f802ceec57f284325bf589f', 'admin', FALSE, NULL);
+
+-- =======================================================================================
+-- THE REST OF THE DATA WHERE ADDED THROUGH THE SYSTEM TO TEST ALL FUNCTIONS.
+-- =======================================================================================
+-- Add Users
+-- =======================================================================================
+-- 'Sarah Al-Mansoori', '202809102@stu.uob.edu.bh', 'College of Information Technology', 'Software Engineering', 'Password@123', 'creator', TRUE, NULL
+-- 'Khalil Ali', '202805102@stu.uob.edu.bh', 'College of Information Technology', 'Computer Science', 'Password@123', 'creator', TRUE, NULL
+-- 'Hawra Abdulla', '202806102@stu.uob.edu.bh', 'College of Science', 'Biology', 'Password@123', 'creator', TRUE, NULL
+-- 'Jassim Hassan', '202807102@stu.uob.edu.bh', 'College of Engineering', 'Landscape Architecture', 'Password@123', 'creator', FALSE, NULL
+-- =======================================================================================
+-- Add Locations
+-- =======================================================================================
+-- 'S1A', 'building', 'College of Arts', 'كلية الآداب', 26.05128300, 50.51433110, 1, NULL
+-- 'S3', 'facility', 'Central Library', 'المكتبة المركزية', 26.05111800, 50.51336600, 1, NULL
+-- NULL, 'roadside', 'Flag Roundabout-Fountain', 'دوار العلم-النافورة', 26.053722, 50.510222, 1, NULL
+-- NULL, 'park', 'Student Parking–Western Gate', 'موقف سيارات الطلاب-البوابة الغربية', 26.049357, 50.506854, 1, NULL
+-- NULL, 'gate', 'Main Gate', 'البوابة الرئيسية', 26.056430, 50.508893, 1, NULL
+-- NULL, 'infrastructure', 'Inner Fence', 'السور الداخلي', 26.057222, 50.510361, 1, NULL
+-- =======================================================================================
+-- Add Plants
+-- =======================================================================================
+-- 'OP-101', 5, 5, NULL, 'Date Palm', 'نخلة البلح', 'Phoenix dactylifera', 'date_palm.jpg', 15, 'tree', 'perennial', 'low', 'full sun', '10.0-15.0 m', '3.0-5.0 m', TRUE, 'low', TRUE, 'deep taproot', 'high', 'high', 'no', 'high', 'High', '120000 g/year', 'outdoor', 1
+-- 'OP-102', 3, 5, 3, 'Bougainvillea', 'جهنمية', 'Bougainvillea spectabilis', 'bougainvillea.jpg', 30, 'shrub', 'perennial', 'medium', 'full sun', '1.5-3.0 m', '2.0-4.0 m', FALSE, 'medium', FALSE, 'fibrous', 'high', 'high', 'seasonal', 'low', 'Medium', '45000 g/year', 'outdoor', NULL
+-- 'IP-101', 1, 4, NULL, 'Peace Lily', 'زنبق السلام', 'Spathiphyllum wallisii', 'peace_lily.jpg', 8, 'indoor plant', 'perennial', 'medium', 'partial shade', '0.3-0.6 m', '0.3-0.5 m', TRUE, 'low', FALSE, 'fibrous', 'low', 'medium', 'Summer', 'medium', 'Low', '12000 g/year', 'indoor', NULL
+-- =======================================================================================
+-- Add Projects
+-- =======================================================================================
+-- 1, 4, 3, 'Native Tress', 'الأشجار المحلية',NULL,NULL,'s1a-before.jpg', 's1a-proposal.jpg', 's1a-after.jpg','https://youtu.be/G3e-cpL7ofc?si=H5AacMB6w4uCZD7y', 's1a-proposal.pdf'),
+-- 3, 3, NULL, 'Flag Roundabout Fountain', 'نافورة دوار العلم','Remove harmful and random trees ','إزالة الأشجار المؤذية والعشوائية','flag-before.jpg', 'flag-proposal.jpg', NULL,'https://youtu.be/ix9cRaBkVe0?si=91gR1pbAeE_aphlv', 'flag-proposal.pdf'
+-- =======================================================================================
+-- Add Records
+-- =======================================================================================
+-- 6, 1, NULL, 2024, 'Planting ornamental trees', 'زراعة أشجار الزينة', 568, 568, 142,'Degraded or uncultivated landscape.', 'Re-landscaped with sustainable ornamental species enhancing ecological and visual value.','أرض متدهورة أو غير مزروعة.', 'أعيد تصميم المناظر الطبيعية باستخدام أنواع نباتية زينة مستدامة تعزز القيمة البيئية والبصرية.', NULL, NULL, NULL, NULL, NULL, NULL
+-- 4, 1, NULL, 2026, 'Tree planting for parking landscape', 'زراعة الأشجار لتنسيق الحدائق في مواقف السيارات', NULL, NULL, 130, 'Uncultivated land.', 'Fully re-landscaped and planted.','أرض غير مزروعة.', 'تمت إعادة تصميم وتنسيق الحدائق بالكامل.', NULL, NULL, NULL, NULL, 'Improved parking landscape with green identity', 'تحسين تصميم مواقف السيارات مع مراعاة الطابع الأخضر'
+-- =======================================================================================
+-- Add News
+-- =======================================================================================
+-- 1, NULL, 'https://www.instagram.com/reel/DYR4j9TNPGK/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==', 'National Campaign of Afforestation', 'الحملة الوطنية للتشجير', 'The National Initiative for Agricultural Sector Development extends its deepest gratitude and appreciation to everyone who contributed to planting a tree and nurturing hope in our homeland.', 'تتقدم المبادرة الوطنية لتنمية القطاع الزراعي بجزيل الشكر وعظيم الامتنان لكل من أسهم بعطائه في غرس شجرة، ومد جذور الأمل في أرض الوطن.', 'SDG 13, SDG 15'
+-- =======================================================================================
+-- Add Costs
+-- =======================================================================================
+-- 'water_tier', 'Low', 0.50  
+-- 'water_tier', 'Medium', 1.20  
+-- 'water_tier', 'High', 2.50    
+-- 'project', 'Campus Greenbelt Expansion', 12500.00
+-- 'project', 'Arboretum Irrigation Retrofit', 8400.00
+-- 'project', 'Botanical Courtyard Redesign', 5300.00
+-- =======================================================================================
