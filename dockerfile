@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y libpq-dev \
 
 # Copy all your project files into the web server's public directory
 COPY . /var/www/html/
-RUN echo "DirectoryIndex site/giest/home.html" >> /etc/apache2/apache2.conf
+RUN echo "DirectoryIndex site/guest/home.html" >> /etc/apache2/apache2.conf
 
 # Expose port 80 so Render can route web traffic to it
 EXPOSE 80
