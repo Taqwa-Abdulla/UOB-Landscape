@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: UOB Landscape
-    env: php
+    name: uob-landscape
+    env: node
     region: frankfurt
     plan: free
-    buildCommand: "composer install"
+    buildCommand: "apt-get update && apt-get install -y php php-cli php-mbstring && composer install"
     startCommand: "php -S 0.0.0.0:$PORT"
     envVars:
       - key: DB_HOST
