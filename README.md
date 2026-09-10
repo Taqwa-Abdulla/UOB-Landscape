@@ -3,21 +3,28 @@ The Landscape Website for University Of Bahrain (UOB), a collaburative website b
 ## Readme Contents:
 - [Overview](#uob-landscape)
 - [Copyright & Usage Restrictions](#copyright--usage-restrictions)
-- [Languages Used](#languages-used)
+- [Website Demo version 1.0.0](#website-demo-v100)
+- [Languages Used](#stack-used)
 - [Frameworks Used](#frameworks-used)
 - [Website Features](#website-features)
 - [Website Structure](#website-structure)
 ## Copyright & Usage Restrictions
 Copyright (c) 2026 University Of Bahrain. All rights reserved. This repository is public for viewing purposes only. Unauthorized downloading, copying, modification, distribution, or commercial use of any code or content herein, via any medium, is strictly prohibited.
-## Languages Used:
-- HTML + JS (Frontend)
-- PHP (Backend: Rest APIs)
+## Website Demo V1.0.0
+<a href="" target="_blank">UOB Landscape Demo website</a>
+
+## Database Used and Deployment:
+- Database: PostgreSQL (PgAdmin)
+- Deployment: Cloud hosting platform (Render)
+## Stack Used:
+- Frontend: HTML + JavaScript (JS) 
+- Backend (Rest APIs): PHP
+- Database: SQL and PSQL
 ## Frameworks Used:
 - CSS: Tailwind v4.3.3, maplibre-gl CSS v4.1.2
 - JS: Chart.js v4.5.1 and MapLibre GL JS v4.1.2
-- QR Code Library (PHP): Endroid QR Code v6.1.3 - composer
+- PHP: QR Code Library "Endroid QR Code v6.1.3" and PDF library "MPDF v8.3.1" - composer
 - Bootstrap Icons v1.11.3 
-- MPDF (PDF PHP library) v8.3.1 - composer
 ## Website Features
 - FAQ Chatbot / Virtual Assistant (Aspen): An interactive, conversational chat window for FAQ with mitigation against Cross-Site Scripting (XSS) attacks.
 - Report generator: Generate Reports for single tables, stats and full report including tables and stats in both PDF and CSV formats.
