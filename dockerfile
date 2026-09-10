@@ -1,12 +1,12 @@
+# Use the official lightweight PHP-Apache image
 FROM php:8.2-apache
 
-<<<<<<< HEAD
-# Install PostgreSQL extensions
-=======
 # Install PostgreSQL dependencies and extensions
->>>>>>> c5ccd282ee02468c5a6fed0d51a00e0091f6e65e
 RUN apt-get update && apt-get install -y libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql pgsql
 
+# Copy all your project files into the web server's public directory
 COPY . /var/www/html/
+
+# Expose port 80 so Render can route web traffic to it
 EXPOSE 80
