@@ -15,7 +15,8 @@ Copyright (c) 2026 University Of Bahrain. All rights reserved. This repository i
 
 ## Database Used and Deployment:
 - Database: PostgreSQL (PgAdmin)
-- Deployment: Cloud hosting platform (Render)
+- Deployment: Cloud hosting platform (Render) using Dockerfile, Blueprint (YAML), and Apache `.htaccess` configurations
+
 ## Stack Used:
 - Frontend: HTML + JavaScript (JS) 
 - Backend (Rest APIs): PHP
