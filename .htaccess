@@ -1,0 +1,14 @@
+# 1. Turn off trailing slash directory resets globally
+DirectorySlash Off
+
+# 2. Disable MultiViews to protect clean API names from getting hijacked
+Options -MultiViews
+
+# 3. Allow Apache to process ALL request methods without dropping payloads
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Route all matching /api requests directly through the passthrough flag [PT]
+    # This automatically locks and preserves GET, POST, PUT, DELETE, and PATCH data
+    RewriteRule ^api/(.*)$ /api/$1 [L,PT]
+</IfModule>
