@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // existing connection configuration
-require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/config/db.php';
 
 try {
     // Instantiate Database class and get the PDO connection
@@ -12,7 +12,7 @@ try {
     $dbConnection = $database->getConnection();
 
     // Locate SQL layout file
-    $sqlFile = __DIR__ . '/../../config/landscape.sql'; 
+    $sqlFile = __DIR__ . '/config/landscape.sql'; 
     
     if (!file_exists($sqlFile)) {
         throw new Exception("Could not find SQL layout");
