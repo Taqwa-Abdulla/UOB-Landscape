@@ -17,5 +17,8 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev --ignore-pl
 # Tell Apache your default home page route
 RUN echo "DirectoryIndex site/guest/home.html" >> /etc/apache2/apache2.conf
 
+# Automatically run the SQL file into the Postgres database on deployment
+RUN PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f /var/www/html/config/landscape.sql || true
+
 # Expose port 80 so Render can route web traffic to it
 EXPOSE 80
