@@ -14,13 +14,15 @@ class Database {
     private $port;
     public $conn;
 
-    public function __construct() {
-        $this->host = getenv('DB_HOST') ?: "localhost";
-        $this->user = getenv('DB_USER') ?: "postgres";
-        $this->password = getenv('DB_PASS') ?: "password";
-        $this->database = getenv('DB_NAME') ?: "landscape";
-        $this->port = getenv('DB_PORT') ?: "5432";
+    public function __construct()
+    {
+        $this->host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: "localhost";
+        $this->user = $_ENV['DB_USER'] ?? getenv('DB_USER') ?: "postgres";
+        $this->password = $_ENV['DB_PASS'] ?? getenv('DB_PASS') ?: "password";
+        $this->database = $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?: "landscape";
+        $this->port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: "5432";
     }
+
 
     // PDO connection
     public function getConnection() {
