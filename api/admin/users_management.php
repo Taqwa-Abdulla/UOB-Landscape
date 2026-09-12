@@ -377,7 +377,7 @@ function deleteUser($db, $userId)
         ], 400);
     }
 
-    $checkStmt = $db->prepare("SELECT username, is_contributor FROM users WHERE user_id = ?");
+    $checkStmt = $db->prepare("SELECT username FROM users WHERE user_id = ?");
     $checkStmt->execute([$userId]);
     $user = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -396,10 +396,6 @@ function deleteUser($db, $userId)
 
         if (!$success) {
             throw new Exception("Failed to delete user from database.");
-        }
-        if (!empty($user['is_contributor'])) {
-            $contribStmt = $db->prepare("DELETE FROM contributors WHERE username = ?");
-            $contribStmt->execute([$user['username']]);
         }
 
         $db->commit();
