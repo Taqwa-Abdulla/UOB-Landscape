@@ -1,39 +1,70 @@
-## UOB-Landscape 
-The Landscape Website for University Of Bahrain (UOB), a collaburative website between college of Information Technology, college of Science, and college of Engineering.
-## Readme Contents:
+# UOB-Landscape
+
+The official Landscape Website for the University of Bahrain (UOB)—a collaborative initiative between the College of Information Technology, the College of Science, and the College of Engineering.
+
+## Table of Contents
 - [Overview](#uob-landscape)
 - [Copyright & Usage Restrictions](#copyright--usage-restrictions)
-- [Website Demo version 1.0.0](#website-demo-v100)
-- [Languages Used](#stack-used)
-- [Frameworks Used](#frameworks-used)
+- [System Architecture & Important Notes](#system-architecture--important-notes)
+- [Live Demo & Contributors](#live-demo--contributors)
+- [Tech Stack & Frameworks](#tech-stack--frameworks)
 - [Website Features](#website-features)
-- [Website Structure](#website-structure)
+- [Repository Structure](#repository-structure)
+
+---
+
 ## Copyright & Usage Restrictions
-Copyright (c) 2026 University Of Bahrain. All rights reserved. This repository is public for viewing purposes only. Unauthorized downloading, copying, modification, distribution, or commercial use of any code or content herein, via any medium, is strictly prohibited.
-## Website Demo V1.0.0
-<a href="https://uob-landscape.onrender.com" target="_blank">UOB Landscape Demo website</a>
+Copyright © 2026 University of Bahrain. All rights reserved. 
 
-## Database Used and Deployment:
-- Database: PostgreSQL (PgAdmin)
-- Deployment: Cloud hosting platform (Render) using Dockerfile, Blueprint (YAML), and Apache `.htaccess` configurations
+This repository is public for viewing purposes only. Unauthorized downloading, copying, modification, distribution, or commercial use of any code or content herein, via any medium, is strictly prohibited.
 
-## Stack Used:
-- Frontend: HTML + JavaScript (JS) 
-- Backend (Rest APIs): PHP
-- Database: SQL and PSQL
-## Frameworks Used:
-- CSS: Tailwind v4.3.3, maplibre-gl CSS v4.1.2
-- JS: Chart.js v4.5.1 and MapLibre GL JS v4.1.2
-- PHP: QR Code Library "Endroid QR Code v6.1.3" and PDF library "MPDF v8.3.1" - composer
-- Bootstrap Icons v1.11.3 
+---
+
+## System Architecture & Important Notes
+
+1. **Modernized Architecture:** Developed entirely from scratch, this modern dynamic version supersedes earlier static prototypes. It incorporates an advanced security architecture, optimized workflows, and a fully overhauled user experience.
+2. **Deployment Code Structure:** The code in this repository includes specific deployment configurations tailored for hosting on Render. The base source code without deployment modifications can be found in the [Original UOB Landscape Repository](https://github.com/Taqwa-Abdulla/UOB-Landscape-Code-Backup.git). 
+3. **Render Hosting Limitations:** Due to the limitations of Render's free tier, database storage and performance may vary. Full-scale production deployment requires a paid tier to ensure optimal functionality for all features.
+
+---
+
+*Note: The code here includes deployment changes to host it specifically on Render. Access to the original repository is restricted to authorized personnel for managing and modifying the core source code. Attempting to download or reconstruct the core source code directly from this public repository is not only prohibited under our usage restrictions, but will result in an incomplete local environment.*
+
+---
+
+## Live Demo & Contributors
+- **Live Website Demo:** [UOB Landscape v1.0.0](https://uob-landscape.onrender.com/site/guest/home.html)
+- **Contributors & Acknowledgments:** [View the About Page](https://uob-landscape.onrender.com/site/guest/about.html)
+
+---
+
+## Tech Stack & Frameworks
+
+### Core Stack
+- **Frontend:** HTML, JavaScript
+- **Backend:** PHP (REST APIs)
+- **Database:** PostgreSQL (PgAdmin)
+- **Deployment:** Cloud hosting via Render (Docker, YAML Blueprint, Apache `.htaccess`)
+
+### Frameworks & Libraries Versions
+-**HTML:** HTML5
+- **CSS / UI:** Vanilla CSS & Tailwind CSS (v4.3.3) Compiled via CLI, MapLibre GL CSS (v4.1.2), Bootstrap Icons (v1.11.3)
+- **JavaScript:** Vanilla JavaScript (ES6+) **&** **JavaScript Libraries:** Chart.js (v4.5.1), MapLibre GL JS (v4.1.2)
+- **PHP:** (v8.4.27) **&** **PHP Libraries (via Composer):** Endroid QR Code (v6.1.3), mPDF (v8.3.1), fPDF (v1.9.0)
+---
+
 ## Website Features
-- FAQ Chatbot / Virtual Assistant (Aspen): An interactive, conversational chat window for FAQ with mitigation against Cross-Site Scripting (XSS) attacks.
-- Report generator: Generate Reports for single tables, stats and full report including tables and stats in both PDF and CSV formats.
-- Notifications, schedule personal and non-personal events with option to print them as PDF, and email users.
-- Full audit tracking based on role with option to export it as PDF or CSV formats.
-- 3D campus locations map
-- Authentication: login & logout with Sanitization & basic Security (cleaning input and role-based access)
-## Website Structure
+
+- **FAQ Chatbot (Aspen):** An interactive conversational assistant equipped with mitigation against Cross-Site Scripting (XSS) attacks.
+- **Advanced Report Generator:** Generates reports for individual tables, statistics, and comprehensive summaries in both PDF and CSV formats.
+- **Notifications & Scheduling:** Manage personal and institutional events with options for PDF export and email notifications.
+- **Role-Based Audit Tracking:** Full activity logging mapped to user roles, with export capabilities (PDF/CSV).
+- **Interactive 3D Campus Map:** Built using MapLibre GL for campus navigation and spatial visualization.
+- **Secure Authentication:** Robust login/logout workflows featuring input sanitization and role-based access control (RBAC).
+
+---
+
+## Repository Structure
 ```
 UOB-Landscape/
 ├── api/
@@ -140,7 +171,7 @@ UOB-Landscape/
 │   │   │   ├── home.html
 │   │   │   ├── location-plants.html
 │   │   │   ├── locations.html
-│.  │   │   └── uob_3d_map.html
+│   │   │   └── uob_3d_map.html
 │   │   └── admin.html
 │   ├── creator/
 │   │   ├── management/
@@ -186,5 +217,5 @@ UOB-Landscape/
 │       └── records/
 └── README.md
 ```
-#
+---
 © 2026 University of Bahrain. All rights reserved.
