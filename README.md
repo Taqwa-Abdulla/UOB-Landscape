@@ -23,7 +23,7 @@ This repository is public for viewing purposes only. Unauthorized downloading, c
 ## System Architecture & Important Notes
 
 1. **Modernized Architecture:** Developed entirely from scratch, this modern dynamic version supersedes earlier static prototypes. It incorporates an advanced security architecture, optimized workflows, and a fully overhauled user experience.
-2. **Deployment Code Structure:** The code in this repository includes specific deployment configurations tailored for hosting on Render. The base source code without deployment modifications can be found in the [Original UOB Landscape Repository](https://github.com/Taqwa-Abdulla/UOB-Landscape-Code-Backup). 
+2. **Deployment Code Structure:** The code in this repository includes specific deployment configurations tailored for hosting on Render. The base source code without deployment modifications can be found in the [Original UOB Landscape Repository](https://github.com/Taqwa-Abdulla/Code-Backup---UOB-Landscape). 
 3. **Render Hosting Limitations:** Due to the limitations of Render's free tier, database storage and performance may vary. Full-scale production deployment requires a paid tier to ensure optimal functionality for all features.
 
 ---
