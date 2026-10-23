@@ -50,7 +50,7 @@ This repository is public for viewing purposes only. Unauthorized downloading, c
 -**HTML:** HTML5
 - **CSS / UI:** Vanilla CSS & Tailwind CSS (v4.3.3) Compiled via CLI, MapLibre GL CSS (v4.1.2), Bootstrap Icons (v1.11.3)
 - **JavaScript:** Vanilla JavaScript (ES6+) **&** **JavaScript Libraries:** Chart.js (v4.5.1), MapLibre GL JS (v4.1.2)
-- **PHP:** (v8.4.27) **&** **PHP Libraries (via Composer):** Endroid QR Code (v6.1.3), mPDF (v8.3.1), fPDF (v1.9.0)
+- **PHP:** (v8.5.12) **&** **PHP Libraries (via Composer):** Endroid QR Code (v6.1.3), mPDF (v8.3.1), fPDF (v1.9.0)
 ---
 
 ## Website Features

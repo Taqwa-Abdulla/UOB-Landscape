@@ -1,5 +1,5 @@
 # Use the official lightweight PHP-Apache image
-FROM php:8.2-apache
+FROM php:8.5.12-apache
 
 # Install PostgreSQL, unzip, and git
 RUN apt-get update && apt-get install -y libpq-dev unzip git \
